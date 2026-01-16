@@ -1,6 +1,6 @@
 package Model;
 
-public class displayMenu {
+public class displayMainMenu {
 
     // Menu chính
     public static void displayMainMenu() {
