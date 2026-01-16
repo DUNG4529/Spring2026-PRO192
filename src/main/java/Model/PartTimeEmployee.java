@@ -1,5 +1,5 @@
 
-package com.project.lab;
+package Model;
 
 
 public class PartTimeEmployee extends Employee {

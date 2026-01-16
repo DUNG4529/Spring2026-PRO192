@@ -1,4 +1,4 @@
-package Project_LAB;
+package Model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

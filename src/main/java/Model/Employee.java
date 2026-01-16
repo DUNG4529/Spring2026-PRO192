@@ -1,5 +1,5 @@
 
-package com.project.lab;
+package Model;
 
 
 public abstract class Employee {
