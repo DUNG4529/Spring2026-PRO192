@@ -3,6 +3,12 @@ package Project_LAB;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ *
+ * @author Tra Giang 
+ */
+
+
 public class Validation {
 
     // Định dạng ngày chung cho toàn project, sửa 1 chỗ là ăn hết
