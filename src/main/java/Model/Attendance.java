@@ -3,18 +3,39 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Model;
+
 import java.time.LocalDate;
+
+/**
+ * Enum định nghĩa các trạng thái điểm danh
+ */
+enum AttendanceStatus {
+    PRESENT("Present"), // Có mặt
+    ABSENT("Absent"), // Vắng mặt
+    LATE("Late"), // Đi muộn
+    EARLY_LEAVE("Early Leave"); // Về sớm
+
+    private String displayName;
+
+    AttendanceStatus(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+}
 
 /**
  * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
  * Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
 public class Attendance {
-    private String idEmployee;  // Mã nhân viên
-    private LocalDate date;     // Ngày điểm danh 
-    private String status;      // Trạng thái điểm danh (ví dụ: "Present", "Absent", "Late", ...)
-    private double overtime;    // Số giờ làm thêm (overtime)
-    
+    private String idEmployee; // Mã nhân viên
+    private LocalDate date; // Ngày điểm danh
+    private AttendanceStatus status; // Trạng thái điểm danh
+    private double overtime; // Số giờ làm thêm (overtime)
+
     /// =========================
     /// KHỞI TẠO DỮ LIỆU
     /// =========================
@@ -22,14 +43,15 @@ public class Attendance {
     // Constructor không tham số
     public Attendance() {
     }
+
     // Constructor đầy đủ tham số
-    public Attendance(String idEmployee, LocalDate date, String status, double overtime) {
+    public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
         this.idEmployee = idEmployee;
         this.date = date;
         this.status = status;
         this.overtime = overtime;
     }
-    
+
     /// =========================
     /// CẬP NHẬT VÀ TRUY XUẤT DỮ LIỆU (GETTER & SETTER)
     /// =========================
@@ -65,14 +87,14 @@ public class Attendance {
     /**
      * Lấy trạng thái điểm danh
      */
-    public String getStatus() {
+    public AttendanceStatus getStatus() {
         return status;
     }
 
     /**
      * Cập nhật trạng thái điểm danh
      */
-    public void setStatus(String status) {
+    public void setStatus(AttendanceStatus status) {
         this.status = status;
     }
 
@@ -89,5 +111,5 @@ public class Attendance {
     public void setOvertime(double overtime) {
         this.overtime = overtime;
     }
-    
+
 }
