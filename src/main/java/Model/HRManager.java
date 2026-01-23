@@ -76,6 +76,8 @@ public class HRManager {
     /// EMPLOYEE METHODS
     /// =========================
 
+    // CRUD fundermentals for Employee
+
     /**
      * Thêm một nhân viên mới vào hệ thống
      *
