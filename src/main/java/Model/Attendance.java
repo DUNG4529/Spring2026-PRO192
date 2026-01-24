@@ -12,8 +12,7 @@ import java.time.LocalDate;
 enum AttendanceStatus {
     PRESENT("Present"), // Có mặt
     ABSENT("Absent"), // Vắng mặt
-    LATE("Late"), // Đi muộn
-    EARLY_LEAVE("Early Leave"); // Về sớm
+    LEAVE("Leave"); // Nghỉ phép
 
     private String displayName;
 

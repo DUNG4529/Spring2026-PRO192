@@ -4,7 +4,7 @@ package Model;
 public class PartTimeEmployee extends Employee {
 
     public PartTimeEmployee(String id, String name, String department, double baseSalary, String jobTitle,
-            String dateOfJoining, EmployeeStatus status) {
+            String dateOfJoining, Status status) {
         super(id, name, department, baseSalary, jobTitle, dateOfJoining, status);
     }
 
@@ -13,7 +13,5 @@ public class PartTimeEmployee extends Employee {
         return 0;
     }
 
-    public void output() {
-        //
-    }
+    
 }
