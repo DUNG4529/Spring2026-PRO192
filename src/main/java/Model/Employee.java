@@ -102,6 +102,7 @@ public abstract class Employee {
     // Phương thức tính lương (trừ ngày nghỉ và cộng giờ tăng ca)
     public abstract double calculateSalary(int absenceDays, int overtimeHours);
 
+
     // output employee information
     public String output() {
         return String.format(
