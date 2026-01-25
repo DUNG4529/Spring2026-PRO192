@@ -1,176 +1,64 @@
 
 package Model;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Lớp HRManager chịu trách nhiệm quản lý:
- * - Danh sách nhân viên (Employee)
- * - Danh sách chấm công (Attendance)
- * - Các nghiệp vụ liên quan đến nhân sự và lương
- */
 public class HRManager {
+    private List<Employee> employeeList;
 
-    /**
-     * Danh sách nhân viên trong hệ thống
-     */
-    private List<Employee> employees;
-
-    /**
-     * Danh sách bản ghi chấm công
-     */
-    private List<Attendance> attendances;
-
-    /// =========================
-    /// KHỞI TẠO DỮ LIỆU
-    /// =========================
-
-    /**
-     * Constructor không tham số
-     */
     public HRManager() {
+        this.employeeList = new ArrayList<>();
     }
 
-    /**
-     * Constructor đầy đủ tham số
-     *
-     * @param employees   Danh sách nhân viên
-     * @param attendances Danh sách chấm công
-     */
-    public HRManager(List<Employee> employees, List<Attendance> attendances) {
-        this.employees = employees;
-        this.attendances = attendances;
+    // search
+    public int searchID(String id) {
+        for (int i = 0; i < employeeList.size(); i++) {
+            if (employeeList.get(i).getId().equalsIgnoreCase(id))
+                return i;
+        }
+        return -1;
     }
 
-    /// =========================
-    /// GETTER & SETTER
-    /// =========================
-
-    /**
-     * Lấy danh sách nhân viên
-     */
-    public List<Employee> getEmployees() {
-        return employees;
+    // create - C
+    public void addEmployee(Employee employee) {
+        if (searchID(employee.getId()) != -1)
+            throw new IllegalArgumentException("ID has exist! Pls enter another ID");
+        employeeList.add(employee);
+        System.out.println("Added successfully!");
     }
 
-    /**
-     * Cập nhật danh sách nhân viên
-     */
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
-    }
-
-    /**
-     * Lấy danh sách chấm công
-     */
-    public List<Attendance> getAttendances() {
-        return attendances;
-    }
-
-    /**
-     * Cập nhật danh sách chấm công
-     */
-    public void setAttendances(List<Attendance> attendances) {
-        this.attendances = attendances;
-    }
-
-    /// =========================
-    /// EMPLOYEE METHODS
-    /// =========================
-
-    // CRUD fundermentals for Employee
-
-    /**
-     * Thêm một nhân viên mới vào hệ thống
-     *
-     * @param e Nhân viên cần thêm
-     */
-    public void addEmployee(Employee e) {
-        // TODO: implement later
-    }
-
-    /**
-     * Cập nhật thông tin nhân viên dựa trên ID
-     *
-     * @param idEmployee  Mã nhân viên cần cập nhật
-     * @param newEmployee Thông tin nhân viên mới
-     */
-    public void updateEmployeeById(String idEmployee, Employee newEmployee) {
-        // TODO: implement later
-    }
-
-    /**
-     * Xóa nhân viên khỏi hệ thống theo ID
-     *
-     * @param idEmployee Mã nhân viên cần xóa
-     */
-    public void deleteEmployeeById(String idEmployee) {
-        // TODO: implement later
-    }
-
-    /**
-     * Tìm nhân viên theo ID
-     *
-     * @param idEmployee Mã nhân viên cần tìm
-     * @return Employee nếu tìm thấy, null nếu không tồn tại
-     */
-    public Employee findEmployeeById(String idEmployee) {
-        // TODO: implement later
+    // read - R - lay 1 tu id
+    public Employee getEmpIndex(int index) {
+        if (index >= 0 && index < employeeList.size()) {
+            return employeeList.get(index);
+        }
         return null;
     }
 
-    /// =========================
-    /// ATTENDANCE METHODS
-    /// =========================
-
-    /**
-     * Thêm một bản ghi chấm công mới
-     *
-     * @param a Bản ghi chấm công
-     */
-    public void addAttendance(Attendance a) {
-        // TODO: implement later
+    // read - R - lay all in4
+    public List<Employee> getAllEmp() {
+        return this.employeeList;
     }
 
-    /**
-     * Cập nhật thông tin chấm công của nhân viên
-     *
-     * @param idEmployee Mã nhân viên
-     * @param date       Ngày chấm công
-     * @param status     Trạng thái (Present/Absent/Late/...)
-     * @param overtime   Số giờ làm thêm
-     */
-    public void updateAttendance(String idEmployee, LocalDate date,
-                                 String status, double overtime) {
-        // TODO: implement later
+    // update - U
+    public void updateEmployee(Employee updateEmp) {
+        int index = searchID(updateEmp.getId());
+        if (index != -1) {
+            employeeList.set(index, updateEmp);
+            System.out.println("Update successfully!");
+        } else
+            System.out.println("Update failed! Pls do again!");
     }
 
-    /**
-     * Xóa bản ghi chấm công của nhân viên theo ngày
-     *
-     * @param idEmployee Mã nhân viên
-     * @param date       Ngày cần xóa
-     */
-    public void deleteAttendance(String idEmployee, LocalDate date) {
-        // TODO: implement later
-    }
-
-    /// =========================
-    /// SALARY METHOD
-    /// =========================
-
-    /**
-     * Tính lương của nhân viên dựa trên:
-     * - Ngày công
-     * - Trạng thái làm việc
-     * - Giờ tăng ca
-     *
-     * @param idEmployee Mã nhân viên
-     * @return Tổng lương của nhân viên
-     */
-    public double calculateSalaryById(String idEmployee) {
-        // TODO: implement later
-        return 0.0;
+    // delete - D
+    public void deleteEmployee(String id) {
+        int index = searchID(id);
+        if (index != -1) {
+            Employee emp = employeeList.get(index);
+            emp.setStatus(Status.INACTIVE);
+            System.out.println("Delete successfully!");
+        } else
+            System.out.println("Delete failed! Pls do agian!");
     }
 }
