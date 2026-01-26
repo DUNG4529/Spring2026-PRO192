@@ -1,13 +1,15 @@
 
-package Model;
+package Service;
 
+import Model.Employee_Information;
+import Model.Status;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HRManager {
-    private List<Employee> employeeList;
+public class EmployeeService {
+    private List<Employee_Information> employeeList;
 
-    public HRManager() {
+    public EmployeeService() {
         this.employeeList = new ArrayList<>();
     }
 
@@ -21,7 +23,7 @@ public class HRManager {
     }
 
     // create - C
-    public void addEmployee(Employee employee) {
+    public void addEmployee(Employee_Information employee) {
         if (searchID(employee.getId()) != -1)
             throw new IllegalArgumentException("ID has exist! Pls enter another ID");
         employeeList.add(employee);
@@ -29,7 +31,7 @@ public class HRManager {
     }
 
     // read - R - lay 1 tu id
-    public Employee getEmpIndex(int index) {
+    public Employee_Information getEmpIndex(int index) {
         if (index >= 0 && index < employeeList.size()) {
             return employeeList.get(index);
         }
@@ -37,12 +39,12 @@ public class HRManager {
     }
 
     // read - R - lay all in4
-    public List<Employee> getAllEmp() {
+    public List<Employee_Information> getAllEmp() {
         return this.employeeList;
     }
 
     // update - U
-    public void updateEmployee(Employee updateEmp) {
+    public void updateEmployee(Employee_Information updateEmp) {
         int index = searchID(updateEmp.getId());
         if (index != -1) {
             employeeList.set(index, updateEmp);
@@ -55,7 +57,7 @@ public class HRManager {
     public void deleteEmployee(String id) {
         int index = searchID(id);
         if (index != -1) {
-            Employee emp = employeeList.get(index);
+            Employee_Information emp = employeeList.get(index);
             emp.setStatus(Status.INACTIVE);
             System.out.println("Delete successfully!");
         } else

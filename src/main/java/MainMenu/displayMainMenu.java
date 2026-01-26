@@ -1,4 +1,6 @@
-package Model;
+package MainMenu;
+
+
 
 // import java Scanner;
 import java.util.Scanner;

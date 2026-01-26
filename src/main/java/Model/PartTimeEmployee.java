@@ -1,7 +1,7 @@
 
 package Model;
 
-public class PartTimeEmployee extends Employee {
+public class PartTimeEmployee extends Employee_Information {
 
     public PartTimeEmployee(String id, String name, String department, double baseSalary, String jobTitle,
             String dateOfJoining, Status status) {

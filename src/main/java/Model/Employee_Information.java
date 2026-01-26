@@ -19,7 +19,7 @@ enum Status {
     }
 }
 
-public abstract class Employee {
+public abstract class Employee_Information {
     private String id; // Mã nhân viên (Not empty, unique)
     private String name; // Họ và tên (Not empty)
     private String department; // Phòng ban
@@ -28,7 +28,7 @@ public abstract class Employee {
     private String dateOfJoining; // Ngày vào làm (Định dạng: "dd/MM/yyyy")
     private Status status; // Trạng thái làm việc (Active/Inactive)
 
-    public Employee(String id, String name,
+    public Employee_Information(String id, String name,
             String department, double baseSalary,
             String jobTitle, String dateOfJoining,
             Status status) {
