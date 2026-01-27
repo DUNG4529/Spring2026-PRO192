@@ -1,25 +1,26 @@
 
 package Model;
 
-/**
- * Trạng thái làm việc của nhân viên
- */
-enum Status {
-    ACTIVE("Active"),
-    INACTIVE("Inactive");
-
-    private final String status;
-
-    Status(String status) {
-        this.status = status;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-}
-
 public abstract class Employee_Information {
+
+    /**
+     * Employment status for an employee
+     */
+    public static enum Status {
+        ACTIVE("Active"),
+        INACTIVE("Inactive");
+
+        private final String label;
+
+        Status(String label) {
+            this.label = label;
+        }
+
+        public String getStatus() {
+            return label;
+        }
+    }
+
     private String id; // Mã nhân viên (Not empty, unique)
     private String name; // Họ và tên (Not empty)
     private String department; // Phòng ban
@@ -50,6 +51,7 @@ public abstract class Employee_Information {
     public void setId(String id) {
         this.id = id;
     }
+
     // Lấy họ và tên
     public String getName() {
         return name;
@@ -58,6 +60,7 @@ public abstract class Employee_Information {
     public void setName(String name) {
         this.name = name;
     }
+
     // Lấy phòng ban
     public String getDepartment() {
         return department;
@@ -66,6 +69,7 @@ public abstract class Employee_Information {
     public void setDepartment(String department) {
         this.department = department;
     }
+
     // Lấy lương cơ bản
     public double getBaseSalary() {
         return baseSalary;
@@ -74,6 +78,7 @@ public abstract class Employee_Information {
     public void setBaseSalary(double baseSalary) {
         this.baseSalary = baseSalary;
     }
+
     // Lấy chức vụ
     public String getJobTitle() {
         return jobTitle;
@@ -82,6 +87,7 @@ public abstract class Employee_Information {
     public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
     }
+
     // Lấy ngày vào làm
     public String getDateOfJoining() {
         return dateOfJoining;
@@ -99,9 +105,9 @@ public abstract class Employee_Information {
     public void setStatus(Status status) {
         this.status = status;
     }
+
     // Phương thức tính lương (trừ ngày nghỉ và cộng giờ tăng ca)
     public abstract double calculateSalary(int absenceDays, int overtimeHours);
-
 
     // output employee information
     public String output() {

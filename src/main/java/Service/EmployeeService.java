@@ -2,13 +2,12 @@
 package Service;
 
 import Model.Employee_Information;
-import Model.Status;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeService {
     private List<Employee_Information> employeeList;
-
+    // Constructor
     public EmployeeService() {
         this.employeeList = new ArrayList<>();
     }
@@ -58,9 +57,9 @@ public class EmployeeService {
         int index = searchID(id);
         if (index != -1) {
             Employee_Information emp = employeeList.get(index);
-            emp.setStatus(Status.INACTIVE);
+            emp.setStatus(Employee_Information.Status.INACTIVE); // set trạng thái thành INACTIVE
             System.out.println("Delete successfully!");
         } else
-            System.out.println("Delete failed! Pls do agian!");
+            System.out.println("Delete failed! Pls do again!");
     }
 }

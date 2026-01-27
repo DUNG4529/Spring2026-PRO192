@@ -3,38 +3,50 @@ package Validation;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Pattern;
-
+// Using Boolean Regex Pattern to validate input
 public class ValidationInput {
-    // check ID
-    public static String validID(String id) {
+    // Valid ID
+    public static Boolean validID(String id) {
         String regexID = "^[A-Z]{2}\\d{6}";
-        if (id == null || !id.matches(regexID))
-            throw new IllegalArgumentException("ID not valid!");
-        return id;
+        return Pattern.matches(regexID, id);
     }
 
-    // check Name
-    public static String validName(String name) {
-        if (name == null)
-            throw new IllegalArgumentException("Name not empty!");
-        String trimmedName = name.trim();
-        String regexName = "^[a-zA-Z]+(\\s[A-Za-z]+)*$";
-        if (!trimmedName.matches(regexName) || trimmedName.length() > 50)
-            throw new IllegalArgumentException("Name not valid (name <50)1!");
-        return trimmedName;
+    // Valid Name
+    public static Boolean validName(String name) {
+        String regexName = "^[a-zA-Z ]{3,50}$";
+        return Pattern.matches(regexName, name);
     }
 
-    // check Salary
-    public static double validSalary(double basicSalary) {
-        if (basicSalary <= 0)
-            throw new IllegalArgumentException("Salary not valid!");
-        return basicSalary;
+    // Valid Salary
+    public static Boolean validSalary(double salary) {
+        return salary >= 0;
     }
 
-    // Valid Day
-    public static LocalDate validDate(LocalDate date) {
-        if (date == null || date.isAfter(LocalDate.now()))
-            throw new IllegalArgumentException("Date not valid!");
-        return date;
+    // Valid String
+    public static Boolean validString(String input) {
+        return input != null && !input.trim().isEmpty();
     }
+
+    // Valid Day 
+    public static Boolean validDate(String date) {
+        if (date == null || date.isEmpty()) {
+            return false;
+        }
+        String regexDate = "^\\d{2}/\\d{2}/\\d{4}$";
+        return Pattern.matches(regexDate, date);
+    }
+
+    // Valid is Number 
+    public static boolean validNumber(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }

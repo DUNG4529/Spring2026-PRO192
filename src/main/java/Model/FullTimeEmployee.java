@@ -9,8 +9,15 @@ public class FullTimeEmployee extends Employee_Information {
     }
 
     public double calculateSalary(int absenceDays, int overtimeHours) {
-        // Lương = Cơ bản + (Giờ OT * 80k) - (Ngày vắng * 100k)
-        return 0;
+        // Check for negative values
+        if (absenceDays < 0 || overtimeHours < 0) {
+            throw new IllegalArgumentException("Absence days and overtime hours cannot be negative.");
+        } else {
+            // Lương = Cơ bản + (Giờ OT * 80k) - (Ngày vắng * 100k)
+            double overtimePay = overtimeHours * 80000;
+            double absenceDeduction = absenceDays * 100000;
+            return getBaseSalary() + overtimePay - absenceDeduction;
+        }
     }
 
 }

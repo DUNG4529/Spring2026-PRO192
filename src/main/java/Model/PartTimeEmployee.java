@@ -10,8 +10,13 @@ public class PartTimeEmployee extends Employee_Information {
 
     public double calculateSalary(int absenceDays, int overtimeHours) {
         // Lương = Cơ bản + (Giờ OT * 50k) - (Ngày vắng * 100k)
-        return 0;
+        if (absenceDays < 0 || overtimeHours < 0) {
+            throw new IllegalArgumentException("Absence days and overtime hours cannot be negative.");
+        } else {
+            double overtimePay = overtimeHours * 50000;
+            double absenceDeduction = absenceDays * 100000;
+            return getBaseSalary() + overtimePay - absenceDeduction;
+        }
     }
-
     
 }
