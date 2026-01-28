@@ -20,6 +20,9 @@ import Validation.ValidationInput;
 
 // Other Imports
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class displayMainMenu {
 
@@ -28,6 +31,96 @@ public class displayMainMenu {
 
 	// Scanner instance
 	private static final Scanner scanner = new Scanner(System.in);
+
+	// Check valid ID
+	public static String checkID(String prompt) {
+		String id;
+		while (true) {
+			System.out.print(prompt);
+			id = scanner.nextLine();
+			// Validate ID
+			if (ValidationInput.validID(id)) {
+				return id;
+			}
+			// Invalid ID message
+			System.out.println("ID not valid! Please enter again.");
+		}
+	}
+
+	// check valid Name
+	public static String checkName(String prompt) {
+		String name;
+		while (true) {
+			System.out.print(prompt);
+			name = scanner.nextLine();
+			// Validate Name
+			if (ValidationInput.validName(name)) {
+				return name;
+			}
+			// Invalid Name message
+			System.out.println("Name not valid! Please enter again.");
+		}
+	}
+
+	// check valid String
+	public static String checkString(String prompt) {
+		String input;
+		while (true) {
+			System.out.print(prompt);
+			input = scanner.nextLine();
+			// Validate String
+			if (ValidationInput.validString(input)) {
+				return input;
+			}
+			// Invalid String message
+			System.out.println("Input not valid! Please enter again.");
+		}
+	}
+
+	// valid number input
+	public static double checkDouble(String prompt) {
+		double number;
+		while (true) {
+			System.out.print(prompt);
+			try {
+				number = Double.parseDouble(scanner.nextLine());
+				return number;
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid number! Please enter again.");
+			}
+		}
+	}
+
+	// valid salary input
+	public static double checkSalary(String prompt) {
+		double salary;
+		while (true) {
+			System.out.print(prompt);
+			salary = Double.parseDouble(scanner.nextLine());
+			// Validate Salary
+			if (ValidationInput.validSalary(salary)) {
+				return salary;
+			}
+			// Invalid Salary message
+			System.out.println("Salary not valid! Please enter again.");
+		}
+	}
+
+	// valid date input
+	public static String checkDate(String prompt) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String dateInput;
+		while (true) {
+			System.out.print(prompt);
+			dateInput = scanner.nextLine();
+			try {
+				LocalDate.parse(dateInput, formatter);
+				return dateInput;
+			} catch (DateTimeParseException e) {
+				System.out.println("Date not valid! Please enter again.");
+			}
+		}
+	}
 
 	// Manage Employees
 	public static void manageEmployees() {
@@ -63,61 +156,25 @@ public class displayMainMenu {
 			switch (choice) {
 				case 1:// ========================================================================================================
 					System.out.println("======================== Adding Employee ========================");
+
 					// Input ID for Employee
-					String idEmployee;
-					do {
-						System.out.print("Enter ID (Format: XX000000): ");
-						idEmployee = scanner.nextLine();
-						if (!ValidationInput.validID(idEmployee)) {
-							System.out.println("ID not valid! Please enter again.");
-							idEmployee = null; // retry
-						}
-					} while (idEmployee == null);
+					String idEmployee = checkID("Enter ID (Format: XX000000): ");
 
 					// Input Name for Employee
-					String name;
-					do {
-						System.out.print("Enter Name: ");
-						name = scanner.nextLine();
-						if (!ValidationInput.validName(name)) {
-							System.out.println("Name not valid! Please enter again.");
-							name = null; // retry
-						}
-					} while (name == null);
+					String name = checkName("Enter Name: ");
 
 					// Employee Department
-					System.out.print("Enter Department: ");
-					String department;
-					do {
-						department = scanner.nextLine();
-						if (!ValidationInput.validString(department)) {
-							System.out.println("Department not valid! Please enter again.");
-							department = null; // retry
-						}
-					} while (department == null);
+					String department = checkString("Enter Department: ");
 
 					// Employee Base Salary
-					double baseSalary = 0;
-					boolean checkSalary = false;
-					do {
-						System.out.print("Enter Base Salary: ");
-						baseSalary = Double.parseDouble(scanner.nextLine());
-						checkSalary = ValidationInput.validSalary(baseSalary);
-						if (!checkSalary) {
-							System.out.println("Salary not valid! Please enter again.");
-						}
-					} while (!checkSalary);
+					double baseSalary = checkDouble("Enter Base Salary: ");
+					while (!ValidationInput.validSalary(baseSalary)) {
+						System.out.println("Salary not valid! Please enter again.");
+						baseSalary = checkDouble("Enter Base Salary: ");
+					}
 
 					// Employee Job Title
-					System.out.print("Enter Job Title: ");
-					String jobTitle;
-					do {
-						jobTitle = scanner.nextLine();
-						if (!ValidationInput.validString(jobTitle)) {
-							System.out.println("Job Title not valid! Please enter again.");
-							jobTitle = null; // retry
-						}
-					} while (jobTitle == null);
+					String jobTitle = checkString("Enter Job Title: ");
 
 					// Employee Date Of Joining
 					System.out.print("Enter Date Of Joining (dd/MM/yyyy): ");
@@ -179,6 +236,9 @@ public class displayMainMenu {
 
 					System.out.println("--- Employee List ---");
 					for (Employee_Information emp : employeeService.getAllEmp()) {
+						if (emp.getStatus() == Employee_Information.Status.INACTIVE) {
+							continue; // Skip inactive employees
+						}
 						System.out.println(emp.output());
 						System.out.println("----------------------");
 					}
@@ -186,20 +246,21 @@ public class displayMainMenu {
 				case 3: // ========================================================================================================
 					System.out.println("======================== Updating Employee ========================");
 					// Enter ID employee to update
-					System.out.print("Enter Employee ID to update: ");
-					String updateID = scanner.nextLine();
+					String updateID = checkID("Enter Employee ID to update: ");
+					// Find Employee Index
+					int empIndexCheck;
+					while (true) {
+						empIndexCheck = employeeService.searchID(updateID);
+						if (empIndexCheck == -1) {
+							System.out.println("Employee with ID " + updateID + " not found. Please enter again.");
+							updateID = checkID("Enter Employee ID to update: ");
+						} else {
+							break; // Employee found
+						}
+					}
 
-					if (!ValidationInput.validID(updateID)) {
-						System.out.println("ID not valid! Please enter again.");
-						break;
-					}
-					int empIndex = employeeService.searchID(updateID);
-					if (empIndex == -1) {
-						System.out.println("Employee with ID " + updateID + " not found.");
-						break;
-					}
-					Employee_Information existingEmp = employeeService.getEmpIndex(empIndex);
-					
+					Employee_Information existingEmp = employeeService.getEmpIndex(empIndexCheck);
+
 					System.out.println("Which information do you want to update for employee ID " + updateID + "?");
 					System.out.println("1. Name");
 					System.out.println("2. Department");
@@ -209,7 +270,7 @@ public class displayMainMenu {
 					System.out.println("6. Status");
 					System.out.println("0. Cancel");
 					System.out.print("Please select an option (0-6): ");
-					
+
 					int userChoice = Integer.parseInt(scanner.nextLine());
 
 					switch (userChoice) {
@@ -218,68 +279,27 @@ public class displayMainMenu {
 							break;
 						case 1:
 							// Update Name
-							String newName;
-							do {
-								System.out.print("Enter new Name: ");
-								newName = scanner.nextLine();
-								if (!ValidationInput.validName(newName)) {
-									System.out.println("Name not valid! Please enter again.");
-									newName = null; // retry
-								}
-							} while (newName == null);
+							String newName = checkName("Enter new Name: ");
 							existingEmp.setName(newName);
 							break;
 						case 2:
 							// Update Department
-							System.out.print("Enter new Department: ");
-							String newDepartment;
-							do {
-								newDepartment = scanner.nextLine();
-								if (!ValidationInput.validString(newDepartment)) {
-									System.out.println("Department not valid! Please enter again.");
-									newDepartment = null; // retry
-								}
-							} while (newDepartment == null);
+							String newDepartment = checkName("Enter new Department: ");
 							existingEmp.setDepartment(newDepartment);
 							break;
 						case 3:
 							// Update Base Salary
-							double newBaseSalary = 0;
-							boolean checkNewSalary = false;
-							do {
-								System.out.print("Enter new Base Salary: ");
-								newBaseSalary = Double.parseDouble(scanner.nextLine());
-								checkNewSalary = ValidationInput.validSalary(newBaseSalary);
-								if (!checkNewSalary) {
-									System.out.println("Salary not valid! Please enter again.");
-								}
-							} while (!checkNewSalary);
+							double newBaseSalary = checkSalary("Enter new Base Salary: ");
 							existingEmp.setBaseSalary(newBaseSalary);
 							break;
 						case 4:
 							// Update Job Title
-							System.out.print("Enter new Job Title: ");
-							String newJobTitle;
-							do {
-								newJobTitle = scanner.nextLine();
-								if (!ValidationInput.validString(newJobTitle)) {
-									System.out.println("Job Title not valid! Please enter again.");
-									newJobTitle = null; // retry
-								}
-							} while (newJobTitle == null);
+							String newJobTitle = checkName("Enter new Job Title: ");
 							existingEmp.setJobTitle(newJobTitle);
 							break;
 						case 5:
 							// Update Date Of Joining
-							String newDateOfJoining;
-							do {
-								System.out.print("Enter new Date Of Joining (dd/MM/yyyy): ");
-								newDateOfJoining = scanner.nextLine();
-								if (!ValidationInput.validDate(newDateOfJoining)) {
-									System.out.println("Date not valid! Please enter again.");
-									newDateOfJoining = null; // retry
-								}
-							} while (newDateOfJoining == null);
+							String newDateOfJoining = checkDate("Enter new Date Of Joining (dd/MM/yyyy): ");
 							existingEmp.setDateOfJoining(newDateOfJoining);
 							break;
 						case 6:
@@ -308,44 +328,35 @@ public class displayMainMenu {
 				case 4: // ========================================================================================================
 					System.out.println("======================== Deleting Employee ========================");
 					// Enter ID employee to delete
-					System.out.print("Enter Employee ID to delete: ");
-					do {
-						System.out.print("Enter ID (Format: XX000000): ");
-						updateID = scanner.nextLine();
-						if (!ValidationInput.validID(updateID)) {
-							System.out.println("ID not valid! Please enter again.");
-							updateID = null; // retry
+					updateID = checkID("Enter Employee ID to delete: ");
+					// Find Employee Index
+					while (true) {
+						empIndexCheck = employeeService.searchID(updateID);
+						if (empIndexCheck == -1) {
+							System.out.println("Employee with ID " + updateID + " not found. Please enter again.");
+							updateID = checkID("Enter Employee ID to delete: ");
+						} else {
+							break; // Employee found
 						}
-					} while (updateID == null);
-
+					}
 					// Delete Employee
 					employeeService.deleteEmployee(updateID);
 					break;
 				case 5: // ========================================================================================================
 					System.out.println("======================== Searching Employee ========================");
-					
-					// Enter ID employee to search
-					System.out.print("Enter Employee ID to search: ");
-					
-					// Check valid ID
-					String searchID;
-					do {
-						System.out.print("Enter ID (Format: XX000000): ");
-						searchID = scanner.nextLine();
-						if (!ValidationInput.validID(searchID)) {
-							System.out.println("ID not valid! Please enter again.");
-							searchID = null; // retry
-						}
-					} while (searchID == null);
 
+					// Enter ID employee to search
+					String searchID = checkID("Enter Employee ID to search: ");
 					// Search Employee
-					int searchIndex = employeeService.searchID(searchID);
-					if (searchIndex != -1) {
-						Employee_Information foundEmp = employeeService.getEmpIndex(searchIndex);
-						System.out.println("Employee found:");
-						System.out.println(foundEmp.output());
-					} else {
-						System.out.println("Employee with ID " + searchID + " not found.");
+					empIndexCheck = employeeService.searchID(searchID);
+					while (true) {
+						if (empIndexCheck == -1) {
+							System.out.println("Employee with ID " + searchID + " not found. Please enter again.");
+							searchID = checkID("Enter Employee ID to search: ");
+							empIndexCheck = employeeService.searchID(searchID);
+						} else {
+							break; // Employee found
+						}
 					}
 					break;
 				case 0: // ========================================================================================================
@@ -380,30 +391,35 @@ public class displayMainMenu {
 		System.out.println("1. Manage Employees");
 		System.out.println("2. Manage Attendance");
 		System.out.println("3. Calculate Salaries");
-		System.out.println("4. Exit");
-		System.out.print("Please select an option (1-4): ");
+		System.out.println("0. Exit");
+		System.out.print("Please select an option (0-3): ");
 
 		int choice = Integer.parseInt(scanner.nextLine());
+		Boolean checkChoice = true;
+		do {
+			switch (choice) {
+				case 1:
+					System.out.println("Managing Employees...");
+					manageEmployees();
+					break;
+				case 2:
+					System.out.println("Managing Attendance...");
+					manageAttendance();
+					break;
+				case 3:
+					System.out.println("Calculating Salaries...");
+					calculateSalaries();
+					break;
+				case 0:
+					System.out.println("Exiting the system. Goodbye!");
+					checkChoice = false;
+					break;
+				default:
+					System.out.println("Invalid choice. Please select a valid option.");
+			}
+		} while (checkChoice);
 
-		switch (choice) {
-			case 1:
-				System.out.println("Managing Employees...");
-				manageEmployees();
-				break;
-			case 2:
-				System.out.println("Managing Attendance...");
-				manageAttendance();
-				break;
-			case 3:
-				System.out.println("Calculating Salaries...");
-				calculateSalaries();
-				break;
-			case 4:
-				System.out.println("Exiting the system. Goodbye!");
-				break;
-			default:
-				System.out.println("Invalid choice. Please select a valid option.");
-		}
+		// Close scanner
 		scanner.close();
 	}
 }
