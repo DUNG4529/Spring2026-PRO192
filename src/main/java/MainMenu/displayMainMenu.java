@@ -349,15 +349,17 @@ public class displayMainMenu {
 					String searchID = checkID("Enter Employee ID to search: ");
 					// Search Employee
 					empIndexCheck = employeeService.searchID(searchID);
-					while (true) {
-						if (empIndexCheck == -1) {
-							System.out.println("Employee with ID " + searchID + " not found. Please enter again.");
-							searchID = checkID("Enter Employee ID to search: ");
-							empIndexCheck = employeeService.searchID(searchID);
-						} else {
-							break; // Employee found
-						}
+					while (empIndexCheck == -1) {
+						System.out.println("Employee with ID " + searchID + " not found. Please enter again.");
+						searchID = checkID("Enter Employee ID to search: ");
+						empIndexCheck = employeeService.searchID(searchID);
 					}
+
+					// Display Employee Information
+					Employee_Information foundEmp = employeeService.getEmpIndex(empIndexCheck);
+					System.out.println("Employee found:");
+					System.out.println(foundEmp.output());
+
 					break;
 				case 0: // ========================================================================================================
 					System.out.println("======================== Exiting to Main Menu ========================");
