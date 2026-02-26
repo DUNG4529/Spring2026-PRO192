@@ -29,7 +29,7 @@ enum AttendanceStatus {
  * Class Attendance_Information dùng để lưu thông tin điểm danh của nhân viên
  Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
-public class Attendance_Information {
+public class Attendance {
     private String idEmployee; // Mã nhân viên
     private LocalDate date; // Ngày điểm danh
     private AttendanceStatus status; // Trạng thái điểm danh
@@ -40,11 +40,11 @@ public class Attendance_Information {
     /// =========================
 
     // Constructor không tham số
-    public Attendance_Information() {
+    public Attendance() {
     }
 
     // Constructor đầy đủ tham số
-    public Attendance_Information(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
+    public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
         this.idEmployee = idEmployee;
         this.date = date;
         this.status = status;

@@ -1,10 +1,10 @@
-package Validation;
+package utils;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Pattern;
 // Using Boolean Regex Pattern to validate input
-public class ValidationInput {
+public class Validation {
     // Valid ID
     public static Boolean validID(String id) {
         String regexID = "^[A-Z]{2}\\d{6}";

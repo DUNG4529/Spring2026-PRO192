@@ -1,22 +1,16 @@
-package MainMenu;
 
-// Imports Validation Classes
-import Validation.ValidationInput;
+package Main;
 
 // Imports Model Classes
-import Model.Employee_Information;
-import Model.Attendance_Information;
+import Model.Employee;
+import Model.Attendance;
 import Model.FullTimeEmployee;
 import Model.PartTimeEmployee;
-import Model.Payroll;
 
 // Imports Service Classes
 import Service.EmployeeService;
-import Service.AttendanceService;
-import Service.PayrollService;
 
-// Imports Validation Classes
-import Validation.ValidationInput;
+import utils.Validation;
 
 // Other Imports
 import java.util.Scanner;
@@ -39,7 +33,7 @@ public class displayMainMenu {
 			System.out.print(prompt);
 			id = scanner.nextLine();
 			// Validate ID
-			if (ValidationInput.validID(id)) {
+			if (Validation.validID(id)) {
 				return id;
 			}
 			// Invalid ID message
@@ -54,7 +48,7 @@ public class displayMainMenu {
 			System.out.print(prompt);
 			name = scanner.nextLine();
 			// Validate Name
-			if (ValidationInput.validName(name)) {
+			if (Validation.validName(name)) {
 				return name;
 			}
 			// Invalid Name message
@@ -69,7 +63,7 @@ public class displayMainMenu {
 			System.out.print(prompt);
 			input = scanner.nextLine();
 			// Validate String
-			if (ValidationInput.validString(input)) {
+			if (Validation.validString(input)) {
 				return input;
 			}
 			// Invalid String message
@@ -98,7 +92,7 @@ public class displayMainMenu {
 			System.out.print(prompt);
 			salary = Double.parseDouble(scanner.nextLine());
 			// Validate Salary
-			if (ValidationInput.validSalary(salary)) {
+			if (Validation.validSalary(salary)) {
 				return salary;
 			}
 			// Invalid Salary message
@@ -168,7 +162,7 @@ public class displayMainMenu {
 
 					// Employee Base Salary
 					double baseSalary = checkDouble("Enter Base Salary: ");
-					while (!ValidationInput.validSalary(baseSalary)) {
+					while (!Validation.validSalary(baseSalary)) {
 						System.out.println("Salary not valid! Please enter again.");
 						baseSalary = checkDouble("Enter Base Salary: ");
 					}
@@ -181,21 +175,20 @@ public class displayMainMenu {
 					String dateOfJoining;
 					do {
 						dateOfJoining = scanner.nextLine();
-						if (!ValidationInput.validDate(dateOfJoining)) {
-							System.out.println("Date not valid! Please enter again.");
+						if (!Validation"Date not valid! Please enter again.");
 							dateOfJoining = null; // retry
 						}
 					} while (dateOfJoining == null);
 
 					// Employee Status
-					Employee_Information.Status status = null;
+					Employee.Status status = null;
 					do {
 						System.out.print("Status (1-Active, 2-Inactive): ");
 						int statusChoice = Integer.parseInt(scanner.nextLine());
 						if (statusChoice == 1) {
-							status = Employee_Information.Status.ACTIVE;
+							status = Employee.Status.ACTIVE;
 						} else if (statusChoice == 2) {
-							status = Employee_Information.Status.INACTIVE;
+							status = Employee.Status.INACTIVE;
 						} else {
 							System.out.println("Please enter 1 or 2.");
 						}
@@ -214,7 +207,7 @@ public class displayMainMenu {
 					} while (!validType);
 
 					// Create Employee Object based on type
-					Employee_Information newEmp;
+					Employee newEmp;
 					if (typeChoice == 1) {
 						newEmp = new FullTimeEmployee(idEmployee, name, department, baseSalary, jobTitle, dateOfJoining,
 								status);
@@ -235,8 +228,8 @@ public class displayMainMenu {
 					}
 
 					System.out.println("--- Employee List ---");
-					for (Employee_Information emp : employeeService.getAllEmp()) {
-						if (emp.getStatus() == Employee_Information.Status.INACTIVE) {
+					for (Employee emp : employeeService.getAllEmp()) {
+						if (emp.getStatus() == Employee.Status.INACTIVE) {
 							continue; // Skip inactive employees
 						}
 						System.out.println(emp.output());
@@ -259,7 +252,7 @@ public class displayMainMenu {
 						}
 					}
 
-					Employee_Information existingEmp = employeeService.getEmpIndex(empIndexCheck);
+					Employee existingEmp = employeeService.getEmpIndex(empIndexCheck);
 
 					System.out.println("Which information do you want to update for employee ID " + updateID + "?");
 					System.out.println("1. Name");
@@ -310,9 +303,9 @@ public class displayMainMenu {
 							System.out.println("Please select an option (1-2): ");
 							int statusChoice = Integer.parseInt(scanner.nextLine());
 							if (statusChoice == 1) {
-								existingEmp.setStatus(Employee_Information.Status.ACTIVE);
+								existingEmp.setStatus(Employee.Status.ACTIVE);
 							} else if (statusChoice == 2) {
-								existingEmp.setStatus(Employee_Information.Status.INACTIVE);
+								existingEmp.setStatus(Employee.Status.INACTIVE);
 							} else {
 								System.out.println("Invalid choice. Status not updated.");
 							}
@@ -356,7 +349,7 @@ public class displayMainMenu {
 					}
 
 					// Display Employee Information
-					Employee_Information foundEmp = employeeService.getEmpIndex(empIndexCheck);
+					Employee foundEmp = employeeService.getEmpIndex(empIndexCheck);
 					System.out.println("Employee found:");
 					System.out.println(foundEmp.output());
 

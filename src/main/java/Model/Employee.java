@@ -1,7 +1,7 @@
 
 package Model;
 
-public abstract class Employee_Information {
+public abstract class Employee {
 
     /**
      * Employment status for an employee
@@ -29,7 +29,7 @@ public abstract class Employee_Information {
     private String dateOfJoining; // Ngày vào làm (Định dạng: "dd/MM/yyyy")
     private Status status; // Trạng thái làm việc (Active/Inactive)
 
-    public Employee_Information(String id, String name,
+    public Employee(String id, String name,
             String department, double baseSalary,
             String jobTitle, String dateOfJoining,
             Status status) {
