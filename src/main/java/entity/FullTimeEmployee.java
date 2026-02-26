@@ -1,5 +1,5 @@
 
-package Model;
+package entity;
 
 public class FullTimeEmployee extends Employee {
 

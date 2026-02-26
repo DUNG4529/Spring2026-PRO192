@@ -1,9 +1,10 @@
 
 package Service;
 
-import Model.Employee;
 import java.util.ArrayList;
 import java.util.List;
+
+import entity.Employee;
 
 public class EmployeeService {
     private List<Employee> employeeList;

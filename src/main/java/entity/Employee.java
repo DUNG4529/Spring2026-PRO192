@@ -1,5 +1,5 @@
 
-package Model;
+package entity;
 
 public abstract class Employee {
 
