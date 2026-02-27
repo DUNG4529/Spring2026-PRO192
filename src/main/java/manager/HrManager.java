@@ -1,12 +1,7 @@
 package manager;
 
-import entity.Employee;
-import entity.Attendance;
-import service.EmployeeService;
-import service.AttendanceService;
-import service.SalaryService;;
-import service.ReportService;
-
+import entity.*;
+import service.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +38,14 @@ public class HRManager {
     }
 
     public Employee findEmployeeById(String idEmployee) {
-        // Gọi hàm getEmployeeById từ EmployeeService đã sửa ở bước trước
-
-        return employeeService.getEmployeeById(idEmployee);
+        int index = employeeService.searchID(idEmployee);
+        if (index == -1) {
+            return null;
+        }
+        return employeeService.getEmpIndex(index);
     }
 
     public void updateEmployeeById(String idEmployee, Employee newEmployee) {
-        // Đảm bảo ID không bị thay đổi (BR1) [7], ép buộc ID của newEmployee phải là ID cũ
         newEmployee.setId(idEmployee);
         employeeService.updateEmployee(newEmployee);
     }
@@ -84,8 +80,38 @@ public class HRManager {
     // ==========================================
     
     public double calculateSalaryById(String idEmployee) {
-        // Ủy quyền tính lương (Base + OT - Absence) [8]
-        return salaryService.calculateSalaryById(idEmployee);
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            return 0.0;
+        }
+        return salaryService.calculateEmployeeSalary(
+                employee,
+                attendances,
+                LocalDate.now().getMonthValue(),
+                LocalDate.now().getYear());
+    }
+
+    public double calculateSalaryById(String idEmployee, int month, int year) {
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            return 0.0;
+        }
+        return salaryService.calculateEmployeeSalary(employee, attendances, month, year);
+    }
+
+    public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
+        List<Attendance> result = new ArrayList<>();
+        if (idEmployee == null || idEmployee.trim().isEmpty()) {
+            return result;
+        }
+        for (Attendance attendance : attendances) {
+            if (attendance != null
+                    && attendance.getIdEmployee() != null
+                    && attendance.getIdEmployee().equalsIgnoreCase(idEmployee)) {
+                result.add(attendance);
+            }
+        }
+        return result;
     }
 
     // ==========================================
@@ -94,11 +120,20 @@ public class HRManager {
     
     // BR12: Báo cáo nhân viên đi làm ít (Vắng mặt nhiều) [8]
     public void reportLowAttendance(int thresholdDays) {
-        reportService.generateLowAttendanceReport(thresholdDays);
+        reportService.generateLowAttendanceReport(
+            employees,
+            attendances,
+            LocalDate.now().getMonthValue(),
+            LocalDate.now().getYear(),
+            thresholdDays);
     }
 
     // BR13: Báo cáo nhân viên lương cao nhất [9]
     public void reportHighestPaid() {
-        reportService.generateHighestPaidReport();
+        reportService.generateHighestPaidEmployeesReport(
+                employees,
+                attendances,
+                LocalDate.now().getMonthValue(),
+                LocalDate.now().getYear());
     }
 }

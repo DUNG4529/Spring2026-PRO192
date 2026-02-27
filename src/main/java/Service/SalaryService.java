@@ -9,6 +9,14 @@ import java.util.List;
 
 public class SalaryService {
 
+    List<Employee> employeeList;
+    List<Attendance> attendanceList;
+    // Constructor
+    public SalaryService(List<Employee> employeeList, List<Attendance> attendanceList) {
+        this.employeeList = employeeList;
+        this.attendanceList = attendanceList;
+    }
+
     // 1. Tính lương nhân viên (dựa trên: Lương cơ bản, Ngày công, Giờ làm thêm, Số
     // ngày nghỉ)
     public double calculateEmployeeSalary(Employee employee, List<Attendance> attendances, int month, int year) {
