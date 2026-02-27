@@ -1,64 +1,104 @@
-
 package manager;
 
+import entity.Employee;
+import entity.Attendance;
+import service.EmployeeService;
+import service.AttendanceService;
+import service.SalaryService;;
+import service.ReportService;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import entity.Attendance;
-import entity.Employee;
-import entity.FullTimeEmployee;
 
-public class HrManager {
-    // Sử dụng ArrayList để quản lý dữ liệu động
+public class HRManager {
+    // 1. Khai báo các List chứa dữ liệu gốc theo đúng yêu cầu thiết kế [2, 3]
     private List<Employee> employees;
     private List<Attendance> attendances;
 
-    public HrManager() {
+    // 2. Khai báo các Service xử lý logic (Decomposition) [4]
+    private EmployeeService employeeService;
+    private AttendanceService attendanceService;
+    private SalaryService salaryService;
+    private ReportService reportService;
+
+    // Constructor: Khởi tạo danh sách và "bơm" (inject) vào các Service
+    public HRManager() {
         this.employees = new ArrayList<>();
         this.attendances = new ArrayList<>();
+
+        // Khởi tạo các Service, truyền List vào để chúng thao tác trực tiếp trên dữ liệu gốc
+        this.employeeService = new EmployeeService(this.employees); // Truyền danh sách nhân viên để EmployeeService có thể quản lý
+        this.attendanceService = new AttendanceService(this.attendances, this.employees); // Truyền cả danh sách nhân viên để AttendanceService có thể cập nhật trạng thái attendance
+        this.salaryService = new SalaryService(this.employees, this.attendances); // Truyền cả hai danh sách để SalaryService có thể tính lương dựa trên attendance
+        this.reportService = new ReportService(this.employees, this.attendances); // Truyền cả hai danh sách để ReportService có thể tạo báo cáo dựa trên dữ liệu nhân viên và attendance
     }
 
-    // --- QUẢN LÝ NHÂN VIÊN (CRUD) ---
-
-    // Thêm nhân viên mới (BR1: Kiểm tra ID duy nhất) 
+    // ==========================================
+    // MODULE 1: EMPLOYEE MANAGEMENT [5, 6]
+    // ==========================================
+    
     public void addEmployee(Employee e) {
-        // Logic: Kiểm tra ID đã tồn tại chưa, nếu chưa thì thêm vào danh sách 
-        // ... 
+        employeeService.addEmployee(e);
     }
 
-    // Tìm nhân viên theo ID 
-    public Employee findEmployeeById(String id) {
-        // Logic: Duyệt qua danh sách nhân viên để tìm kiếm theo ID 
-        // ...
-        return null; // Trả về null nếu không tìm thấy
+    public Employee findEmployeeById(String idEmployee) {
+        // Gọi hàm getEmployeeById từ EmployeeService đã sửa ở bước trước
+
+        return employeeService.getEmployeeById(idEmployee);
     }
 
-    // Xóa nhân viên 
-    public void deleteEmployeeById(String id) {
-        // Logic: Tìm nhân viên theo ID và xóa khỏi danh sách (hoặc đánh dấu INACTIVE)
-        // ...
+    public void updateEmployeeById(String idEmployee, Employee newEmployee) {
+        // Đảm bảo ID không bị thay đổi (BR1) [7], ép buộc ID của newEmployee phải là ID cũ
+        newEmployee.setId(idEmployee);
+        employeeService.updateEmployee(newEmployee);
     }
 
-    // --- QUẢN LÝ CHẤM CÔNG ---
+    public void deleteEmployeeById(String idEmployee) {
+        employeeService.deleteEmployee(idEmployee);
+    }
 
-    // Ghi nhận chấm công (BR3: Nhân viên phải tồn tại) 
+    public List<Employee> getAllEmployees() {
+        return employeeService.getAllEmp();
+    }
+
+    // ==========================================
+    // MODULE 2: ATTENDANCE MANAGEMENT [5, 6]
+    // ==========================================
+    
     public void addAttendance(Attendance a) {
-        // Logic: Kiểm tra nhân viên tồn tại, sau đó thêm thông tin chấm công vào danh sách 
-        // ...
+        attendanceService.addAttendance(a);
     }
 
-    // --- TÍNH LƯƠNG & BÁO CÁO ---
-
-    // Tính lương dựa trên Business Rules (BR7, BR8, BR9) 
-    public double calculateSalaryById(String idEmployee, int month, int year) {
-        // Logic: Tìm nhân viên theo ID, lấy thông tin chấm công trong tháng đó, tính lương dựa trên loại nhân viên và các quy tắc đã định 
-        // ...
-        return 0.0; // Trả về lương đã tính
+    public void updateAttendance(String idEmployee, LocalDate date, String status, double overtime) {
+        // Ủy quyền cho AttendanceService xử lý việc tìm và cập nhật
+        attendanceService.updateAttendance(idEmployee, date, status, overtime);
     }
 
-    // Báo cáo nhân viên lương cao nhất (B8)
-    public void showHighestPaidEmployees() {
-        // Logic: Tìm giá trị lương lớn nhất và in ra danh sách nhân viên có lương cao nhất
-        // ...
-        System.out.println("----------- HIGHEST PAID EMPLOYEES -----------");
+    public void deleteAttendance(String idEmployee, LocalDate date) {
+        attendanceService.deleteAttendance(idEmployee, date);
+    }
+
+    // ==========================================
+    // MODULE 3: SALARY MANAGEMENT [5, 6]
+    // ==========================================
+    
+    public double calculateSalaryById(String idEmployee) {
+        // Ủy quyền tính lương (Base + OT - Absence) [8]
+        return salaryService.calculateSalaryById(idEmployee);
+    }
+
+    // ==========================================
+    // MODULE 4: REPORTING [2, 7]
+    // ==========================================
+    
+    // BR12: Báo cáo nhân viên đi làm ít (Vắng mặt nhiều) [8]
+    public void reportLowAttendance(int thresholdDays) {
+        reportService.generateLowAttendanceReport(thresholdDays);
+    }
+
+    // BR13: Báo cáo nhân viên lương cao nhất [9]
+    public void reportHighestPaid() {
+        reportService.generateHighestPaidReport();
     }
 }

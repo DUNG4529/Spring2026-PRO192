@@ -1,5 +1,5 @@
 
-package Service;
+package service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,9 @@ public class EmployeeService {
     public EmployeeService() {
         this.employeeList = new ArrayList<>();
     }
-
+    public EmployeeService(List<Employee> employeeList) {
+        this.employeeList = employeeList;
+    }
     // search
     public int searchID(String id) {
         for (int i = 0; i < employeeList.size(); i++) {

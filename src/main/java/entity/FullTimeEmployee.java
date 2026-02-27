@@ -1,16 +1,23 @@
 
 package entity;
 
+// TÍNH KẾ THỪA (Inheritance): FullTimeEmployee kế thừa (extends) từ lớp cha Employee.
+// Tái sử dụng lại toàn bộ các thuộc tính (id, tên, ...) và các phương thức getter/setter của lớp cha.
 public class FullTimeEmployee extends Employee {
 
+    // CONSTRUCTOR của lớp con gọi constructor của lớp cha thông qua từ khóa "super"
     public FullTimeEmployee(String id, String name, String department, double baseSalary, String jobTitle,
             String dateOfJoining, Status status) {
         super(id, name, department, baseSalary, jobTitle, dateOfJoining, status);
     }
 
-    public double calculateSalary(int absenceDays, int overtimeHours) {
+    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè (Override) lại phương thức abstract từ
+    // lớp cha.
+    // Lớp FullTime thực hiện logic tính lương riêng: OT tính 80k.
+    @Override
+    public double calculateSalary(int workingDays, int absenceDays, int overtimeHours) {
         // Check for negative values
-        if (absenceDays < 0 || overtimeHours < 0) {
+        if (workingDays < 0 || absenceDays < 0 || overtimeHours < 0) {
             throw new IllegalArgumentException("Absence days and overtime hours cannot be negative.");
         } else {
             // Lương = Cơ bản + (Giờ OT * 80k) - (Ngày vắng * 100k)
@@ -18,6 +25,13 @@ public class FullTimeEmployee extends Employee {
             double absenceDeduction = absenceDays * 100000;
             return getBaseSalary() + overtimePay - absenceDeduction;
         }
+    }
+
+    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè phương thức output() của lớp cha
+    // Gọi ngược hàm ở lớp cha (super.output()) và nối đổi lại text cho phù hợp.
+    @Override
+    public String output() {
+        return super.output().replace("Employee Information:", "Full-Time Employee Information:");
     }
 
 }

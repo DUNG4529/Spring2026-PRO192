@@ -1,13 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Service;
+package service;
 
-/**
- *
- * @author TienDung
- */
+import java.util.List;
+import entity.Attendance;
+import entity.Employee;
+
 public class SalaryService {
     
+    private List<Employee> employees;
+    private List<Attendance> attendances;
+
+    public SalaryService(List<Employee> employees, List<Attendance> attendances) {
+        this.employees = employees;
+        this.attendances = attendances;
+    }
+
 }

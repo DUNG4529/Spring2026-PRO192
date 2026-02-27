@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Attendance {
     private String idEmployee; // Mã nhân viên
     private LocalDate date; // Ngày điểm danh
-    private AttendanceStatus status; // Trạng thái điểm danh
+    private AttendanceStatus status = AttendanceStatus.ABSENT; // Trạng thái điểm danh (mặc định ABSENT)
     private double overtime; // Số giờ làm thêm (overtime)
 
     public enum AttendanceStatus {
@@ -42,13 +42,14 @@ public class Attendance {
 
     // Constructor không tham số
     public Attendance() {
+        this.status = AttendanceStatus.ABSENT;
     }
 
     // Constructor đầy đủ tham số
     public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
         this.idEmployee = idEmployee;
         this.date = date;
-        this.status = status;
+        this.status = (status == null) ? AttendanceStatus.ABSENT : status;
         this.overtime = overtime;
     }
 
@@ -95,7 +96,7 @@ public class Attendance {
      * Cập nhật trạng thái điểm danh
      */
     public void setStatus(AttendanceStatus status) {
-        this.status = status;
+        this.status = (status == null) ? AttendanceStatus.ABSENT : status;
     }
 
     /**

@@ -1,18 +1,20 @@
 
 package ui;
 
-import manager.HrManager;
-import java.util.Scanner;
+import manager.HRManager;
+import service.AttendanceService;
+import service.EmployeeService;
+import service.ReportService;
+import service.SalaryService;
 
+import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import utils.Validation;
-import Service.AttendanceService;
-import Service.ReportService;
-import Service.SalaryService;
-import Service.EmployeeService;
+import entity.Employee;
+
 import java.util.List;
 
 
@@ -113,7 +115,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Khởi tạo đối tượng quản lý và Scanner
-        HrManager hrManager = new HrManager();
+        HRManager hrManager = new HRManager();
         int choice = 0;
 
         // --------------------------------------------------------
@@ -166,7 +168,7 @@ public class Main {
     // --------------------------------------------------------
     
     // Menu quản lý nhân viên (Employee Management) // BR1, BR2, BR4, BR5, BR6
-    private static void manageEmployeesMenu(HrManager hrManager) {
+    private static void manageEmployeesMenu(HRManager hrManager) {
         System.out.println("\n----------- EMPLOYEE MANAGEMENT -----------");
         System.out.println("1. Add new employee");
         System.out.println("2. Update employee information");
@@ -187,13 +189,21 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    // hrManager.addEmployee(...);
+                    hrManager.addEmployee(null);
                     break;
                 case 2:
                     // hrManager.updateEmployee(...);
+                    Employee emp = hrManager.findEmployeeById(checkID("Enter employee ID to update: "));
+                    if (emp != null) {
+                        hrManager.updateEmployeeById(emp.getId(), null);
+                    } else {
+                        System.out.println("Employee not found with the given ID.");
+                    }
+
                     break;
                 case 3:
                     // hrManager.deleteEmployeeById(...);
+                    
                     break;
                 case 4:
                     // hrManager.viewAllEmployees();
@@ -210,7 +220,7 @@ public class Main {
         } while (choice != 6);
     }
     // Menu quản lý chấm công (Attendance Management) // BR3
-    private static void attendanceManagementMenu(HrManager hrManager) {
+    private static void attendanceManagementMenu(HRManager hrManager) {
         System.out.println("\n----------- ATTENDANCE MANAGEMENT -----------");
         System.out.println("1. Record daily attendance");
         System.out.println("2. Update attendance record");
@@ -219,11 +229,39 @@ public class Main {
         System.out.println("5. Back to Main Menu");
         System.out.print("Choose an option: ");
 
-        // Calling corresponding functions from hrManager for attendance management
+        int choice = 0;
+        do {
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                choice = -1; // Bắt lỗi nếu người dùng nhập chữ thay vì số
+            }
+
+            switch (choice) {
+                case 1:
+                    // hrManager.recordAttendance(...);
+                    break;
+                case 2:
+                    // hrManager.updateAttendance(...);
+                    break;
+                case 3:
+                    // hrManager.viewAttendanceHistory(...);
+                    break;
+                case 4:
+                    // hrManager.calculateWorkingDaysAndAbsences(...);
+                    break;
+                case 5:
+                    System.out.println("Returning to Main Menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose from 1 to 5.");
+            }
+        } while (choice != 5);
+        
     }
 
     // Menu quản lý lương (Salary Management) // BR7, BR8, BR9
-    private static void salaryManagementMenu(HrManager hrManager) {
+    private static void salaryManagementMenu(HRManager hrManager) {
         System.out.println("\n----------- SALARY MANAGEMENT -----------");
         System.out.println("1. Calculate monthly salary for an employee");
         System.out.println("2. View salary details");
@@ -231,17 +269,63 @@ public class Main {
         System.out.println("4. Back to Main Menu");
         System.out.print("Choose an option: ");
 
-        // Calling corresponding functions from hrManager for salary management
+        int choice = 0;
+        do {
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                choice = -1; // Bắt lỗi nếu người dùng nhập chữ thay vì số
+            }
+
+            switch (choice) {
+                case 1:
+                    // hrManager.calculateSalaryById(...);
+                    break;
+                case 2:
+                    // hrManager.viewSalaryDetails(...);
+                    break;
+                case 3:
+                    // hrManager.generateSalaryReport(...);
+                    break;
+                case 4:
+                    System.out.println("Returning to Main Menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose from 1 to 4.");
+            }
+        } while (choice != 4);
+
     }
     
     // Menu báo cáo (Reports) // BR8
-    private static void reportsMenu(HrManager hrManager) {
+    private static void reportsMenu(HRManager hrManager) {
         System.out.println("\n----------- REPORTS -----------");
         System.out.println("1. List employees with low attendance");
         System.out.println("2. List highest-paid employees");
         System.out.println("3. Back to Main Menu");
         System.out.print("Choose an option: ");
         
-        // Calling corresponding functions from hrManager for reports
+        int choice = 0;
+        do {
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                choice = -1; // Bắt lỗi nếu người dùng nhập chữ thay vì số
+            }
+
+            switch (choice) {
+                case 1:
+                    // hrManager.showLowAttendanceEmployees();
+                    break;
+                case 2:
+                    // hrManager.showHighestPaidEmployees();
+                    break;
+                case 3:
+                    System.out.println("Returning to Main Menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose from 1 to 3.");
+            }
+        } while (choice != 3);
     }
 }
