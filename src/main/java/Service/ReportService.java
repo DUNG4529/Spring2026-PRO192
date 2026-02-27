@@ -1,23 +1,84 @@
 package service;
 
-import java.util.List;
-import entity.*;
+import entity.Attendance;
+import entity.Employee;
 
+import java.util.List;
 
 public class ReportService {
 
-    private List<Employee> employees;
-    private List<Attendance> attendances;
+    // Task B7 — Employees with Low Attendance (BR12)
+    // BR12: An employee is considered to have low attendance if the number of
+    // Absent days in a selected month exceeds a predefined threshold (e.g. more
+    // than 3 days).
+    public void generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
+            int threshold) {
+        System.out.println("----------- LOW ATTENDANCE REPORT -----------");
+        boolean found = false;
 
-    // Constructor: Nhận dữ liệu gốc từ HRManager thông qua Dependency Injection
-    public ReportService(List<Employee> employees, List<Attendance> attendances) {
-        this.employees = employees;
-        this.attendances = attendances;
+        for (Employee emp : employees) {
+            if (emp.getStatus() != Employee.Status.ACTIVE)
+                continue;
+
+            int absentDays = 0;
+            for (Attendance a : attendances) {
+                if (a.getIdEmployee().equals(emp.getId()) && a.getDate().getMonthValue() == month
+                        && a.getDate().getYear() == year) {
+                    if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
+                        absentDays++;
+                    }
+                }
+            }
+
+            if (absentDays > threshold) {
+                System.out.printf("%s %s %d absent days\n", emp.getId(), emp.getName(), absentDays);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No employees found with low attendance.");
+        }
+        System.out.println("--------------------------------------------");
     }
-    // BR12: Báo cáo nhân viên có số ngày vắng mặt nhiều nhất [9]
-    
-    private static void mostAbsentReport() {
-        System.out.println("Generating report for most absent employees...");
-        // Implementation of the most absent report generation would go here
+
+    // Task B8 — Highest Paid Employees (BR13)
+    // BR13: The highest-paid employees are determined based on the total calculated
+    // salary for a selected month
+    public void generateHighestPaidEmployeesReport(List<Employee> employees, List<Attendance> attendances, int month,
+            int year) {
+        System.out.println("----------- HIGHEST PAID EMPLOYEES -----------");
+
+        SalaryService salaryService = new SalaryService();
+        double maxSalary = 0;
+
+        // Find max salary
+        for (Employee emp : employees) {
+            if (emp.getStatus() != Employee.Status.ACTIVE)
+                continue;
+            double salary = salaryService.calculateEmployeeSalary(emp, attendances, month, year);
+            if (salary > maxSalary) {
+                maxSalary = salary;
+            }
+        }
+
+        // Print employees with max salary
+        boolean found = false;
+        if (maxSalary > 0) {
+            for (Employee emp : employees) {
+                if (emp.getStatus() != Employee.Status.ACTIVE)
+                    continue;
+                double salary = salaryService.calculateEmployeeSalary(emp, attendances, month, year);
+                if (salary == maxSalary) {
+                    System.out.printf("%s %s %,.0f VND\n", emp.getId(), emp.getName(), salary);
+                    found = true;
+                }
+            }
+        }
+
+        if (!found) {
+            System.out.println("No valid salary data found for this month.");
+        }
+        System.out.println("---------------------------------------------");
     }
 }
