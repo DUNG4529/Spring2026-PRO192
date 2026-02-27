@@ -1,6 +1,8 @@
 
 package entity;
 
+import entity.Attendance.AttendanceStatus;// sửa nhé 
+
 public abstract class Employee {
 
     /**
@@ -28,7 +30,7 @@ public abstract class Employee {
     private String jobTitle; // Chức vụ
     private String dateOfJoining; // Ngày vào làm (Định dạng: "dd/MM/yyyy")
     private Status status; // Trạng thái làm việc (Active/Inactive)
-
+    private AttendanceStatus attendance = AttendanceStatus.ABSENT; // Trạng thái attendance (sửa ở đây nha)
     public Employee(String id, String name,
             String department, double baseSalary,
             String jobTitle, String dateOfJoining,
@@ -40,6 +42,7 @@ public abstract class Employee {
         this.jobTitle = jobTitle;
         this.dateOfJoining = dateOfJoining;
         this.status = status;
+        
     }
     // Getter và Setter cho các thuộc tính
 
@@ -105,7 +108,15 @@ public abstract class Employee {
     public void setStatus(Status status) {
         this.status = status;
     }
+    // sửa ở đây nhé
+    public AttendanceStatus getAttendance() {
+        return attendance;
+    }
 
+    public void setAttendance(AttendanceStatus attendance) {
+        this.attendance = attendance;
+    }
+    
     // Phương thức tính lương (trừ ngày nghỉ và cộng giờ tăng ca)
     public abstract double calculateSalary(int absenceDays, int overtimeHours);
 
@@ -119,8 +130,9 @@ public abstract class Employee {
                         "  Base Salary   : %.2f\n" +
                         "  Job Title     : %s\n" +
                         "  Date Of Join  : %s\n" +
-                        "  Status        : %s",
-                id, name, department, baseSalary, jobTitle, dateOfJoining, status);
+                        "  Status        : %s\n"+
+                        "  Attendance    : %s",
+                id, name, department, baseSalary, jobTitle, dateOfJoining, status,attendance);
     }
 
 }

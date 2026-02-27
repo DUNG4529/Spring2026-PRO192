@@ -1,420 +1,247 @@
 
-package manager;
+package ui;
 
-// Imports Model Classes
-import Model.Employee;
-import Model.Attendance;
-import Model.FullTimeEmployee;
-import Model.PartTimeEmployee;
-
-// Imports Service Classes
-import Service.EmployeeService;
-
-import utils.Validation;
-
-// Other Imports
+import manager.HrManager;
 import java.util.Scanner;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class HrManager {
+import utils.Validation;
+import Service.AttendanceService;
+import Service.ReportService;
+import Service.SalaryService;
+import Service.EmployeeService;
+import java.util.List;
 
-	// Service instances (reuse within menu loop)
-	private static final EmployeeService employeeService = new EmployeeService();
 
-	// Scanner instance
-	private static final Scanner scanner = new Scanner(System.in);
+public class Main {
 
-	// Check valid ID
-	public static String checkID(String prompt) {
-		String id;
-		while (true) {
-			System.out.print(prompt);
-			id = scanner.nextLine();
-			// Validate ID
-			if (Validation.validID(id)) {
-				return id;
-			}
-			// Invalid ID message
-			System.out.println("ID not valid! Please enter again.");
-		}
-	}
+    // Scanner instance
+    private static final Scanner sc = new Scanner(System.in);
 
-	// check valid Name
-	public static String checkName(String prompt) {
-		String name;
-		while (true) {
-			System.out.print(prompt);
-			name = scanner.nextLine();
-			// Validate Name
-			if (Validation.validName(name)) {
-				return name;
-			}
-			// Invalid Name message
-			System.out.println("Name not valid! Please enter again.");
-		}
-	}
+    // Check valid ID
+    public static String checkID(String prompt) {
+        String id;
+        while (true) {
+            System.out.print(prompt);
+            id = sc.nextLine();
+            // Validate ID
+            if (Validation.validID(id)) {
+                return id;
+            }
+            // Invalid ID message
+            System.out.println("ID not valid! Please enter again.");
+        }
+    }
 
-	// check valid String
-	public static String checkString(String prompt) {
-		String input;
-		while (true) {
-			System.out.print(prompt);
-			input = scanner.nextLine();
-			// Validate String
-			if (Validation.validString(input)) {
-				return input;
-			}
-			// Invalid String message
-			System.out.println("Input not valid! Please enter again.");
-		}
-	}
+    // check valid Name
+    public static String checkName(String prompt) {
+        String name;
+        while (true) {
+            System.out.print(prompt);
+            name = sc.nextLine();
+            // Validate Name
+            if (Validation.validName(name)) {
+                return name;
+            }
+            // Invalid Name message
+            System.out.println("Name not valid! Please enter again.");
+        }
+    }
 
-	// valid number input
-	public static double checkDouble(String prompt) {
-		double number;
-		while (true) {
-			System.out.print(prompt);
-			try {
-				number = Double.parseDouble(scanner.nextLine());
-				return number;
-			} catch (NumberFormatException e) {
-				System.out.println("Invalid number! Please enter again.");
-			}
-		}
-	}
+    // check valid String
+    public static String checkString(String prompt) {
+        String input;
+        while (true) {
+            System.out.print(prompt);
+            input = sc.nextLine();
+            // Validate String
+            if (Validation.validString(input)) {
+                return input;
+            }
+            // Invalid String message
+            System.out.println("Input not valid! Please enter again.");
+        }
+    }
 
-	// valid salary input
-	public static double checkSalary(String prompt) {
-		double salary;
-		while (true) {
-			System.out.print(prompt);
-			salary = Double.parseDouble(scanner.nextLine());
-			// Validate Salary
-			if (Validation.validSalary(salary)) {
-				return salary;
-			}
-			// Invalid Salary message
-			System.out.println("Salary not valid! Please enter again.");
-		}
-	}
+    // valid number input
+    public static double checkDouble(String prompt) {
+        double number;
+        while (true) {
+            System.out.print(prompt);
+            try {
+                number = Double.parseDouble(sc.nextLine());
+                return number;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number! Please enter again.");
+            }
+        }
+    }
 
-	// valid date input
-	public static String checkDate(String prompt) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		String dateInput;
-		while (true) {
-			System.out.print(prompt);
-			dateInput = scanner.nextLine();
-			try {
-				LocalDate.parse(dateInput, formatter);
-				return dateInput;
-			} catch (DateTimeParseException e) {
-				System.out.println("Date not valid! Please enter again.");
-			}
-		}
-	}
+    // valid salary input
+    public static double checkSalary(String prompt) {
+        double salary;
+        while (true) {
+            System.out.print(prompt);
+            salary = Double.parseDouble(sc.nextLine());
+            // Validate Salary
+            if (Validation.validSalary(salary)) {
+                return salary;
+            }
+            // Invalid Salary message
+            System.out.println("Salary not valid! Please enter again.");
+        }
+    }
 
-	// Manage Employees
-	public static void manageEmployees() {
+    // valid date input
+    public static String checkDate(String prompt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dateInput;
+        while (true) {
+            System.out.print(prompt);
+            dateInput = sc.nextLine();
+            try {
+                LocalDate.parse(dateInput, formatter);
+                return dateInput;
+            } catch (DateTimeParseException e) {
+                System.out.println("Date not valid! Please enter again.");
+            }
+        }
+    }
 
-		int choice;
-		Boolean exit = false;
+    public static void main(String[] args) {
+        // Khởi tạo đối tượng quản lý và Scanner
+        HrManager hrManager = new HrManager();
+        int choice = 0;
 
-		while (!exit) {
-			// Display Employee Management Menu
-			System.out.println("====================================================");
-			System.out.println("============= Employee Management Menu =============");
-			System.out.println("====================================================");
+        // --------------------------------------------------------
+        // MAIN MENU (Menu chính điều hướng các chức năng - CT: Main Menu)
+        // --------------------------------------------------------
+        do {
+            System.out.println("======================================");
+            System.out.println("      HUMAN RESOURCE MANAGEMENT       ");
+            System.out.println("======================================");
+            System.out.println("1. Manage Employees");
+            System.out.println("2. Attendance Management");
+            System.out.println("3. Salary Management");
+            System.out.println("4. Reports");
+            System.out.println("5. Exit");
+            System.out.println("--------------------------------------");
+            System.out.print("Choose an option: ");
+            
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                choice = -1; // Bắt lỗi nếu người dùng nhập chữ thay vì số
+            }
 
-			// Input Employee Choices
-			System.out.println("1. Add Employee");
-			System.out.println("2. Display Employees");
-			System.out.println("3. Update Employee");
-			System.out.println("4. Delete Employee");
-			System.out.println("5. Search Employee");
-			System.out.println("0. Exit to Main Menu");
-			System.out.print("Please select an option (0-5): ");
+            // Xử lý điều hướng dựa trên lựa chọn
+            switch (choice) {
+                case 1:
+                    manageEmployeesMenu(hrManager);
+                    break;
+                case 2:
+                    attendanceManagementMenu(hrManager);
+                    break;
+                case 3:
+                    salaryManagementMenu(hrManager);
+                    break;
+                case 4:
+                    reportsMenu(hrManager);
+                    break;
+                case 5:
+                    System.out.println("Exiting system. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose from 1 to 5.");
+            }
+        } while (choice != 5);
 
-			// Validate Input Choice
-			do {
-				System.out.print("Enter your choice (0-5): ");
-				choice = Integer.parseInt(scanner.nextLine());
-				if (choice < 0 || choice > 5) {
-					System.out.println("Invalid choice. Please select a valid option.");
-				}
-			} while (choice < 0 || choice > 5);
+        sc.close();
+    }
+    // --------------------------------------------------------
+    // SUB-MENUS (Các Menu phụ phân rã theo chức năng - CT: Sub-Menu)
+    // --------------------------------------------------------
+    
+    // Menu quản lý nhân viên (Employee Management) // BR1, BR2, BR4, BR5, BR6
+    private static void manageEmployeesMenu(HrManager hrManager) {
+        System.out.println("\n----------- EMPLOYEE MANAGEMENT -----------");
+        System.out.println("1. Add new employee");
+        System.out.println("2. Update employee information");
+        System.out.println("3. Remove an employee");
+        System.out.println("4. View all employees");
+        System.out.println("5. Search employees by name, department, or job title");
+        System.out.println("6. Back to Main Menu");
+        
+        int choice = 0;
 
-			// Perform actions based on user choice
-			switch (choice) {
-				case 1:// ========================================================================================================
-					System.out.println("======================== Adding Employee ========================");
+        // Calling corresponding functions from hrManager for employee management
+        do {
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                choice = -1; // Bắt lỗi nếu người dùng nhập chữ thay vì số
+            }
 
-					// Input ID for Employee
-					String idEmployee = checkID("Enter ID (Format: XX000000): ");
+            switch (choice) {
+                case 1:
+                    // hrManager.addEmployee(...);
+                    break;
+                case 2:
+                    // hrManager.updateEmployee(...);
+                    break;
+                case 3:
+                    // hrManager.deleteEmployeeById(...);
+                    break;
+                case 4:
+                    // hrManager.viewAllEmployees();
+                    break;
+                case 5:
+                    // hrManager.searchEmployees(...);
+                    break;
+                case 6:
+                    System.out.println("Returning to Main Menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose from 1 to 6.");
+            }
+        } while (choice != 6);
+    }
+    // Menu quản lý chấm công (Attendance Management) // BR3
+    private static void attendanceManagementMenu(HrManager hrManager) {
+        System.out.println("\n----------- ATTENDANCE MANAGEMENT -----------");
+        System.out.println("1. Record daily attendance");
+        System.out.println("2. Update attendance record");
+        System.out.println("3. View attendance history");
+        System.out.println("4. Calculate total working days and absences");
+        System.out.println("5. Back to Main Menu");
+        System.out.print("Choose an option: ");
 
-					// Input Name for Employee
-					String name = checkName("Enter Name: ");
+        // Calling corresponding functions from hrManager for attendance management
+    }
 
-					// Employee Department
-					String department = checkString("Enter Department: ");
+    // Menu quản lý lương (Salary Management) // BR7, BR8, BR9
+    private static void salaryManagementMenu(HrManager hrManager) {
+        System.out.println("\n----------- SALARY MANAGEMENT -----------");
+        System.out.println("1. Calculate monthly salary for an employee");
+        System.out.println("2. View salary details");
+        System.out.println("3. Generate salary report for all employees");
+        System.out.println("4. Back to Main Menu");
+        System.out.print("Choose an option: ");
 
-					// Employee Base Salary
-					double baseSalary = checkDouble("Enter Base Salary: ");
-					while (!Validation.validSalary(baseSalary)) {
-						System.out.println("Salary not valid! Please enter again.");
-						baseSalary = checkDouble("Enter Base Salary: ");
-					}
-
-					// Employee Job Title
-					String jobTitle = checkString("Enter Job Title: ");
-
-					// Employee Date Of Joining
-					System.out.print("Enter Date Of Joining (dd/MM/yyyy): ");
-					String dateOfJoining;
-					do {
-						dateOfJoining = scanner.nextLine();
-						if (!Validation"Date not valid! Please enter again.");
-							dateOfJoining = null; // retry
-						}
-					} while (dateOfJoining == null);
-
-					// Employee Status
-					Employee.Status status = null;
-					do {
-						System.out.print("Status (1-Active, 2-Inactive): ");
-						int statusChoice = Integer.parseInt(scanner.nextLine());
-						if (statusChoice == 1) {
-							status = Employee.Status.ACTIVE;
-						} else if (statusChoice == 2) {
-							status = Employee.Status.INACTIVE;
-						} else {
-							System.out.println("Please enter 1 or 2.");
-						}
-					} while (status == null);
-
-					// Employee Type
-					int typeChoice;
-					Boolean validType;
-					do {
-						System.out.print("Employee Type (1-FullTime, 2-PartTime): ");
-						typeChoice = Integer.parseInt(scanner.nextLine());
-						validType = (typeChoice == 1 || typeChoice == 2);
-						if (!validType) {
-							System.out.println("Please enter 1 or 2.");
-						}
-					} while (!validType);
-
-					// Create Employee Object based on type
-					Employee newEmp;
-					if (typeChoice == 1) {
-						newEmp = new FullTimeEmployee(idEmployee, name, department, baseSalary, jobTitle, dateOfJoining,
-								status);
-					} else {
-						newEmp = new PartTimeEmployee(idEmployee, name, department, baseSalary, jobTitle, dateOfJoining,
-								status);
-					}
-
-					// Add Employee to the system
-					employeeService.addEmployee(newEmp);
-					break;
-				case 2: // ========================================================================================================
-					System.out.println("======================== Displaying Employees ========================");
-
-					if (employeeService.getAllEmp().isEmpty()) {
-						System.out.println("No employees to display.");
-						break;
-					}
-
-					System.out.println("--- Employee List ---");
-					for (Employee emp : employeeService.getAllEmp()) {
-						if (emp.getStatus() == Employee.Status.INACTIVE) {
-							continue; // Skip inactive employees
-						}
-						System.out.println(emp.output());
-						System.out.println("----------------------");
-					}
-					break;
-				case 3: // ========================================================================================================
-					System.out.println("======================== Updating Employee ========================");
-					// Enter ID employee to update
-					String updateID = checkID("Enter Employee ID to update: ");
-					// Find Employee Index
-					int empIndexCheck;
-					while (true) {
-						empIndexCheck = employeeService.searchID(updateID);
-						if (empIndexCheck == -1) {
-							System.out.println("Employee with ID " + updateID + " not found. Please enter again.");
-							updateID = checkID("Enter Employee ID to update: ");
-						} else {
-							break; // Employee found
-						}
-					}
-
-					Employee existingEmp = employeeService.getEmpIndex(empIndexCheck);
-
-					System.out.println("Which information do you want to update for employee ID " + updateID + "?");
-					System.out.println("1. Name");
-					System.out.println("2. Department");
-					System.out.println("3. Base Salary");
-					System.out.println("4. Job Title");
-					System.out.println("5. Date Of Joining");
-					System.out.println("6. Status");
-					System.out.println("0. Cancel");
-					System.out.print("Please select an option (0-6): ");
-
-					int userChoice = Integer.parseInt(scanner.nextLine());
-
-					switch (userChoice) {
-						case 0:
-							System.out.println("Update complete.");
-							break;
-						case 1:
-							// Update Name
-							String newName = checkName("Enter new Name: ");
-							existingEmp.setName(newName);
-							break;
-						case 2:
-							// Update Department
-							String newDepartment = checkName("Enter new Department: ");
-							existingEmp.setDepartment(newDepartment);
-							break;
-						case 3:
-							// Update Base Salary
-							double newBaseSalary = checkSalary("Enter new Base Salary: ");
-							existingEmp.setBaseSalary(newBaseSalary);
-							break;
-						case 4:
-							// Update Job Title
-							String newJobTitle = checkName("Enter new Job Title: ");
-							existingEmp.setJobTitle(newJobTitle);
-							break;
-						case 5:
-							// Update Date Of Joining
-							String newDateOfJoining = checkDate("Enter new Date Of Joining (dd/MM/yyyy): ");
-							existingEmp.setDateOfJoining(newDateOfJoining);
-							break;
-						case 6:
-							// Update Status
-							System.out.print("Status Choice: ");
-							System.out.println("	1. ACTIVE");
-							System.out.println("	2. INACTIVE");
-							System.out.println("Please select an option (1-2): ");
-							int statusChoice = Integer.parseInt(scanner.nextLine());
-							if (statusChoice == 1) {
-								existingEmp.setStatus(Employee.Status.ACTIVE);
-							} else if (statusChoice == 2) {
-								existingEmp.setStatus(Employee.Status.INACTIVE);
-							} else {
-								System.out.println("Invalid choice. Status not updated.");
-							}
-							break;
-						default:
-							System.out.println("Invalid choice. No updates made.");
-							break;
-					}
-
-					// Save updated employee information
-					employeeService.updateEmployee(existingEmp);
-					break;
-				case 4: // ========================================================================================================
-					System.out.println("======================== Deleting Employee ========================");
-					// Enter ID employee to delete
-					updateID = checkID("Enter Employee ID to delete: ");
-					// Find Employee Index
-					while (true) {
-						empIndexCheck = employeeService.searchID(updateID);
-						if (empIndexCheck == -1) {
-							System.out.println("Employee with ID " + updateID + " not found. Please enter again.");
-							updateID = checkID("Enter Employee ID to delete: ");
-						} else {
-							break; // Employee found
-						}
-					}
-					// Delete Employee
-					employeeService.deleteEmployee(updateID);
-					break;
-				case 5: // ========================================================================================================
-					System.out.println("======================== Searching Employee ========================");
-
-					// Enter ID employee to search
-					String searchID = checkID("Enter Employee ID to search: ");
-					// Search Employee
-					empIndexCheck = employeeService.searchID(searchID);
-					while (empIndexCheck == -1) {
-						System.out.println("Employee with ID " + searchID + " not found. Please enter again.");
-						searchID = checkID("Enter Employee ID to search: ");
-						empIndexCheck = employeeService.searchID(searchID);
-					}
-
-					// Display Employee Information
-					Employee foundEmp = employeeService.getEmpIndex(empIndexCheck);
-					System.out.println("Employee found:");
-					System.out.println(foundEmp.output());
-
-					break;
-				case 0: // ========================================================================================================
-					System.out.println("======================== Exiting to Main Menu ========================");
-					exit = true;
-					break;
-				default: // ========================================================================================================
-					System.out.println("Invalid choice. Please select a valid option.");
-			}
-		}
-	}
-
-	// Manage Attendance
-	public static void manageAttendance() {
-		System.out.println("====================================================");
-		System.out.println("============ Attendance Management Menu ============");
-		System.out.println("====================================================");
-	}
-
-	// Calculate Salaries
-
-	public static void calculateSalaries() {
-		System.out.println("====================================================");
-		System.out.println("============= Salary Calculation Menu ==============");
-		System.out.println("====================================================");
-	}
-
-	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-
-		System.out.println("===== Employee Management System =====");
-		System.out.println("1. Manage Employees");
-		System.out.println("2. Manage Attendance");
-		System.out.println("3. Calculate Salaries");
-		System.out.println("0. Exit");
-		System.out.print("Please select an option (0-3): ");
-
-		int choice = Integer.parseInt(scanner.nextLine());
-		Boolean checkChoice = true;
-		do {
-			switch (choice) {
-				case 1:
-					System.out.println("Managing Employees...");
-					manageEmployees();
-					break;
-				case 2:
-					System.out.println("Managing Attendance...");
-					manageAttendance();
-					break;
-				case 3:
-					System.out.println("Calculating Salaries...");
-					calculateSalaries();
-					break;
-				case 0:
-					System.out.println("Exiting the system. Goodbye!");
-					checkChoice = false;
-					break;
-				default:
-					System.out.println("Invalid choice. Please select a valid option.");
-			}
-		} while (checkChoice);
-
-		// Close scanner
-		scanner.close();
-	}
+        // Calling corresponding functions from hrManager for salary management
+    }
+    
+    // Menu báo cáo (Reports) // BR8
+    private static void reportsMenu(HrManager hrManager) {
+        System.out.println("\n----------- REPORTS -----------");
+        System.out.println("1. List employees with low attendance");
+        System.out.println("2. List highest-paid employees");
+        System.out.println("3. Back to Main Menu");
+        System.out.print("Choose an option: ");
+        
+        // Calling corresponding functions from hrManager for reports
+    }
 }

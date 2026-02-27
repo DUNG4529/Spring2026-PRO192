@@ -7,34 +7,35 @@ package entity;
 import java.time.LocalDate;
 
 /**
- * Class Attendance_Information dùng để lưu thông tin điểm danh của nhân viên
+ * Enum định nghĩa các trạng thái điểm danh
+ */
+
+
+/**
+ * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
  Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
 public class Attendance {
-    /**
-     * Enum định nghĩa các trạng thái điểm danh
-     */
-    public static enum AttendanceStatus {
-        PRESENT("Present"),
-        ABSENT("Absent"),
-        LEAVE("Leave");
-
-        private final String displayName;
-
-        AttendanceStatus(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
     private String idEmployee; // Mã nhân viên
     private LocalDate date; // Ngày điểm danh
     private AttendanceStatus status; // Trạng thái điểm danh
     private double overtime; // Số giờ làm thêm (overtime)
 
+    public enum AttendanceStatus {
+    PRESENT("Present"), // Có mặt
+    ABSENT("Absent"), // Vắng mặt
+    LEAVE("Leave"); // Nghỉ phép
+
+    private String displayName;
+
+    AttendanceStatus(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+}
     /// =========================
     /// KHỞI TẠO DỮ LIỆU
     /// =========================

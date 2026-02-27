@@ -8,6 +8,6 @@ package Service;
  *
  * @author TienDung
  */
-public class PayrollService {
+public class SalaryService {
     
 }
