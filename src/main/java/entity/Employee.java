@@ -117,8 +117,11 @@ public abstract class Employee {
         this.attendance = attendance;
     }
     
-    // Phương thức tính lương (trừ ngày nghỉ và cộng giờ tăng ca)
-    public abstract double calculateSalary(int absenceDays, int overtimeHours);
+     // TÍNH TRỪU TƯỢNG (Abstraction): Khai báo phương thức tính lương là "abstract"
+    // Phương thức này chỉ có tên và tham số, không có thân hàm (body).
+    // Bắt buộc các lớp con (kế thừa) phải định nghĩa lại (override) phương thức
+    // này.
+    public abstract double calculateSalary(int workingDays, int absenceDays, int overtimeHours);
 
     // output employee information
     public String output() {
