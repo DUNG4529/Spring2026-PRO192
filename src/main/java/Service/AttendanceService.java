@@ -35,10 +35,6 @@ public class AttendanceService {
         return markAttendance(id, AttendanceStatus.ABSENT);
     }
 
-    public boolean markLeave(String id) {
-        return markAttendance(id, AttendanceStatus.LEAVE);
-    }
-
     private boolean markAttendance(String id, AttendanceStatus status) {
         if (!Validation.validID(id)) {
             return false;

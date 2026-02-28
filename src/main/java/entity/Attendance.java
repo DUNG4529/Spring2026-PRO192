@@ -23,8 +23,7 @@ public class Attendance {
 
     public enum AttendanceStatus {
     PRESENT("Present"), // Có mặt
-    ABSENT("Absent"), // Vắng mặt
-    LEAVE("Leave"); // Nghỉ phép
+    ABSENT("Absent"); // Vắng mặt
 
     private String displayName;
 

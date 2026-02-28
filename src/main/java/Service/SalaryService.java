@@ -34,8 +34,7 @@ public class SalaryService {
                     && a.getDate().getYear() == year) {
                 if (a.getStatus() == Attendance.AttendanceStatus.PRESENT) {
                     workingDays++;
-                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT
-                        || a.getStatus() == Attendance.AttendanceStatus.LEAVE) {
+                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
                     absenceDays++;
                 }
                 overtimeHours += (int) a.getOvertime();
@@ -70,8 +69,7 @@ public class SalaryService {
                         && a.getDate().getYear() == year) {
                     if (a.getStatus() == Attendance.AttendanceStatus.PRESENT)
                         workingDays++;
-                    else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT
-                            || a.getStatus() == Attendance.AttendanceStatus.LEAVE)
+                    else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT)
                         absenceDays++;
                 }
             }
@@ -103,8 +101,7 @@ public class SalaryService {
                     && a.getDate().getYear() == year) {
                 if (a.getStatus() == Attendance.AttendanceStatus.PRESENT) {
                     workingDays++;
-                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT
-                        || a.getStatus() == Attendance.AttendanceStatus.LEAVE) {
+                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
                     absenceDays++;
                 }
                 overtimeHours += (int) a.getOvertime();
@@ -140,8 +137,7 @@ public class SalaryService {
                             && a.getDate().getYear() == year) {
                         if (a.getStatus() == Attendance.AttendanceStatus.PRESENT)
                             workingDays++;
-                        else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT
-                                || a.getStatus() == Attendance.AttendanceStatus.LEAVE)
+                        else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT)
                             absenceDays++;
                     }
                 }
