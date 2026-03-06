@@ -20,6 +20,7 @@ public class ReportService {
     // BR12: An employee is considered to have low attendance if the number of
     // Absent days in a selected month exceeds a predefined threshold (e.g. more
     // than 3 days).
+    // threshold days: Số ngày đi làm tối thiểu trong 1 tháng 
     public void generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
             int threshold) {
         System.out.println("----------- LOW ATTENDANCE REPORT -----------");

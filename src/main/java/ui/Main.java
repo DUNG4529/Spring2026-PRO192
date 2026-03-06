@@ -27,8 +27,8 @@ public class Main {
         while (true) {
             System.out.print(prompt);
             id = sc.nextLine();
-            // Accept both formats: XX000000 and E01-style demo IDs
-            if (Validation.validID(id) || id.matches("^E\\d{2}$")) {
+            // Check valid id
+            if (Validation.validID(id)) {
                 return id;
             }
             // Invalid ID message

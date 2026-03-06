@@ -1,117 +1,70 @@
 package service;
 
-import entity.Attendance;
+import entity.*;
 import entity.Attendance.AttendanceStatus;
-import entity.Employee;
-import utils.Validation;
-
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import service.*;
 
 public class AttendanceService {
 
-    private final List<Attendance> attendanceList;
-    private final EmployeeService empService;
+    // ⚠ Phải static luôn
+    public static Map<String, List<Attendance>> AttendanceRecord = new HashMap<>();
 
-    public AttendanceService(List<Attendance> attendanceList, List<Employee> employeeList) {
-        this.attendanceList = attendanceList;
-        this.empService = new EmployeeService(employeeList);
-    }
+    // ⚠ Static method
+    public static void AttendanceTable(EmployeeService empService) {
 
-    public AttendanceService(EmployeeService empService) {
-        this.attendanceList = new java.util.ArrayList<>();
-        this.empService = empService;
-    }
+        List<Employee> IDlist = empService.getAllEmp();
+        LocalDate today = LocalDate.now();
 
-    public void CheckandEditAttendance(String id) {
-        markPresent(id);
-    }
+        for (Employee emp : IDlist) {
 
-    public boolean markPresent(String id) {
-        return markAttendance(id, AttendanceStatus.PRESENT);
-    }
+            String id = emp.getId();
 
-    public boolean markAbsent(String id) {
-        return markAttendance(id, AttendanceStatus.ABSENT);
-    }
+            AttendanceRecord.putIfAbsent(id, new ArrayList<>());
 
-    private boolean markAttendance(String id, AttendanceStatus status) {
-        if (!Validation.validID(id)) {
-            return false;
-        }
+            if (AttendanceRecord.get(id).isEmpty()) {
 
-        int index = empService.searchID(id);
-        if (index == -1) {
-            return false;
-        }
+                Attendance defaultRecord =
+                        new Attendance(today, AttendanceStatus.ABSENT, 0.0);
 
-        Employee emp = empService.getEmpIndex(index);
-        if (emp == null) {
-            return false;
-        }
-
-        emp.setAttendance(status);
-        return true;
-    }
-
-    public List<Attendance> getAllAttendance() {
-        return attendanceList;
-    }
-
-    public int searchAttendance(String idEmployee, LocalDate date) {
-        for (int i = 0; i < attendanceList.size(); i++) {
-            Attendance attendance = attendanceList.get(i);
-            if (attendance.getIdEmployee().equalsIgnoreCase(idEmployee)
-                    && attendance.getDate().equals(date)) {
-                return i;
+                AttendanceRecord.get(id).add(defaultRecord);
             }
         }
-        return -1;
     }
 
-    public void addAttendance(Attendance attendance) {
-        if (attendance == null) {
-            throw new IllegalArgumentException("Attendance must not be null");
-        }
+    public static void markAttendance(String id, AttendanceStatus newStatus) {
 
-        if (empService.searchID(attendance.getIdEmployee()) == -1) {
-            throw new IllegalArgumentException("Employee does not exist");
-        }
+        if (AttendanceRecord.containsKey(id)) {
 
-        if (searchAttendance(attendance.getIdEmployee(), attendance.getDate()) != -1) {
-            throw new IllegalArgumentException("Attendance already exists for this employee and date");
-        }
+            List<Attendance> records = AttendanceRecord.get(id);
+            LocalDate today = LocalDate.now();
 
-        attendance.setStatus(AttendanceStatus.PRESENT);
-        attendanceList.add(attendance);
-    }
+            for (Attendance record : records) {
 
-    public void updateAttendance(String idEmployee, LocalDate date, String status, double overtime) {
-        int index = searchAttendance(idEmployee, date);
-        if (index == -1) {
-            return;
-        }
-
-        Attendance attendance = attendanceList.get(index);
-        attendance.setStatus(AttendanceStatus.PRESENT);
-        attendance.setOvertime(overtime);
-    }
-
-    public void deleteAttendance(String idEmployee, LocalDate date) {
-        int index = searchAttendance(idEmployee, date);
-        if (index == -1) {
-            return;
-        }
-        attendanceList.remove(index);
-    }
-
-    public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
-        List<Attendance> result = new java.util.ArrayList<>();
-        for (Attendance attendance : attendanceList) {
-            if (attendance.getIdEmployee().equalsIgnoreCase(idEmployee)) {
-                result.add(attendance);
+                if (record.getDate().equals(today)) {
+                    record.setStatus(newStatus);
+                    System.out.println("Cập nhật thành công cho ID: " + id);
+                    return;
+                }
             }
+
+        } else {
+            System.out.println("Không tìm thấy mã nhân viên!");
         }
-        return result;
+    }
+
+    public static void showAllAttendance() {
+
+        for (String id : AttendanceRecord.keySet()) {
+
+            System.out.println("ID: " + id);
+
+            for (Attendance record : AttendanceRecord.get(id)) {
+                System.out.println(record);
+            }
+
+            System.out.println("----------------------");
+        }
     }
 }

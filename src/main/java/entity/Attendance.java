@@ -45,8 +45,7 @@ public class Attendance {
     }
 
     // Constructor đầy đủ tham số
-    public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
-        this.idEmployee = idEmployee;
+    public Attendance( LocalDate date, AttendanceStatus status, double overtime) {
         this.date = date;
         this.status = (status == null) ? AttendanceStatus.ABSENT : status;
         this.overtime = overtime;
