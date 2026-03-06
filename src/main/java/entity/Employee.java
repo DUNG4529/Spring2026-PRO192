@@ -123,19 +123,19 @@ public abstract class Employee {
     // này.
     public abstract double calculateSalary(int workingDays, int absenceDays, int overtimeHours);
 
-    // output employee information
-    public String output() {
+    // ToString để hiển thị thông tin nhân viên
+    @Override
+    public String toString() {
         return String.format(
                 "Employee Information:\n" +
-                        "  ID            : %s\n" +
-                        "  Name          : %s\n" +
-                        "  Department    : %s\n" +
-                        "  Base Salary   : %.2f\n" +
-                        "  Job Title     : %s\n" +
-                        "  Date Of Join  : %s\n" +
-                        "  Status        : %s\n"+
-                        "  Attendance    : %s",
-                id, name, department, baseSalary, jobTitle, dateOfJoining, status,attendance);
+                        "ID: %s\n" +
+                        "Name: %s\n" +
+                        "Department: %s\n" +
+                        "Base Salary: %.2f\n" +
+                        "Job Title: %s\n" +
+                        "Date of Joining: %s\n" +
+                        "Status: %s",
+                id, name, department, baseSalary, jobTitle, dateOfJoining, status.getStatus());
     }
 
 }

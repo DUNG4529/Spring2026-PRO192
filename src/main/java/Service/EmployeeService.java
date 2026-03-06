@@ -1,10 +1,8 @@
 
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import entity.Employee;
+import java.util.*;
+import entity.*;
 
 public class EmployeeService {
     private List<Employee> employeeList;

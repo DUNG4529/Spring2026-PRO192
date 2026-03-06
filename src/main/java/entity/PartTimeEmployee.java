@@ -26,11 +26,11 @@ public class PartTimeEmployee extends Employee {
         }
     }
 
-    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè phương thức output() của lớp cha
-    // Gọi ngược hàm ở lớp cha (super.output()) và nối đổi lại text cho phù hợp.
+    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè phương thức toString() của lớp cha
+    // Gọi ngược hàm ở lớp cha (super.toString()) và nối đổi lại text cho phù hợp.
     @Override
-    public String output() {
-        return super.output().replace("Employee Information:", "Part-Time Employee Information:");
+    public String toString() {
+        return super.toString().replace("Employee Information:", "Part-Time Employee Information:");
     }
 
 }

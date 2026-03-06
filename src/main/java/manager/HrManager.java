@@ -12,21 +12,29 @@ public class HRManager {
     private List<Attendance> attendances;
 
     // 2. Khai báo các Service xử lý logic (Decomposition) [4]
-    private EmployeeService employeeService;
-    private AttendanceService attendanceService;
-    private SalaryService salaryService;
-    private ReportService reportService;
+    private EmployeeService employeeService = new EmployeeService(employees);
+    private AttendanceService attendanceService = new AttendanceService();
+    private SalaryService salaryService = new SalaryService(employees, attendances);
+    private ReportService reportService = new ReportService(employees, attendances);
 
     // Constructor: Khởi tạo danh sách và "bơm" (inject) vào các Service
     public HRManager() {
         this.employees = new ArrayList<>();
         this.attendances = new ArrayList<>();
+
+        // Inject dữ liệu vào các Service
+        this.employeeService = new EmployeeService(employees);
+        this.attendanceService = new AttendanceService();
+
+        // Lưu ý: SalaryService và ReportService cần cả employees và attendances, nên phải khởi tạo sau khi đã tạo xong 2 List này
+        this.salaryService = new SalaryService(employees, attendances);
+        this.reportService = new ReportService(employees, attendances);
     }
 
     // ==========================================
     // MODULE 1: EMPLOYEE MANAGEMENT [5, 6]
     // ==========================================
-    
+    // Các phương thức quản lý nhân viên (thêm, sửa, xóa, tìm kiếm)
     public void addEmployee(Employee e) {
         employeeService.addEmployee(e);
     }
@@ -70,6 +78,7 @@ public class HRManager {
     // MODULE 3: SALARY MANAGEMENT [5, 6]
     // ==========================================
     
+    // Tính lương cho một nhân viên theo ID, tháng và năm hiện tại
     public double calculateSalaryById(String idEmployee) {
         Employee employee = findEmployeeById(idEmployee);
         if (employee == null) {
@@ -81,7 +90,7 @@ public class HRManager {
                 LocalDate.now().getMonthValue(),
                 LocalDate.now().getYear());
     }
-
+    // Tính lương cho một nhân viên theo ID, tháng và năm cụ thể (cho phép nhập tháng/năm khác)
     public double calculateSalaryById(String idEmployee, int month, int year) {
         Employee employee = findEmployeeById(idEmployee);
         if (employee == null) {
@@ -89,7 +98,7 @@ public class HRManager {
         }
         return salaryService.calculateEmployeeSalary(employee, attendances, month, year);
     }
-
+    // Hiển thị bảng lương cho tất cả nhân viên trong tháng hiện tại
     public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
         List<Attendance> result = new ArrayList<>();
         if (idEmployee == null || idEmployee.trim().isEmpty()) {
