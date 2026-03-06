@@ -11,6 +11,9 @@ public class ReportService {
     List<Employee> employeeList;
     List<Attendance> attendanceList;
 
+    public ReportService() {
+    }
+
     public ReportService(List<Employee> employeeList, List<Attendance> attendanceList) {
         this.employeeList = employeeList;
         this.attendanceList = attendanceList;

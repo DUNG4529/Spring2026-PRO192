@@ -12,6 +12,8 @@ public class SalaryService {
     List<Employee> employeeList;
     List<Attendance> attendanceList;
     // Constructor
+    public SalaryService() {
+    }
     public SalaryService(List<Employee> employeeList, List<Attendance> attendanceList) {
         this.employeeList = employeeList;
         this.attendanceList = attendanceList;

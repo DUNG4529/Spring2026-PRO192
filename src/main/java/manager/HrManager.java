@@ -21,12 +21,6 @@ public class HRManager {
     public HRManager() {
         this.employees = new ArrayList<>();
         this.attendances = new ArrayList<>();
-
-        // Khởi tạo các Service, truyền List vào để chúng thao tác trực tiếp trên dữ liệu gốc
-        this.employeeService = new EmployeeService(this.employees); // Truyền danh sách nhân viên để EmployeeService có thể quản lý
-        this.attendanceService = new AttendanceService(this.attendances, this.employees); // Truyền cả danh sách nhân viên để AttendanceService có thể cập nhật trạng thái attendance
-        this.salaryService = new SalaryService(this.employees, this.attendances); // Truyền cả hai danh sách để SalaryService có thể tính lương dựa trên attendance
-        this.reportService = new ReportService(this.employees, this.attendances); // Truyền cả hai danh sách để ReportService có thể tạo báo cáo dựa trên dữ liệu nhân viên và attendance
     }
 
     // ==========================================
@@ -61,18 +55,15 @@ public class HRManager {
     // ==========================================
     // MODULE 2: ATTENDANCE MANAGEMENT [5, 6]
     // ==========================================
-    
-    public void addAttendance(Attendance a) {
-        attendanceService.addAttendance(a);
+    public void initializeAttendance() {
+        attendanceService.AttendanceTable(employeeService);
     }
 
-    public void updateAttendance(String idEmployee, LocalDate date, String status, double overtime) {
-        // Ủy quyền cho AttendanceService xử lý việc tìm và cập nhật
-        attendanceService.updateAttendance(idEmployee, date, status, overtime);
+    public void markEmployeeAttendance(String idEmployee, Attendance.AttendanceStatus status) {
+        attendanceService.markAttendance(idEmployee, status);
     }
-
-    public void deleteAttendance(String idEmployee, LocalDate date) {
-        attendanceService.deleteAttendance(idEmployee, date);
+    public void showAllAttendance() {
+        attendanceService.showAllAttendance();
     }
 
     // ==========================================

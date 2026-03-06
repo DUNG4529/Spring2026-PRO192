@@ -4,15 +4,21 @@ import entity.*;
 import entity.Attendance.AttendanceStatus;
 import java.time.LocalDate;
 import java.util.*;
-import service.*;
 
 public class AttendanceService {
 
-    // ⚠ Phải static luôn
-    public static Map<String, List<Attendance>> AttendanceRecord = new HashMap<>();
+    // Dữ liệu điểm danh được lưu trữ trong một Map, với key là ID nhân viên và value là danh sách các bản ghi điểm danh
+    public Map<String, List<Attendance>> AttendanceRecord = new HashMap<>();
 
-    // ⚠ Static method
-    public static void AttendanceTable(EmployeeService empService) {
+    // Constructor
+    public AttendanceService() {
+    }
+    public AttendanceService(Map<String, List<Attendance>> attendanceRecord) {
+        this.AttendanceRecord = attendanceRecord;
+    }
+
+    // 1. Khởi tạo bảng điểm danh cho tất cả nhân viên (mặc định là vắng mặt)
+    public void AttendanceTable(EmployeeService empService) {
 
         List<Employee> IDlist = empService.getAllEmp();
         LocalDate today = LocalDate.now();
@@ -32,8 +38,8 @@ public class AttendanceService {
             }
         }
     }
-
-    public static void markAttendance(String id, AttendanceStatus newStatus) {
+    // 2. Cập nhật điểm danh cho nhân viên
+    public void markAttendance(String id, AttendanceStatus newStatus) {
 
         if (AttendanceRecord.containsKey(id)) {
 
@@ -54,7 +60,8 @@ public class AttendanceService {
         }
     }
 
-    public static void showAllAttendance() {
+    // 3. Hiển thị bảng điểm danh của tất cả nhân viên
+    public void showAllAttendance() {
 
         for (String id : AttendanceRecord.keySet()) {
 
