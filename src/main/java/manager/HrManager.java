@@ -1,9 +1,9 @@
 package manager;
 
-import servicee.ReportService;
-import servicee.EmployeeService;
-import servicee.SalaryService;
-import servicee.AttendanceService;
+import service.ReportService;
+import service.EmployeeService;
+import service.SalaryService;
+import service.AttendanceService;
 import entity.*;
 import java.time.LocalDate;
 import java.util.ArrayList;

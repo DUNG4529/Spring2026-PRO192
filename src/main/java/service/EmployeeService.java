@@ -1,5 +1,5 @@
 
-package servicee;
+package service;
 
 import java.util.*;
 import entity.*;

@@ -1,4 +1,4 @@
-package servicee;
+package service;
 
 import entity.*;
 import entity.Attendance.AttendanceStatus;
