@@ -6,24 +6,21 @@ package entity;
 
 import java.time.LocalDate;
 
-/**
- * Enum định nghĩa các trạng thái điểm danh
- */
-
 
 /**
  * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
  Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
 public class Attendance {
-    private String idEmployee; // Mã nhân viên
+    private final String idEmployee; // Mã nhân viên (không đổi sau khi tạo)
     private LocalDate date; // Ngày điểm danh
-    private AttendanceStatus status = AttendanceStatus.ABSENT; // Trạng thái điểm danh (mặc định ABSENT)
+    private AttendanceStatus status; // Trạng thái điểm danh 
     private double overtime; // Số giờ làm thêm (overtime)
 
     public enum AttendanceStatus {
     PRESENT("Present"), // Có mặt
-    ABSENT("Absent"); // Vắng mặt
+    ABSENT("Absent"), // Vắng mặt
+    LEAVE("Leave"); // Nghỉ phép
 
     private String displayName;
 
@@ -39,13 +36,15 @@ public class Attendance {
     /// KHỞI TẠO DỮ LIỆU
     /// =========================
 
-    // Constructor không tham số
-    public Attendance() {
-        this.status = AttendanceStatus.ABSENT;
-    }
-
     // Constructor đầy đủ tham số
-    public Attendance( LocalDate date, AttendanceStatus status, double overtime) {
+    public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
+        if (idEmployee == null || idEmployee.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee ID cannot be empty");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("Attendance date cannot be null");
+        }
+        this.idEmployee = idEmployee;
         this.date = date;
         this.status = (status == null) ? AttendanceStatus.ABSENT : status;
         this.overtime = overtime;
@@ -60,13 +59,6 @@ public class Attendance {
      */
     public String getIdEmployee() {
         return idEmployee;
-    }
-
-    /**
-     * Cập nhật mã nhân viên
-     */
-    public void setIdEmployee(String idEmployee) {
-        this.idEmployee = idEmployee;
     }
 
     /**

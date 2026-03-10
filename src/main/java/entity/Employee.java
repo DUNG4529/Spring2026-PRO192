@@ -1,8 +1,6 @@
 
 package entity;
 
-import entity.Attendance.AttendanceStatus;// sửa nhé 
-
 public abstract class Employee {
 
     /**
@@ -10,8 +8,7 @@ public abstract class Employee {
      */
     public static enum Status {
         ACTIVE("Active"),
-        INACTIVE("Inactive"),
-        LEAVE("Leave");
+        INACTIVE("Inactive");
 
         private final String label;
 
@@ -32,7 +29,6 @@ public abstract class Employee {
     private String jobTitle; // Chức vụ
     private String dateOfJoining; // Ngày vào làm (Định dạng: "dd/MM/yyyy")
     private Status status; // Trạng thái làm việc (Active/Inactive)
-    private AttendanceStatus attendance = AttendanceStatus.ABSENT; // Trạng thái attendance (sửa ở đây nha)
 
     // Constructor 
     public Employee(String id, String name, String department, double baseSalary, String jobTitle, String dateOfJoining,
@@ -83,7 +79,7 @@ public abstract class Employee {
         if (department == null || department.trim().isEmpty()) {
             throw new IllegalArgumentException("Department cannot be empty");
         }
-        
+
         this.department = department;
     }
 
@@ -121,14 +117,6 @@ public abstract class Employee {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-    // sửa ở đây nhé
-    public AttendanceStatus getAttendance() {
-        return attendance;
-    }
-
-    public void setAttendance(AttendanceStatus attendance) {
-        this.attendance = attendance;
     }
     
      // TÍNH TRỪU TƯỢNG (Abstraction): Khai báo phương thức tính lương là "abstract"
