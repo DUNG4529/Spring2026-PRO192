@@ -10,7 +10,8 @@ public abstract class Employee {
      */
     public static enum Status {
         ACTIVE("Active"),
-        INACTIVE("Inactive");
+        INACTIVE("Inactive"),
+        LEAVE("Leave");
 
         private final String label;
 
@@ -23,7 +24,8 @@ public abstract class Employee {
         }
     }
 
-    private String id; // Mã nhân viên (Not empty, unique)
+    private final String id; // ID is unique and cannot be changed once set (final)
+
     private String name; // Họ và tên (Not empty)
     private String department; // Phòng ban
     protected double baseSalary; // Lương cơ bản
@@ -31,6 +33,8 @@ public abstract class Employee {
     private String dateOfJoining; // Ngày vào làm (Định dạng: "dd/MM/yyyy")
     private Status status; // Trạng thái làm việc (Active/Inactive)
     private AttendanceStatus attendance = AttendanceStatus.ABSENT; // Trạng thái attendance (sửa ở đây nha)
+
+    // Constructor 
     public Employee(String id, String name,
             String department, double baseSalary,
             String jobTitle, String dateOfJoining,
@@ -44,15 +48,10 @@ public abstract class Employee {
         this.status = status;
         
     }
-    // Getter và Setter cho các thuộc tính
-
+    // Getter & Setter for all properties except ID
     // Lấy mã nhân viên
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     // Lấy họ và tên

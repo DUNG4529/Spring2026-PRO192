@@ -24,8 +24,16 @@ public class EmployeeService {
 
     // create - C
     public void addEmployee(Employee employee) {
+        
+        if (employee == null)
+            throw new IllegalArgumentException("Employee cannot be null!");
+        
+        if (employee.getId() == null || employee.getId().trim().isEmpty())
+            throw new IllegalArgumentException("Employee ID cannot be empty!");
+
         if (searchID(employee.getId()) != -1)
-            throw new IllegalArgumentException("ID has exist! Pls enter another ID");
+            throw new IllegalArgumentException("ID has existed! Please enter another ID.");
+        
         employeeList.add(employee);
         System.out.println("Added successfully!");
     }
@@ -40,7 +48,7 @@ public class EmployeeService {
 
     // read - R - lay all in4
     public List<Employee> getAllEmp() {
-        return this.employeeList;
+        return Collections.unmodifiableList(employeeList); // Trả về danh sách không thể sửa đổi để bảo vệ dữ liệu gốc
     }
 
     // update - U
@@ -50,7 +58,7 @@ public class EmployeeService {
             employeeList.set(index, updateEmp);
             System.out.println("Update successfully!");
         } else
-            System.out.println("Update failed! Pls do again!");
+            throw new IllegalArgumentException("ID not found! Please do again!");
     }
 
     // delete - D
@@ -61,6 +69,6 @@ public class EmployeeService {
             emp.setStatus(Employee.Status.INACTIVE); // set trạng thái thành INACTIVE
             System.out.println("Delete successfully!");
         } else
-            System.out.println("Delete failed! Pls do again!");
+            throw new IllegalArgumentException("ID not found! Please do again!");
     }
 }
