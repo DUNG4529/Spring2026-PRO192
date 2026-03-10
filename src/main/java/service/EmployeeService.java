@@ -5,6 +5,7 @@ import java.util.*;
 import entity.*;
 
 public class EmployeeService {
+    
     private List<Employee> employeeList;
     // Constructor
     public EmployeeService() {
@@ -24,7 +25,7 @@ public class EmployeeService {
 
     // create - C
     public void addEmployee(Employee employee) {
-        
+        // BR1: ID phải là duy nhất và không được thay đổi sau khi đã thiết lập (final)
         if (employee == null)
             throw new IllegalArgumentException("Employee cannot be null!");
         
@@ -33,7 +34,15 @@ public class EmployeeService {
 
         if (searchID(employee.getId()) != -1)
             throw new IllegalArgumentException("ID has existed! Please enter another ID.");
-        
+
+        // BR2: Tên và phòng ban không được để trống
+        if (employee.getName() == null || employee.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee name cannot be empty");
+        }
+
+        if (employee.getDepartment() == null || employee.getDepartment().trim().isEmpty()) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
         employeeList.add(employee);
         System.out.println("Added successfully!");
     }

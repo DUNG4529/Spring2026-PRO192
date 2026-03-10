@@ -35,10 +35,18 @@ public abstract class Employee {
     private AttendanceStatus attendance = AttendanceStatus.ABSENT; // Trạng thái attendance (sửa ở đây nha)
 
     // Constructor 
-    public Employee(String id, String name,
-            String department, double baseSalary,
-            String jobTitle, String dateOfJoining,
+    public Employee(String id, String name, String department, double baseSalary, String jobTitle, String dateOfJoining,
             Status status) {
+        // BR1: ID phải là duy nhất và không được thay đổi sau khi đã thiết lập (final)
+        // BR2: Tên và phòng ban không được để trống
+        
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee name cannot be empty");
+            }
+        if (department == null || department.trim().isEmpty()) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
+
         this.id = id;
         this.name = name;
         this.department = department;
@@ -60,6 +68,9 @@ public abstract class Employee {
     }
 
     public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee name cannot be empty");
+        }
         this.name = name;
     }
 
@@ -69,6 +80,10 @@ public abstract class Employee {
     }
 
     public void setDepartment(String department) {
+        if (department == null || department.trim().isEmpty()) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
+        
         this.department = department;
     }
 
