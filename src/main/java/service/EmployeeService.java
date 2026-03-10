@@ -3,81 +3,80 @@ package service;
 
 import java.util.*;
 import entity.*;
+import entity.Employee.Status;
 
 public class EmployeeService {
-    
-    private List<Employee> employeeList;
+
+    private Map<String, Employee> employeeMap;
+
     // Constructor
     public EmployeeService() {
-        this.employeeList = new ArrayList<>();
+        this.employeeMap = new HashMap<>();
     }
-    public EmployeeService(List<Employee> employeeList) {
-        this.employeeList = employeeList;
+
+    public EmployeeService(Map<String, Employee> employeeMap) {
+        this.employeeMap = employeeMap;
     }
+
     // search
-    public int searchID(String id) {
-        for (int i = 0; i < employeeList.size(); i++) {
-            if (employeeList.get(i).getId().equalsIgnoreCase(id))
-                return i;
-        }
-        return -1;
+    public Employee searchByID(String id) {
+        return employeeMap.get(id);
     }
 
     // create - C
     public void addEmployee(Employee employee) {
-        // BR1: ID phải là duy nhất và không được thay đổi sau khi đã thiết lập (final)
+
         if (employee == null)
             throw new IllegalArgumentException("Employee cannot be null!");
-        
+
         if (employee.getId() == null || employee.getId().trim().isEmpty())
             throw new IllegalArgumentException("Employee ID cannot be empty!");
 
-        if (searchID(employee.getId()) != -1)
+        if (employeeMap.containsKey(employee.getId()))
             throw new IllegalArgumentException("ID has existed! Please enter another ID.");
 
-        // BR2: Tên và phòng ban không được để trống
-        if (employee.getName() == null || employee.getName().trim().isEmpty()) {
+        if (employee.getName() == null || employee.getName().trim().isEmpty())
             throw new IllegalArgumentException("Employee name cannot be empty");
-        }
 
-        if (employee.getDepartment() == null || employee.getDepartment().trim().isEmpty()) {
+        if (employee.getDepartment() == null || employee.getDepartment().trim().isEmpty())
             throw new IllegalArgumentException("Department cannot be empty");
-        }
-        employeeList.add(employee);
+
+        employeeMap.put(employee.getId(), employee);
+
         System.out.println("Added successfully!");
     }
 
-    // read - R - lay 1 tu id
-    public Employee getEmpIndex(int index) {
-        if (index >= 0 && index < employeeList.size()) {
-            return employeeList.get(index);
-        }
-        return null;
+    // read - R - lấy 1 employee theo ID
+    public Employee getEmployee(String id) {
+        return employeeMap.get(id);
     }
 
-    // read - R - lay all in4
+    // read - R - lấy tất cả
     public List<Employee> getAllEmp() {
-        return Collections.unmodifiableList(employeeList); // Trả về danh sách không thể sửa đổi để bảo vệ dữ liệu gốc
+        return new ArrayList<>(employeeMap.values());
     }
 
     // update - U
     public void updateEmployee(Employee updateEmp) {
-        int index = searchID(updateEmp.getId());
-        if (index != -1) {
-            employeeList.set(index, updateEmp);
-            System.out.println("Update successfully!");
-        } else
+
+        if (!employeeMap.containsKey(updateEmp.getId()))
             throw new IllegalArgumentException("ID not found! Please do again!");
+
+        employeeMap.put(updateEmp.getId(), updateEmp);
+
+        System.out.println("Update successfully!");
     }
 
     // delete - D
     public void deleteEmployee(String id) {
-        int index = searchID(id);
-        if (index != -1) {
-            Employee emp = employeeList.get(index);
-            emp.setStatus(Employee.Status.INACTIVE); // set trạng thái thành INACTIVE
-            System.out.println("Delete successfully!");
-        } else
+
+        Employee emp = employeeMap.get(id);
+
+        if (emp == null)
             throw new IllegalArgumentException("ID not found! Please do again!");
+
+        emp.setStatus(Status.INACTIVE);
+
+        System.out.println("Delete successfully!");
     }
 }
