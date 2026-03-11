@@ -6,32 +6,31 @@ package entity;
 
 import java.time.LocalDate;
 
-
 /**
  * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
- Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
+ * Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
 public class Attendance {
     private final String idEmployee; // Mã nhân viên (không đổi sau khi tạo)
     private LocalDate date; // Ngày điểm danh
-    private AttendanceStatus status; // Trạng thái điểm danh 
+    private AttendanceStatus status; // Trạng thái điểm danh
     private double overtime; // Số giờ làm thêm (overtime)
 
     public enum AttendanceStatus {
-    PRESENT("Present"), // Có mặt
-    ABSENT("Absent"), // Vắng mặt
-    LEAVE("Leave"); // Nghỉ phép
+        PRESENT("Present"), // Có mặt
+        ABSENT("Absent"), // Vắng mặt
+        LEAVE("Leave"); // Nghỉ phép
 
-    private String displayName;
+        private String displayName;
 
-    AttendanceStatus(String displayName) {
-        this.displayName = displayName;
+        AttendanceStatus(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-}
     /// =========================
     /// KHỞI TẠO DỮ LIỆU
     /// =========================
@@ -44,9 +43,12 @@ public class Attendance {
         if (date == null) {
             throw new IllegalArgumentException("Attendance date cannot be null");
         }
+        if (status == null) {
+            throw new IllegalArgumentException("Attendance status cannot be null");
+        }
         this.idEmployee = idEmployee;
         this.date = date;
-        this.status = (status == null) ? AttendanceStatus.ABSENT : status;
+        this.status = status;
         this.overtime = overtime;
     }
 
@@ -86,7 +88,10 @@ public class Attendance {
      * Cập nhật trạng thái điểm danh
      */
     public void setStatus(AttendanceStatus status) {
-        this.status = (status == null) ? AttendanceStatus.ABSENT : status;
+        if (status == null) {
+            throw new IllegalArgumentException("Attendance status cannot be null");
+        }
+        this.status = status;
     }
 
     /**

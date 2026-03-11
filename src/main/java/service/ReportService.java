@@ -8,22 +8,14 @@ import java.util.List;
 public class ReportService {
 
     // Constructor
-    List<Employee> employeeList;
-    List<Attendance> attendanceList;
-
     public ReportService() {
-    }
-
-    public ReportService(List<Employee> employeeList, List<Attendance> attendanceList) {
-        this.employeeList = employeeList;
-        this.attendanceList = attendanceList;
     }
 
     // Task B7 — Employees with Low Attendance (BR12)
     // BR12: An employee is considered to have low attendance if the number of
     // Absent days in a selected month exceeds a predefined threshold (e.g. more
     // than 3 days).
-    // threshold days: Số ngày đi làm tối thiểu trong 1 tháng 
+    // threshold days: Số ngày đi làm tối thiểu trong 1 tháng
     public void generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
             int threshold) {
         System.out.println("----------- LOW ATTENDANCE REPORT -----------");
@@ -62,7 +54,7 @@ public class ReportService {
             int year) {
         System.out.println("----------- HIGHEST PAID EMPLOYEES -----------");
 
-        SalaryService salaryService = new SalaryService(employees, attendances);
+        SalaryService salaryService = new SalaryService();
         double maxSalary = 0;
 
         // Find max salary

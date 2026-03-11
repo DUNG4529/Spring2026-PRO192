@@ -6,7 +6,8 @@ import java.util.*;
 import java.time.LocalDate;
 
 public class HRManager {
-    // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và báo cáo
+    // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và
+    // báo cáo
     private final EmployeeService employeeService;
     private final AttendanceService attendanceService;
     private final SalaryService salaryService;
@@ -59,12 +60,20 @@ public class HRManager {
     }
 
     public void markEmployeeAttendance(String idEmployee, Attendance.AttendanceStatus status) {
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee does not exist");
+        }
         attendanceService.markAttendance(idEmployee, status);
     }
 
     public void addAttendance(Attendance attendance) {
         if (attendance == null) {
             throw new IllegalArgumentException("Attendance cannot be null");
+        }
+        Employee employee = findEmployeeById(attendance.getIdEmployee());
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee does not exist");
         }
         attendanceService.addAttendance(
                 attendance.getIdEmployee(),
@@ -74,7 +83,7 @@ public class HRManager {
     }
 
     public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
-        List<Attendance> records = attendanceService.AttendanceRecord.get(idEmployee);
+        List<Attendance> records = attendanceService.getAllAttendanceRecords().get(idEmployee);
         if (records == null) {
             return new ArrayList<>();
         }
@@ -104,7 +113,7 @@ public class HRManager {
     // ==========================
     // Manager Methods for Reporting
     // ==========================
-    
+
     public void reportLowAttendance(int thresholdDays) {
         reportService.generateLowAttendanceReport(
                 getAllEmployees(),
@@ -124,7 +133,7 @@ public class HRManager {
 
     private List<Attendance> getAllAttendances() {
         List<Attendance> result = new ArrayList<>();
-        for (Map.Entry<String, List<Attendance>> entry : attendanceService.AttendanceRecord.entrySet()) {
+        for (Map.Entry<String, List<Attendance>> entry : attendanceService.getAllAttendanceRecords().entrySet()) {
             result.addAll(entry.getValue());
         }
         return result;
