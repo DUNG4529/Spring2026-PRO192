@@ -15,7 +15,7 @@ public class PartTimeEmployee extends Employee {
     // lớp cha.
     // Lớp PartTime thực hiện logic tính lương riêng: OT tính 50k.
     @Override
-    public double calculateSalary(int workingDays, int absenceDays, int overtimeHours) {
+    public double calculateSalary(int workingDays, int absenceDays, double overtimeHours) {
         // Lương = Cơ bản + (Giờ OT * 50k) - (Ngày vắng * 100k)
         if (workingDays < 0 || absenceDays < 0 || overtimeHours < 0) {
             throw new IllegalArgumentException("Absence days and overtime hours cannot be negative.");

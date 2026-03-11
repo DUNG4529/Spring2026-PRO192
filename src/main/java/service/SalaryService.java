@@ -9,6 +9,13 @@ import java.util.List;
 
 public class SalaryService {
 
+    private static final class AttendanceSummary {
+        private int workingDays;
+        private int absenceDays;
+        private int leaveDays;
+        private double overtimeHours;
+    }
+
     List<Employee> employeeList;
     List<Attendance> attendanceList;
     // Constructor
@@ -27,23 +34,8 @@ public class SalaryService {
             return 0.0;
         }
 
-        int workingDays = 0;
-        int absenceDays = 0;
-        int overtimeHours = 0;
-
-        for (Attendance a : attendances) {
-            if (a.getIdEmployee().equals(employee.getId()) && a.getDate().getMonthValue() == month
-                    && a.getDate().getYear() == year) {
-                if (a.getStatus() == Attendance.AttendanceStatus.PRESENT) {
-                    workingDays++;
-                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
-                    absenceDays++;
-                }
-                overtimeHours += (int) a.getOvertime();
-            }
-        }
-
-        return employee.calculateSalary(workingDays, absenceDays, overtimeHours);
+        AttendanceSummary summary = summarizeAttendance(employee, attendances, month, year);
+        return employee.calculateSalary(summary.workingDays, summary.absenceDays, summary.overtimeHours);
     }
 
     // 2. Xem bảng lương tất cả nhân viên
@@ -53,8 +45,8 @@ public class SalaryService {
         System.out.printf(" BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year);
         System.out.println(
                 "====================================================================================================");
-        System.out.printf("%-10s | %-20s | %-15s | %-12s | %-12s | %-15s\n",
-                "ID", "Name", "Role", "Working Days", "Absence Days", "Total Salary");
+        System.out.printf("%-10s | %-20s | %-15s | %-12s | %-12s | %-12s | %-15s\n",
+            "ID", "Name", "Role", "Working Days", "Absence Days", "Leave Days", "Total Salary");
         System.out.println(
                 "----------------------------------------------------------------------------------------------------");
 
@@ -63,21 +55,11 @@ public class SalaryService {
                 continue;
 
             double salary = calculateEmployeeSalary(emp, attendances, month, year);
+            AttendanceSummary summary = summarizeAttendance(emp, attendances, month, year);
 
-            // Tính lại workingDays và absenceDays chỉ để hiển thị
-            int workingDays = 0, absenceDays = 0;
-            for (Attendance a : attendances) {
-                if (a.getIdEmployee().equals(emp.getId()) && a.getDate().getMonthValue() == month
-                        && a.getDate().getYear() == year) {
-                    if (a.getStatus() == Attendance.AttendanceStatus.PRESENT)
-                        workingDays++;
-                    else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT)
-                        absenceDays++;
-                }
-            }
-
-            System.out.printf("%-10s | %-20s | %-15s | %-12d | %-12d | %-15.2f\n",
-                    emp.getId(), emp.getName(), emp.getClass().getSimpleName(), workingDays, absenceDays, salary);
+            System.out.printf("%-10s | %-20s | %-15s | %-12d | %-12d | %-12d | %-15.2f\n",
+                    emp.getId(), emp.getName(), emp.getClass().getSimpleName(), summary.workingDays,
+                    summary.absenceDays, summary.leaveDays, salary);
         }
         System.out.println(
                 "====================================================================================================");
@@ -86,37 +68,30 @@ public class SalaryService {
     // Task B6 — Calculate Salary (Detail for a single employee)
     public void displaySalaryDetail(Employee employee, List<Attendance> attendances, int month, int year) {
         System.out.println("----------- CALCULATE SALARY -----------");
+        // BR10: Salary can only be calculated for active employees.
+        // Valid employee status check
+
         System.out.printf("Employee ID: %s\n", employee.getId());
         System.out.printf("Month / Year: %d / %d\n", month, year);
 
-        if (employee.getStatus() != Employee.Status.ACTIVE) {
-            System.out.println("Error: Salary can only be calculated for active employees.");
+        try {
+            if (employee.getStatus() != Employee.Status.ACTIVE) {
+                throw new IllegalStateException("Salary can only be calculated for active employees.");
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
             return;
         }
 
-        int workingDays = 0;
-        int absenceDays = 0;
-        int overtimeHours = 0;
-
-        for (Attendance a : attendances) {
-            if (a.getIdEmployee().equals(employee.getId()) && a.getDate().getMonthValue() == month
-                    && a.getDate().getYear() == year) {
-                if (a.getStatus() == Attendance.AttendanceStatus.PRESENT) {
-                    workingDays++;
-                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
-                    absenceDays++;
-                }
-                overtimeHours += (int) a.getOvertime();
-            }
-        }
-
-        double totalSalary = employee.calculateSalary(workingDays, absenceDays, overtimeHours);
+        AttendanceSummary summary = summarizeAttendance(employee, attendances, month, year);
+        double totalSalary = employee.calculateSalary(summary.workingDays, summary.absenceDays, summary.overtimeHours);
 
         System.out.println("Output");
         System.out.println("Salary calculated successfully.");
-        System.out.printf("Total Working Days: %d\n", workingDays);
-        System.out.printf("Overtime Hours: %d\n", overtimeHours);
-        System.out.printf("Absence Days: %d\n", absenceDays);
+        System.out.printf("Total Working Days: %d\n", summary.workingDays);
+        System.out.printf("Overtime Hours: %.2f\n", summary.overtimeHours);
+        System.out.printf("Absence Days: %d\n", summary.absenceDays);
+        System.out.printf("Leave Days: %d\n", summary.leaveDays);
         System.out.printf("Total Salary: %,.0f VND\n", totalSalary);
     }
 
@@ -125,31 +100,47 @@ public class SalaryService {
             String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(String.format("BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year));
-            writer.write("ID,Name,Role,Working Days,Absence Days,Total Salary\n");
+            writer.write("ID,Name,Role,Working Days,Absence Days,Leave Days,Total Salary\n");
 
             for (Employee emp : employees) {
                 if (emp.getStatus() != Employee.Status.ACTIVE)
                     continue;
 
                 double salary = calculateEmployeeSalary(emp, attendances, month, year);
+                AttendanceSummary summary = summarizeAttendance(emp, attendances, month, year);
 
-                int workingDays = 0, absenceDays = 0;
-                for (Attendance a : attendances) {
-                    if (a.getIdEmployee().equals(emp.getId()) && a.getDate().getMonthValue() == month
-                            && a.getDate().getYear() == year) {
-                        if (a.getStatus() == Attendance.AttendanceStatus.PRESENT)
-                            workingDays++;
-                        else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT)
-                            absenceDays++;
-                    }
-                }
-
-                writer.write(String.format("%s,%s,%s,%d,%d,%.2f\n",
-                        emp.getId(), emp.getName(), emp.getClass().getSimpleName(), workingDays, absenceDays, salary));
+                writer.write(String.format("%s,%s,%s,%d,%d,%d,%.2f\n",
+                        emp.getId(), emp.getName(), emp.getClass().getSimpleName(), summary.workingDays,
+                        summary.absenceDays, summary.leaveDays, salary));
             }
             System.out.println("=> Xuất bảng lương ra file thành công: " + filePath);
         } catch (IOException e) {
             System.out.println("=> Lỗi khi xuất file: " + e.getMessage());
         }
+    }
+
+    private AttendanceSummary summarizeAttendance(Employee employee, List<Attendance> attendances, int month, int year) {
+        AttendanceSummary summary = new AttendanceSummary();
+
+        for (Attendance attendance : attendances) {
+            if (!attendance.getIdEmployee().equals(employee.getId())) {
+                continue;
+            }
+            if (attendance.getDate().getMonthValue() != month || attendance.getDate().getYear() != year) {
+                continue;
+            }
+
+            if (attendance.getStatus() == Attendance.AttendanceStatus.PRESENT) {
+                summary.workingDays++;
+            } else if (attendance.getStatus() == Attendance.AttendanceStatus.ABSENT) {
+                summary.absenceDays++;
+            } else if (attendance.getStatus() == Attendance.AttendanceStatus.LEAVE) {
+                summary.leaveDays++;
+            }
+
+            summary.overtimeHours += attendance.getOvertime();
+        }
+
+        return summary;
     }
 }

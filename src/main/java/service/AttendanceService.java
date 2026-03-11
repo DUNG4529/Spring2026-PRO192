@@ -40,10 +40,23 @@ public class AttendanceService {
         this.employeeService = employeeService;
     }
 
-    // Get an unmodifiable map of all attendance records to prevent external
-    // modification
+    // Phương thức để lấy bản sao của tất cả dữ liệu điểm danh (để tránh lộ dữ liệu nội bộ)
     public Map<String, List<Attendance>> getAllAttendanceRecords() {
-        return Collections.unmodifiableMap(AttendanceRecord);
+        Map<String, List<Attendance>> snapshot = new HashMap<>();
+        // Tạo bản sao sâu (deep copy) của dữ liệu điểm danh để đảm bảo tính bất biến
+        for (Map.Entry<String, List<Attendance>> entry : AttendanceRecord.entrySet()) {
+            List<Attendance> copiedRecords = new ArrayList<>();
+            for (Attendance record : entry.getValue()) {
+                copiedRecords.add(new Attendance(
+                        record.getIdEmployee(),
+                        record.getDate(),
+                        record.getStatus(),
+                        record.getOvertime()));
+            }
+            snapshot.put(entry.getKey(), Collections.unmodifiableList(copiedRecords));
+        }
+
+        return Collections.unmodifiableMap(snapshot);
     }
 
     // 1. Khởi tạo bảng điểm danh cho tất cả nhân viên (mặc định là vắng mặt)

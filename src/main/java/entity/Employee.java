@@ -123,7 +123,7 @@ public abstract class Employee {
     // Phương thức này chỉ có tên và tham số, không có thân hàm (body).
     // Bắt buộc các lớp con (kế thừa) phải định nghĩa lại (override) phương thức
     // này.
-    public abstract double calculateSalary(int workingDays, int absenceDays, int overtimeHours);
+    public abstract double calculateSalary(int workingDays, int absenceDays, double overtimeHours);
 
     // ToString để hiển thị thông tin nhân viên
     @Override
