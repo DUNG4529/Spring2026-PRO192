@@ -30,10 +30,12 @@ public class HRManager {
     }
 
     public Employee findEmployeeById(String idEmployee) {
+        validateEmployeeId(idEmployee);
         return employeeService.getEmployee(idEmployee);
     }
 
     public void updateEmployeeById(String idEmployee, Employee newEmployee) {
+        validateEmployeeId(idEmployee);
         if (newEmployee == null) {
             throw new IllegalArgumentException("Employee cannot be null");
         }
@@ -44,6 +46,7 @@ public class HRManager {
     }
 
     public void deleteEmployeeById(String idEmployee) {
+        validateEmployeeId(idEmployee);
         employeeService.deleteEmployee(idEmployee);
     }
 
@@ -60,6 +63,10 @@ public class HRManager {
     }
 
     public void markEmployeeAttendance(String idEmployee, Attendance.AttendanceStatus status) {
+        validateEmployeeId(idEmployee);
+        if (status == null) {
+            throw new IllegalArgumentException("Attendance status cannot be null");
+        }
         Employee employee = findEmployeeById(idEmployee);
         if (employee == null) {
             throw new IllegalArgumentException("Employee does not exist");
@@ -83,6 +90,7 @@ public class HRManager {
     }
 
     public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
+        validateEmployeeId(idEmployee);
         List<Attendance> records = attendanceService.getAllAttendanceRecords().get(idEmployee);
         if (records == null) {
             return new ArrayList<>();
@@ -103,6 +111,8 @@ public class HRManager {
     }
 
     public double calculateSalaryById(String idEmployee, int month, int year) {
+        validateEmployeeId(idEmployee);
+        validateMonthYear(month, year);
         Employee employee = findEmployeeById(idEmployee);
         if (employee == null) {
             return 0.0;
@@ -115,6 +125,9 @@ public class HRManager {
     // ==========================
 
     public void reportLowAttendance(int thresholdDays) {
+        if (thresholdDays < 0) {
+            throw new IllegalArgumentException("Threshold days cannot be negative");
+        }
         reportService.generateLowAttendanceReport(
                 getAllEmployees(),
                 getAllAttendances(),
@@ -137,5 +150,20 @@ public class HRManager {
             result.addAll(entry.getValue());
         }
         return result;
+    }
+
+    private void validateEmployeeId(String idEmployee) {
+        if (idEmployee == null || idEmployee.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee ID cannot be empty");
+        }
+    }
+
+    private void validateMonthYear(int month, int year) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+        if (year <= 0) {
+            throw new IllegalArgumentException("Year must be greater than 0");
+        }
     }
 }

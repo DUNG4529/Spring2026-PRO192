@@ -46,6 +46,9 @@ public class Attendance {
         if (status == null) {
             throw new IllegalArgumentException("Attendance status cannot be null");
         }
+        if (overtime < 0) {
+            throw new IllegalArgumentException("Overtime cannot be negative");
+        }
         this.idEmployee = idEmployee;
         this.date = date;
         this.status = status;
@@ -105,6 +108,9 @@ public class Attendance {
      * Cập nhật số giờ tăng ca
      */
     public void setOvertime(double overtime) {
+        if (overtime < 0) {
+            throw new IllegalArgumentException("Overtime cannot be negative");
+        }
         this.overtime = overtime;
     }
 

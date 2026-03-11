@@ -82,6 +82,7 @@ public class AttendanceService {
 
     // 2. Cập nhật điểm danh cho nhân viên
     public void markAttendance(String id, String newStatusStr) {
+        validateEmployeeId(id);
         if (!utils.Validation.validAttendanceStatus(newStatusStr)) {
             System.out.println("Lỗi: Trạng thái không hợp lệ. Chỉ chấp nhận Present, Absent, hoặc Leave.");
             return;
@@ -92,6 +93,8 @@ public class AttendanceService {
 
     // 2. Cập nhật điểm danh cho nhân viên (Bằng Enum)
     public void markAttendance(String id, AttendanceStatus newStatus) {
+        validateEmployeeId(id);
+        validateAttendanceStatus(newStatus);
 
         // BR3: Chỉ chấm công khi nhân viên tồn tại trong hệ thống
         if (!isEmployeeExists(id)) {
@@ -119,6 +122,7 @@ public class AttendanceService {
 
     // Ghi nhận điểm danh theo ngày cho 1 nhân viên cụ thể (String)
     public void addAttendance(String id, LocalDate date, String statusStr, double overtime) {
+        validateAttendanceInputs(id, date, overtime);
         if (!utils.Validation.validAttendanceStatus(statusStr)) {
             throw new IllegalArgumentException("Invalid attendance status string");
         }
@@ -128,6 +132,9 @@ public class AttendanceService {
 
     // Ghi nhận điểm danh theo ngày cho 1 nhân viên cụ thể
     public void addAttendance(String id, LocalDate date, AttendanceStatus status, double overtime) {
+        validateAttendanceInputs(id, date, overtime);
+        validateAttendanceStatus(status);
+
         // BR3: Nhân viên phải tồn tại trước khi ghi nhận điểm danh
         if (!isEmployeeExists(id)) {
             throw new IllegalArgumentException("Employee does not exist");
@@ -167,5 +174,27 @@ public class AttendanceService {
             return false;
         }
         return employeeService.searchByID(id) != null;
+    }
+
+    private void validateAttendanceInputs(String id, LocalDate date, double overtime) {
+        validateEmployeeId(id);
+        if (date == null) {
+            throw new IllegalArgumentException("Attendance date cannot be null");
+        }
+        if (overtime < 0) {
+            throw new IllegalArgumentException("Overtime cannot be negative");
+        }
+    }
+
+    private void validateEmployeeId(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee ID cannot be empty");
+        }
+    }
+
+    private void validateAttendanceStatus(AttendanceStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Attendance status cannot be null");
+        }
     }
 }

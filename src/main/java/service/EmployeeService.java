@@ -20,26 +20,18 @@ public class EmployeeService {
 
     // search
     public Employee searchByID(String id) {
+        if (isBlank(id)) {
+            return null;
+        }
         return employeeMap.get(id);
     }
 
     // create - C
     public void addEmployee(Employee employee) {
-
-        if (employee == null)
-            throw new IllegalArgumentException("Employee cannot be null!");
-
-        if (employee.getId() == null || employee.getId().trim().isEmpty())
-            throw new IllegalArgumentException("Employee ID cannot be empty!");
+        validateEmployeeForSave(employee);
 
         if (employeeMap.containsKey(employee.getId()))
             throw new IllegalArgumentException("ID has existed! Please enter another ID.");
-
-        if (employee.getName() == null || employee.getName().trim().isEmpty())
-            throw new IllegalArgumentException("Employee name cannot be empty");
-
-        if (employee.getDepartment() == null || employee.getDepartment().trim().isEmpty())
-            throw new IllegalArgumentException("Department cannot be empty");
 
         employeeMap.put(employee.getId(), employee);
 
@@ -48,6 +40,9 @@ public class EmployeeService {
 
     // read - R - lấy 1 employee theo ID
     public Employee getEmployee(String id) {
+        if (isBlank(id)) {
+            return null;
+        }
         return employeeMap.get(id);
     }
 
@@ -58,6 +53,7 @@ public class EmployeeService {
 
     // update - U
     public void updateEmployee(Employee updateEmp) {
+        validateEmployeeForSave(updateEmp);
 
         if (!employeeMap.containsKey(updateEmp.getId()))
             throw new IllegalArgumentException("ID not found! Please do again!");
@@ -69,6 +65,7 @@ public class EmployeeService {
 
     // delete - D
     public void deleteEmployee(String id) {
+        validateEmployeeId(id);
 
         Employee emp = employeeMap.get(id);
 
@@ -78,5 +75,28 @@ public class EmployeeService {
         emp.setStatus(Status.INACTIVE);
 
         System.out.println("Delete successfully!");
+    }
+
+    private void validateEmployeeForSave(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null!");
+        }
+        validateEmployeeId(employee.getId());
+        if (isBlank(employee.getName())) {
+            throw new IllegalArgumentException("Employee name cannot be empty");
+        }
+        if (isBlank(employee.getDepartment())) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
+    }
+
+    private void validateEmployeeId(String id) {
+        if (isBlank(id)) {
+            throw new IllegalArgumentException("Employee ID cannot be empty");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

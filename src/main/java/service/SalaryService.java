@@ -29,6 +29,8 @@ public class SalaryService {
     // 1. Tính lương nhân viên (dựa trên: Lương cơ bản, Ngày công, Giờ làm thêm, Số
     // ngày nghỉ)
     public double calculateEmployeeSalary(Employee employee, List<Attendance> attendances, int month, int year) {
+        validateEmployeeAttendanceInputs(employee, attendances, month, year);
+
         // BR10: Salary can only be calculated for active employees.
         if (employee.getStatus() != Employee.Status.ACTIVE) {
             return 0.0;
@@ -40,6 +42,8 @@ public class SalaryService {
 
     // 2. Xem bảng lương tất cả nhân viên
     public void displayAllSalaries(List<Employee> employees, List<Attendance> attendances, int month, int year) {
+        validateEmployeesAttendanceInputs(employees, attendances, month, year);
+
         System.out.println(
                 "====================================================================================================");
         System.out.printf(" BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year);
@@ -67,6 +71,8 @@ public class SalaryService {
 
     // Task B6 — Calculate Salary (Detail for a single employee)
     public void displaySalaryDetail(Employee employee, List<Attendance> attendances, int month, int year) {
+        validateEmployeeAttendanceInputs(employee, attendances, month, year);
+
         System.out.println("----------- CALCULATE SALARY -----------");
         // BR10: Salary can only be calculated for active employees.
         // Valid employee status check
@@ -98,6 +104,9 @@ public class SalaryService {
     // 3. Xuất bảng lương ra file
     public void exportSalariesToFile(List<Employee> employees, List<Attendance> attendances, int month, int year,
             String filePath) {
+        validateEmployeesAttendanceInputs(employees, attendances, month, year);
+        validateFilePath(filePath);
+
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(String.format("BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year));
             writer.write("ID,Name,Role,Working Days,Absence Days,Leave Days,Total Salary\n");
@@ -142,5 +151,41 @@ public class SalaryService {
         }
 
         return summary;
+    }
+
+    private void validateEmployeeAttendanceInputs(Employee employee, List<Attendance> attendances, int month, int year) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
+        if (attendances == null) {
+            throw new IllegalArgumentException("Attendance list cannot be null");
+        }
+        validateMonthYear(month, year);
+    }
+
+    private void validateEmployeesAttendanceInputs(List<Employee> employees, List<Attendance> attendances, int month,
+            int year) {
+        if (employees == null) {
+            throw new IllegalArgumentException("Employee list cannot be null");
+        }
+        if (attendances == null) {
+            throw new IllegalArgumentException("Attendance list cannot be null");
+        }
+        validateMonthYear(month, year);
+    }
+
+    private void validateMonthYear(int month, int year) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+        if (year <= 0) {
+            throw new IllegalArgumentException("Year must be greater than 0");
+        }
+    }
+
+    private void validateFilePath(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be empty");
+        }
     }
 }
