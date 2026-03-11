@@ -15,8 +15,7 @@ public class ReportService {
 
     // Task B7 — Employees with Low Attendance (BR12)
     // BR12: An employee is considered to have low attendance if the number of
-    // Absent days in a selected month exceeds a predefined threshold (e.g. more
-    // than 3 days).
+    // Absent days in a selected month exceeds a predefined threshold (e.g. more than 3 days).
     // threshold days: Ngưỡng số ngày vắng mặt để xác định nhân viên có điểm danh thấp (ví dụ: 3 ngày)
     public String generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
             int threshold) {
