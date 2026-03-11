@@ -6,8 +6,7 @@ import java.util.*;
 import java.time.LocalDate;
 
 public class HRManager {
-    // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và
-    // báo cáo
+    // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và báo cáo
     private final EmployeeService employeeService;
     private final AttendanceService attendanceService;
     private final SalaryService salaryService;
