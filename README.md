@@ -1,103 +1,207 @@
-# Spring2026-PRO192
+# HR Management System
 
-Human Resource Management System
+**Version:** 1.5.3 &nbsp;|&nbsp; **Project Manager:** Nguyễn Tiến Dũng &nbsp;|&nbsp; **Course:** PRO192 — Spring 2026 — FPT University
 
-## 📋 Mô Tả Dự Án
+---
 
-Hệ thống quản lý nhân sự (HRMS) được xây dựng bằng Java, cung cấp các chức năng quản lý nhân viên, chấm công, tính lương và báo cáo cho các công ty.
+## Mô tả
 
-## 🎯 Chức Năng Chính
+Console application quản lý nhân sự (HRMS) viết bằng Java. Hỗ trợ quản lý nhân viên, chấm công, tính lương và xuất báo cáo. Dữ liệu được tự động đọc/ghi từ file text qua các phiên sử dụng.
 
-### 1. Quản Lý Nhân Viên
+---
 
-- Thêm nhân viên mới (Full-time hoặc Part-time)
-- Xem danh sách nhân viên
-- Cập nhật thông tin nhân viên
-- Xóa nhân viên khỏi hệ thống
+## Chức năng
 
-### 2. Quản Lý Chấm Công
+| Task | Mô tả                                      |
+| ---- | ------------------------------------------ |
+| B1   | Thêm nhân viên mới (Full-time / Part-time) |
+| B2   | Cập nhật thông tin nhân viên               |
+| B3   | Xem danh sách nhân viên                    |
+| B4   | Ghi nhận chấm công theo ngày               |
+| B5   | Xem lịch sử chấm công theo nhân viên       |
+| B6   | Tính lương nhân viên theo tháng/năm        |
+| B7   | Báo cáo nhân viên vắng vượt ngưỡng         |
+| B8   | Báo cáo nhân viên được trả lương cao nhất  |
 
-- Ghi nhận chấm công hàng ngày
-- Xem lịch sử chấm công
-- Cập nhật bản ghi chấm công
-- Xóa bản ghi chấm công
+---
 
-### 3. Quản Lý Lương
-
-- Tính lương nhân viên dựa trên:
-  - Lương cơ bản
-  - Ngày công
-  - Giờ làm thêm (Overtime)
-  - Số ngày nghỉ
-- Xem bảng lương tất cả nhân viên
-- Xuất bảng lương ra file
-
-### 4. Báo Cáo
-
-- Báo cáo tham gia làm việc
-- Báo cáo lương
-- Báo cáo tổng hợp
-
-## 🏗️ Cấu Trúc Dự Án
+## Cấu trúc project
 
 ```
 Project_LAB/
-├── src/
-│   ├── main/java/Model/
-│   │   ├── Employee.java (lớp trừu tượng)
-│   │   ├── FullTimeEmployee.java
-│   │   ├── PartTimeEmployee.java
-│   │   ├── Attendance.java
-│   │   ├── HRManager.java
-│   │   ├── displayMenu.java
-│   │   └── Validation.java
-│   └── test/java/
+├── data/
+│   ├── employees.txt        # Dữ liệu nhân viên
+│   └── attendance.txt       # Dữ liệu chấm công
+├── src/main/java/
+│   ├── entity/              # Employee, FullTimeEmployee, PartTimeEmployee, Attendance
+│   ├── service/             # EmployeeService, AttendanceService, SalaryService, ReportService
+│   ├── manager/             # HRManager (điều phối các service)
+│   ├── ui/                  # Main (toàn bộ console I/O)
+│   └── utils/               # Validation
 ├── pom.xml
 └── README.md
 ```
 
-## 🔧 Công Nghệ Sử Dụng
+---
 
-- **Ngôn Ngữ**: Java
-- **Build Tool**: Maven
-- **JDK**: 8 trở lên
+## Công nghệ
 
-## 📦 Cách Cài Đặt
+| Thành phần     | Chi tiết                         |
+| -------------- | -------------------------------- |
+| Ngôn ngữ       | Java 8+                          |
+| Build tool     | Maven                            |
+| Lưu trữ        | File text, pipe-delimited (`\|`) |
+| Định dạng ngày | dd/MM/yyyy                       |
 
-1. Clone dự án:
+---
 
-```bash
-git clone <repository-url>
-cd Project_LAB
-```
-
-2. Build dự án với Maven:
+## Cài đặt & chạy
 
 ```bash
-mvn clean install
+# Build
+mvn clean compile
+
+# Chạy
+mvn exec:java -Dexec.mainClass="ui.Main"
 ```
 
-3. Chạy ứng dụng:
+Hoặc chạy trực tiếp `Main.java` từ IDE (IntelliJ / NetBeans / VS Code).
+
+> Dữ liệu được tự động load từ `data/` khi khởi động và tự động lưu sau mỗi thao tác.
+
+---
+
+## Format file dữ liệu
+
+**employees.txt** — 8 trường mỗi dòng:
+
+```
+EM000001|Nguyen Van An|IT|Software Engineer|01/03/2023|12000000|ACTIVE|FULL_TIME
+```
+
+**attendance.txt** — 4 trường mỗi dòng:
+
+```
+EM000001|01/03/2026|PRESENT|1.5
+```
+
+---
+
+## Nhóm phát triển
+
+- **Nguyễn Tiến Dũng** _(Project Manager)_
+- Trần Tuấn Đạt
+- Ngô Công Hoàng
+- Huỳnh Ngô Trà Giang
+
+---
+
+_Cập nhật: 11/03/2026_
+
+---
+
+## Mô tả
+
+Hệ thống quản lý nhân sự (HRMS) console application xây dựng bằng Java, hỗ trợ quản lý nhân viên, chấm công, tính lương và xuất báo cáo. Dữ liệu được lưu trữ và tải từ file text giữa các phiên sử dụng.
+
+---
+
+## Chức năng
+
+### 1. Quản lý nhân viên
+
+- Xem danh sách nhân viên (B3)
+- Thêm nhân viên mới — Full-time hoặc Part-time (B1)
+- Cập nhật thông tin nhân viên (B2)
+
+### 2. Quản lý chấm công
+
+- Điểm danh hôm nay theo ID
+- Ghi nhận chấm công theo ngày tùy chọn (B4)
+- Xem lịch sử chấm công theo nhân viên (B5)
+
+### 3. Quản lý lương
+
+- Tính lương nhân viên theo tháng/năm (B6)
+  - Lương cơ bản + ngày công + giờ overtime − ngày nghỉ
+
+### 4. Báo cáo
+
+- Nhân viên có số ngày vắng vượt ngưỡng (B7)
+- Nhân viên được trả lương cao nhất trong tháng (B8)
+
+---
+
+## Cấu trúc project
+
+```
+Project_LAB/
+├── data/
+│   ├── employees.txt        # Dữ liệu nhân viên (pipe-delimited)
+│   └── attendance.txt       # Dữ liệu chấm công (pipe-delimited)
+├── src/main/java/
+│   ├── entity/
+│   │   ├── Employee.java
+│   │   ├── FullTimeEmployee.java
+│   │   ├── PartTimeEmployee.java
+│   │   └── Attendance.java
+│   ├── service/
+│   │   ├── EmployeeService.java
+│   │   ├── AttendanceService.java
+│   │   ├── SalaryService.java
+│   │   └── ReportService.java
+│   ├── manager/
+│   │   └── HRManager.java
+│   ├── ui/
+│   │   └── Main.java
+│   └── utils/
+│       └── Validation.java
+├── pom.xml
+└── README.md
+```
+
+---
+
+## Công nghệ
+
+| Thành phần     | Chi tiết                   |
+| -------------- | -------------------------- |
+| Ngôn ngữ       | Java 8+                    |
+| Build tool     | Maven                      |
+| Lưu trữ        | File text (pipe-delimited) |
+| Định dạng ngày | dd/MM/yyyy                 |
+
+---
+
+## Cài đặt & chạy
 
 ```bash
-mvn exec:java -Dexec.mainClass="Main"
+# Build
+mvn clean compile
+
+# Chạy
+mvn exec:java -Dexec.mainClass="ui.Main"
 ```
 
-## 📝 Hướng Dẫn Sử Dụng
+Hoặc chạy trực tiếp `Main.java` từ IDE (IntelliJ / NetBeans / VS Code).
 
-### Thêm Nhân Viên
+Dữ liệu được tự động load từ `data/` khi khởi động và tự động lưu sau mỗi thay đổi.
 
-1. Chọn "Quản lý nhân viên" từ menu chính
-2. Chọn "Thêm nhân viên mới"
-3. Nhập thông tin nhân viên (ID, Tên, Phòng ban, v.v.)
-4. Chọn loại nhân viên (Full-time/Part-time)
+---
 
-### Ghi Chấm Công
+## Format file dữ liệu
 
-1. Chọn "Quản lý chấm công"
-2. Chọn "Ghi chấm công"
-3. Nhập mã nhân viên, ngày, trạng thái chấm công
-4. Nhập giờ làm thêm (nếu có)
+**employees.txt**
+
+```
+EM000001|Nguyen Van An|IT|Software Engineer|01/03/2023|12000000|ACTIVE|FULL_TIME
+```
+
+**attendance.txt**
+
+```
+EM000001|01/03/2026|PRESENT|1.5
+```
 
 ### Tính Lương
 
@@ -163,6 +267,6 @@ Nhóm phát triển:
 
 ---
 
-**Phiên Bản**: 1.8
-**Ngày Cập Nhật**: 2026-01-16  
-**Trạng Thái**: Đang Phát Triển
+**Phiên Bản**: 1.5.3
+**Ngày Cập Nhật**: 11/03/2026
+**Trạng Thái**: Đã Hoàn Thành
