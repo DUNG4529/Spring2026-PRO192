@@ -1,272 +1,352 @@
-# HR Management System
-
-**Version:** 1.5.3 &nbsp;|&nbsp; **Project Manager:** Nguyễn Tiến Dũng &nbsp;|&nbsp; **Course:** PRO192 — Spring 2026 — FPT University
-
----
-
-## Mô tả
-
-Console application quản lý nhân sự (HRMS) viết bằng Java. Hỗ trợ quản lý nhân viên, chấm công, tính lương và xuất báo cáo. Dữ liệu được tự động đọc/ghi từ file text qua các phiên sử dụng.
+[![Java](https://img.shields.io/badge/Java-8+-orange?style=for-the-badge&logo=java)](https://java.com)
+[![Maven](https://img.shields.io/badge/Maven-3.6+-blue?style=for-the-badge&logo=apache-maven)](https://maven.apache.org)
+[![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)]()
+[![License](https://img.shields.io/badge/License-FPT%20University-green?style=for-the-badge)]()
 
 ---
 
-## Chức năng
+# 📊 HR Management System
 
-| Task | Mô tả                                      |
-| ---- | ------------------------------------------ |
-| B1   | Thêm nhân viên mới (Full-time / Part-time) |
-| B2   | Cập nhật thông tin nhân viên               |
-| B3   | Xem danh sách nhân viên                    |
-| B4   | Ghi nhận chấm công theo ngày               |
-| B5   | Xem lịch sử chấm công theo nhân viên       |
-| B6   | Tính lương nhân viên theo tháng/năm        |
-| B7   | Báo cáo nhân viên vắng vượt ngưỡng         |
-| B8   | Báo cáo nhân viên được trả lương cao nhất  |
+<p align="center">
+
+**Human Resource Management System (HRMS)**
+
+Console-based application for managing employees, attendance, salary and reports.
+
+Built with **Java 8+** and **Maven**
+
+**Version:** 1.5.4 | **PM:** Nguyễn Tiến Dũng
+
+</p>
 
 ---
 
-## Cấu trúc project
+# 📑 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Data Storage](#data-storage)
+- [Salary Calculation](#salary-calculation)
+- [Troubleshooting](#troubleshooting)
+- [Development Team](#development-team)
+- [License](#license)
+
+---
+
+# 📝 Overview
+
+The **HR Management System (HRMS)** is a **console-based Java application** designed to manage core HR operations.
+
+The system supports:
+
+- ✅ Employee management (Add, Update, View)
+- ✅ Attendance tracking (Record, View history)
+- ✅ Salary calculation (Based on working days, overtime, absences)
+- ✅ HR reports (Low attendance, Highest paid)
+
+All data is stored using **text files** (pipe-delimited format) and automatically **loaded and saved between sessions**.
+
+---
+
+# ✨ Features
+
+|  Task  | Feature               | Description                                                         |
+| :----: | --------------------- | ------------------------------------------------------------------- |
+| **B1** | Add Employee          | Add new employee (Full-time or Part-time) with complete information |
+| **B2** | Update Employee       | Modify employee department and job title                            |
+| **B3** | View Employees        | Display all employees in formatted table                            |
+| **B4** | Record Attendance     | Log attendance for a specific date with overtime hours              |
+| **B5** | View History          | View attendance records for an employee (sorted by date)            |
+| **B6** | Salary Calculation    | Calculate salary for a specific month, showing breakdown            |
+| **B7** | Low Attendance Report | Find employees exceeding absence threshold                          |
+| **B8** | Highest Paid Report   | Display highest-paid employees for a period                         |
+
+---
+
+# 🏗️ System Architecture
+
+The system follows a **clean layered architecture** for separation of concerns:
+
+```
+┌─────────────────────────────────────┐
+│       UI Layer (Main.java)          │
+│   • Console interaction             │
+│   • Menu display & input            │
+└──────────────┬──────────────────────┘
+               │
+┌──────────────▼──────────────────────┐
+│   Manager Layer (HRManager.java)    │
+│   • Coordinate services             │
+│   • File I/O orchestration          │
+└──────────────┬──────────────────────┘
+               │
+┌──────────────▼──────────────────────┐
+│   Service Layer                     │
+│   • EmployeeService                 │
+│   • AttendanceService               │
+│   • SalaryService                   │
+│   • ReportService                   │
+└──────────────┬──────────────────────┘
+               │
+┌──────────────▼──────────────────────┐
+│   Entity Layer                      │
+│   • Employee (+ subtypes)           │
+│   • Attendance                      │
+└──────────────┬──────────────────────┘
+               │
+┌──────────────▼──────────────────────┐
+│   Data Files (Text format)          │
+│   • employees.txt                   │
+│   • attendance.txt                  │
+└─────────────────────────────────────┘
+```
+
+### Design Principles
+
+- **Separation of Concerns** — Services contain logic, UI handles I/O only
+- **Data Validation** — Input checked at service layer
+- **Persistence** — Automatic file save after mutations
+- **Date Standardization** — All dates in `dd/MM/yyyy` format
+
+---
+
+# 📁 Project Structure
 
 ```
 Project_LAB/
+│
 ├── data/
-│   ├── employees.txt        # Dữ liệu nhân viên
-│   └── attendance.txt       # Dữ liệu chấm công
+│   ├── employees.txt                 👥 Employee records
+│   └── attendance.txt                📊 Attendance records
+│
 ├── src/main/java/
-│   ├── entity/              # Employee, FullTimeEmployee, PartTimeEmployee, Attendance
-│   ├── service/             # EmployeeService, AttendanceService, SalaryService, ReportService
-│   ├── manager/             # HRManager (điều phối các service)
-│   ├── ui/                  # Main (toàn bộ console I/O)
-│   └── utils/               # Validation
-├── pom.xml
-└── README.md
-```
-
----
-
-## Công nghệ
-
-| Thành phần     | Chi tiết                         |
-| -------------- | -------------------------------- |
-| Ngôn ngữ       | Java 8+                          |
-| Build tool     | Maven                            |
-| Lưu trữ        | File text, pipe-delimited (`\|`) |
-| Định dạng ngày | dd/MM/yyyy                       |
-
----
-
-## Cài đặt & chạy
-
-```bash
-# Build
-mvn clean compile
-
-# Chạy
-mvn exec:java -Dexec.mainClass="ui.Main"
-```
-
-Hoặc chạy trực tiếp `Main.java` từ IDE (IntelliJ / NetBeans / VS Code).
-
-> Dữ liệu được tự động load từ `data/` khi khởi động và tự động lưu sau mỗi thao tác.
-
----
-
-## Format file dữ liệu
-
-**employees.txt** — 8 trường mỗi dòng:
-
-```
-EM000001|Nguyen Van An|IT|Software Engineer|01/03/2023|12000000|ACTIVE|FULL_TIME
-```
-
-**attendance.txt** — 4 trường mỗi dòng:
-
-```
-EM000001|01/03/2026|PRESENT|1.5
-```
-
----
-
-## Nhóm phát triển
-
-- **Nguyễn Tiến Dũng** _(Project Manager)_
-- Trần Tuấn Đạt
-- Ngô Công Hoàng
-- Huỳnh Ngô Trà Giang
-
----
-
-_Cập nhật: 11/03/2026_
-
----
-
-## Mô tả
-
-Hệ thống quản lý nhân sự (HRMS) console application xây dựng bằng Java, hỗ trợ quản lý nhân viên, chấm công, tính lương và xuất báo cáo. Dữ liệu được lưu trữ và tải từ file text giữa các phiên sử dụng.
-
----
-
-## Chức năng
-
-### 1. Quản lý nhân viên
-
-- Xem danh sách nhân viên (B3)
-- Thêm nhân viên mới — Full-time hoặc Part-time (B1)
-- Cập nhật thông tin nhân viên (B2)
-
-### 2. Quản lý chấm công
-
-- Điểm danh hôm nay theo ID
-- Ghi nhận chấm công theo ngày tùy chọn (B4)
-- Xem lịch sử chấm công theo nhân viên (B5)
-
-### 3. Quản lý lương
-
-- Tính lương nhân viên theo tháng/năm (B6)
-  - Lương cơ bản + ngày công + giờ overtime − ngày nghỉ
-
-### 4. Báo cáo
-
-- Nhân viên có số ngày vắng vượt ngưỡng (B7)
-- Nhân viên được trả lương cao nhất trong tháng (B8)
-
----
-
-## Cấu trúc project
-
-```
-Project_LAB/
-├── data/
-│   ├── employees.txt        # Dữ liệu nhân viên (pipe-delimited)
-│   └── attendance.txt       # Dữ liệu chấm công (pipe-delimited)
-├── src/main/java/
+│   │
 │   ├── entity/
-│   │   ├── Employee.java
-│   │   ├── FullTimeEmployee.java
-│   │   ├── PartTimeEmployee.java
-│   │   └── Attendance.java
+│   │   ├── Employee.java             (Abstract base class)
+│   │   ├── FullTimeEmployee.java     (Concrete implementation)
+│   │   ├── PartTimeEmployee.java     (Concrete implementation)
+│   │   └── Attendance.java           (Attendance record)
+│   │
 │   ├── service/
-│   │   ├── EmployeeService.java
-│   │   ├── AttendanceService.java
-│   │   ├── SalaryService.java
-│   │   └── ReportService.java
+│   │   ├── EmployeeService.java      (CRUD operations)
+│   │   ├── AttendanceService.java    (Attendance logic)
+│   │   ├── SalaryService.java        (Salary calculation)
+│   │   └── ReportService.java        (Report generation)
+│   │
 │   ├── manager/
-│   │   └── HRManager.java
+│   │   └── HRManager.java            (Coordinator + File I/O)
+│   │
 │   ├── ui/
-│   │   └── Main.java
+│   │   └── Main.java                 (Console UI & menus)
+│   │
 │   └── utils/
-│       └── Validation.java
-├── pom.xml
-└── README.md
+│       └── Validation.java           (Input validation)
+│
+├── pom.xml                           (Maven configuration)
+└── README.md                         (This file)
 ```
 
 ---
 
-## Công nghệ
+# 🚀 Getting Started
 
-| Thành phần     | Chi tiết                   |
-| -------------- | -------------------------- |
-| Ngôn ngữ       | Java 8+                    |
-| Build tool     | Maven                      |
-| Lưu trữ        | File text (pipe-delimited) |
-| Định dạng ngày | dd/MM/yyyy                 |
+## Prerequisites
 
----
+- **Java 8** or higher
+- **Maven 3.6** or higher
+- **Git** (for cloning)
 
-## Cài đặt & chạy
+## 1️⃣ Clone Repository
 
 ```bash
-# Build
-mvn clean compile
+git clone <repository-url>
+cd Project_LAB
+```
 
-# Chạy
+## 2️⃣ Build Project
+
+```bash
+mvn clean compile
+```
+
+## 3️⃣ Run Application
+
+```bash
 mvn exec:java -Dexec.mainClass="ui.Main"
 ```
 
-Hoặc chạy trực tiếp `Main.java` từ IDE (IntelliJ / NetBeans / VS Code).
+**Alternatively**, run `Main.java` directly from your IDE:
 
-Dữ liệu được tự động load từ `data/` khi khởi động và tự động lưu sau mỗi thay đổi.
+- IntelliJ IDEA
+- NetBeans
+- VS Code (with Java extension)
+
+### Expected Output
+
+```
+================= MAIN MENU =================
+        HUMAN RESOURCE MANAGEMENT
+=============================================
+1. Manage Employees
+2. Attendance Management
+3. Salary Management
+4. Reports
+5. Exit
+---------------------------------------------
+Choose: _
+```
 
 ---
 
-## Format file dữ liệu
+# 💾 Data Storage
 
-**employees.txt**
+The application persists data using **text files** in **pipe-delimited format** (`|` separator).
+
+Files are located in the `data/` directory and automatically loaded on startup.
+
+## employees.txt
+
+**Format:** 8 fields per line
+
+```
+ID | Name | Department | JobTitle | HireDate | BaseSalary | Status | Type
+```
+
+**Example:**
 
 ```
 EM000001|Nguyen Van An|IT|Software Engineer|01/03/2023|12000000|ACTIVE|FULL_TIME
+EM000002|Tran Thi Hoa|HR|HR Officer|15/07/2022|10000000|ACTIVE|FULL_TIME
 ```
 
-**attendance.txt**
+**Fields:**
 
-```
-EM000001|01/03/2026|PRESENT|1.5
-```
-
-### Tính Lương
-
-1. Chọn "Quản lý lương"
-2. Chọn "Tính lương nhân viên"
-3. Nhập mã nhân viên
-4. Nhập số ngày nghỉ (nếu có)
-
-## 👥 Thông Tin Nhân Viên
-
-Mỗi nhân viên có các thuộc tính:
-
-- **ID**: Mã nhân viên (duy nhất)
-- **Tên**: Tên đầy đủ
-- **Phòng Ban**: Nơi làm việc
-- **Lương Cơ Bản**: Mức lương cơ bản
-- **Chức Vụ**: Vị trí công việc
-- **Ngày Vào Làm**: Ngày bắt đầu
-- **Trạng Thái**: Active/Inactive
-
-## 💰 Cách Tính Lương
-
-### Nhân Viên Full-time
-
-```
-Lương = Lương Cơ Bản + Phụ Cấp + (Giờ Làm Thêm × 1.5 × Giờ Công)
-```
-
-### Nhân Viên Part-time
-
-```
-Lương = Giờ Công × Tỉ Giá Giờ + (Giờ Làm Thêm × 2 × Tỉ Giá Giờ)
-```
-
-## 🐛 Troubleshooting
-
-### Lỗi khi chạy ứng dụng
-
-- Kiểm tra phiên bản Java: `java -version`
-- Kiểm tra Maven: `mvn -version`
-- Xóa folder `target` và build lại: `mvn clean install`
-
-## 📞 Hỗ Trợ
-
-Nếu gặp vấn đề, vui lòng:
-
-1. Kiểm tra file log
-2. Xem lại input dữ liệu
-3. Liên hệ với team phát triển
-
-## 📄 Giấy Phép
-
-Dự án này là phần của khóa học PRO192 tại FPT University.
-
-## 👨‍💼 Tác Giả
-
-Nhóm phát triển:
-
-- **Trần Tuấn Đạt**
-- **Nguyễn Tiến Dũng**
-- **Ngô Công Hoàng**
-- **Huỳnh Ngô Trà Giang**
+- `ID` — Employee ID (unique)
+- `Name` — Full name
+- `Department` — Department name
+- `JobTitle` — Job position
+- `HireDate` — Hire date (dd/MM/yyyy)
+- `BaseSalary` — Monthly base salary (VND)
+- `Status` — ACTIVE or INACTIVE
+- `Type` — FULL_TIME or PART_TIME
 
 ---
 
-**Phiên Bản**: 1.5.3
-**Ngày Cập Nhật**: 11/03/2026
-**Trạng Thái**: Đã Hoàn Thành
+## attendance.txt
+
+**Format:** 4 fields per line
+
+```
+EmployeeID | Date | Status | OvertimeHours
+```
+
+**Example:**
+
+```
+EM000001|01/03/2026|PRESENT|1.5
+EM000001|02/03/2026|ABSENT|0
+EM000002|01/03/2026|LEAVE|0
+```
+
+**Fields:**
+
+- `EmployeeID` — Reference to employee ID
+- `Date` — Attendance date (dd/MM/yyyy)
+- `Status` — PRESENT, ABSENT, or LEAVE
+- `OvertimeHours` — Hours of overtime (0 if not working)
+
+---
+
+# 💰 Salary Calculation
+
+### Full-time Employee
+
+```
+Salary = BaseSalary / WorkingDaysPerMonth × ActualWorkingDays
+       + (OvertimeHours × 1.5 × HourlyRate)
+       - (AbsencePenalty × AbsenceDays)
+```
+
+### Part-time Employee
+
+```
+Salary = ActualWorkingDays × DailyRate
+       + (OvertimeHours × 2 × HourlyRate)
+```
+
+**Business Rules (BR10):**
+
+- Salary can only be calculated for **ACTIVE** employees
+- Overtime calculated only on **PRESENT** days
+- Absence days reduce salary accordingly
+
+---
+
+# 🐛 Troubleshooting
+
+### Error: "Employee not found"
+
+✅ Check if the employee ID exists  
+✅ Verify the ID format (e.g., EM000001)
+
+### Error: "Cannot create data directory"
+
+✅ Ensure write permissions in project directory  
+✅ Check disk space availability
+
+### Error: "Date format invalid"
+
+✅ Always use format: `dd/MM/yyyy` (e.g., 15/03/2026)
+
+### Application doesn't start
+
+**Check Java version:**
+
+```bash
+java -version
+```
+
+**Check Maven installation:**
+
+```bash
+mvn -version
+```
+
+**Rebuild project:**
+
+```bash
+mvn clean install
+```
+
+---
+
+# 👥 Development Team
+
+| Role             | Member               |
+| ---------------- | -------------------- |
+| **👨‍💼 PM**        | **Nguyễn Tiến Dũng** |
+| **👨‍💻 Developer** | Trần Tuấn Đạt        |
+| **👨‍💻 Developer** | Ngô Công Hoàng       |
+| **👨‍💻 Developer** | Huỳnh Ngô Trà Giang  |
+
+---
+
+# 📄 License
+
+This project was developed for the course **PRO192 — Software Engineering** at **FPT University**.
+
+**Educational use only.**
+
+---
+
+<p align="center">
+
+**PRO192 — Spring 2026**  
+FPT University
+
+Updated: 11/03/2026
+
+</p>
