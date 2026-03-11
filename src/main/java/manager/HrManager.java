@@ -152,6 +152,9 @@ public class HRManager {
         return result;
     }
 
+    // ========================
+    // Helper Methods for Validation
+    // ========================
     private void validateEmployeeId(String idEmployee) {
         if (idEmployee == null || idEmployee.trim().isEmpty()) {
             throw new IllegalArgumentException("Employee ID cannot be empty");
