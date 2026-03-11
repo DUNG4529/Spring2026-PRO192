@@ -13,9 +13,9 @@ public class Validation {
         return Pattern.matches(regexID, id);
     }
 
-    // 2. Kiểm tra Tên (Chỉ chứa chữ cái và khoảng trắng, 3-50 ký tự)
+    // 2. Kiểm tra Tên (Chứa chữ cái Unicode, khoảng trắng, 3-50 ký tự - hỗ trợ tên Việt)
     public static boolean validName(String name) {
-        String regexName = "^[a-zA-Z ]{3,50}$";
+        String regexName = "^[\\p{L} ]{3,50}$";  // \p{L} matches any Unicode letter
         return Pattern.matches(regexName, name);
     }
 

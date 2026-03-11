@@ -141,13 +141,12 @@ public class SalaryService {
 
             if (attendance.getStatus() == Attendance.AttendanceStatus.PRESENT) {
                 summary.workingDays++;
+                summary.overtimeHours += attendance.getOvertime();  // Overtime only for PRESENT days
             } else if (attendance.getStatus() == Attendance.AttendanceStatus.ABSENT) {
                 summary.absenceDays++;
             } else if (attendance.getStatus() == Attendance.AttendanceStatus.LEAVE) {
                 summary.leaveDays++;
             }
-
-            summary.overtimeHours += attendance.getOvertime();
         }
 
         return summary;

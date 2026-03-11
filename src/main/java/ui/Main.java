@@ -4,6 +4,7 @@ import manager.HRManager;
 import entity.*;
 import java.util.*;
 import java.time.*;
+import utils.Validation;
 
 public class Main {
     private static final Scanner KEYBOARD_SCANNER = new Scanner(System.in);
@@ -64,8 +65,7 @@ public class Main {
         List<Employee> employees = hrManager.getAllEmployees();
         if (employees.isEmpty()) {
             System.out.println("No employees.");
-            System.out.print("Press ENTER to return...");
-            KEYBOARD_SCANNER.nextLine();
+            waitForEnterToReturn();
             return;
         }
 
@@ -83,8 +83,7 @@ public class Main {
         }
         System.out.println();
         System.out.println("--------------------------------------------------------------");
-        System.out.print("Press ENTER to return...");
-        KEYBOARD_SCANNER.nextLine();
+        waitForEnterToReturn();
     }
 
     private static void manageEmployeesMenu(HRManager hrManager) {
@@ -156,24 +155,13 @@ public class Main {
         System.out.println("Status           : 1.Present  2.Absent  3.Leave");
         System.out.print("Choose           : ");
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
-
-        Attendance.AttendanceStatus status;
-        switch (statusChoice) {
-            case "1":
-                status = Attendance.AttendanceStatus.PRESENT;
-                break;
-            case "2":
-                status = Attendance.AttendanceStatus.ABSENT;
-                break;
-            case "3":
-                status = Attendance.AttendanceStatus.LEAVE;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid status choice");
-        }
+        Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
 
         System.out.print("Overtime Hours   : ");
         double overtimeHours = Double.parseDouble(KEYBOARD_SCANNER.nextLine().trim());
+        if (overtimeHours < 0) {
+            throw new IllegalArgumentException("Overtime hours cannot be negative");
+        }
 
         System.out.println();
         System.out.println("----------- RECORD ATTENDANCE -----------");
@@ -182,19 +170,8 @@ public class Main {
         System.out.println("Date             : " + date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         System.out.println("Status           : " + status.getDisplayName());
         System.out.printf("Overtime Hours   : %.2f%n", overtimeHours);
-        System.out.println();
-        System.out.println("[1] Save");
-        System.out.println("[2] Cancel");
-        System.out.println("----------------------------------------");
-        System.out.print("Select option: ");
-        String option = KEYBOARD_SCANNER.nextLine().trim();
-
-        if ("2".equals(option)) {
-            System.out.println("Record cancelled.");
+        if (!confirmPrimaryAction("Save", "Record cancelled.")) {
             return;
-        }
-        if (!"1".equals(option)) {
-            throw new IllegalArgumentException("Invalid option");
         }
 
         Attendance attendance = new Attendance(employeeId, date, status, overtimeHours);
@@ -219,8 +196,7 @@ public class Main {
 
         if (records.isEmpty()) {
             System.out.println("No attendance records found for this employee.");
-            System.out.print("Press ENTER to return...");
-            KEYBOARD_SCANNER.nextLine();
+            waitForEnterToReturn();
             return;
         }
 
@@ -237,8 +213,7 @@ public class Main {
         }
         System.out.println();
         System.out.println("----------------------------------");
-        System.out.print("Press ENTER to return...");
-        KEYBOARD_SCANNER.nextLine();
+        waitForEnterToReturn();
     }
 
     private static void salaryManagementMenu(HRManager hrManager) {
@@ -281,10 +256,9 @@ public class Main {
     }
 
     private static void highestPaidReport(HRManager hrManager) {
-        System.out.print("Month / Year (e.g. 3 / 2026): ");
-        String[] parts = KEYBOARD_SCANNER.nextLine().trim().split("/");
-        int month = Integer.parseInt(parts[0].trim());
-        int year = Integer.parseInt(parts[1].trim());
+        int[] monthYear = readMonthYearInput("Month / Year (e.g. 3 / 2026): ");
+        int month = monthYear[0];
+        int year = monthYear[1];
 
         List<Employee> employees = hrManager.getAllEmployees();
 
@@ -318,19 +292,21 @@ public class Main {
 
         System.out.println();
         System.out.println("-----------------------------------");
-        System.out.print("Press ENTER to return...");
-        KEYBOARD_SCANNER.nextLine();
+        waitForEnterToReturn();
     }
 
     private static void lowAttendanceReport(HRManager hrManager) {
-        System.out.print("Month / Year (e.g. 3 / 2026): ");
-        String[] parts = KEYBOARD_SCANNER.nextLine().trim().split("/");
-        int month = Integer.parseInt(parts[0].trim());
-        int year = Integer.parseInt(parts[1].trim());
+        int[] monthYear = readMonthYearInput("Month / Year (e.g. 3 / 2026): ");
+        int month = monthYear[0];
+        int year = monthYear[1];
 
         System.out.print("Absent days threshold (default 3): ");
         String thresholdInput = KEYBOARD_SCANNER.nextLine().trim();
         int threshold = thresholdInput.isEmpty() ? 3 : Integer.parseInt(thresholdInput);
+        if (threshold < 0) {
+            System.out.println("Error: Threshold cannot be negative.");
+            return;
+        }
 
         List<Employee> employees = hrManager.getAllEmployees();
 
@@ -362,40 +338,43 @@ public class Main {
 
         System.out.println();
         System.out.println("-----------------------------------");
-        System.out.print("Press ENTER to return...");
-        KEYBOARD_SCANNER.nextLine();
+        waitForEnterToReturn();
     }
 
     private static void addEmployee(HRManager hrManager) {
         System.out.println("------------- ADD EMPLOYEE -------------");
         System.out.print("Employee ID      : ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
+        if (!Validation.validID(id)) {
+            throw new IllegalArgumentException("Invalid Employee ID format (expected: 2 uppercase letters + 6 digits)");
+        }
         System.out.print("Full Name        : ");
         String name = KEYBOARD_SCANNER.nextLine().trim();
+        if (!Validation.validName(name)) {
+            throw new IllegalArgumentException("Invalid full name (3-50 letters/spaces)");
+        }
         System.out.print("Department       : ");
         String department = KEYBOARD_SCANNER.nextLine().trim();
+        if (!Validation.validString(department)) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
         System.out.print("Job Title        : ");
         String jobTitle = KEYBOARD_SCANNER.nextLine().trim();
+        if (!Validation.validString(jobTitle)) {
+            throw new IllegalArgumentException("Job title cannot be empty");
+        }
         System.out.print("Employment Type  : ");
         String typeInput = KEYBOARD_SCANNER.nextLine().trim();
         System.out.print("Date of Joining  : ");
         String doj = KEYBOARD_SCANNER.nextLine().trim();
+        if (!Validation.validDate(doj)) {
+            throw new IllegalArgumentException("Invalid date format (expected: dd/MM/yyyy)");
+        }
         System.out.print("Basic Salary     : ");
         double baseSalary = parseSalaryInput(KEYBOARD_SCANNER.nextLine().trim());
 
-        System.out.println();
-        System.out.println("[1] Save");
-        System.out.println("[2] Cancel");
-        System.out.println("----------------------------------------");
-        System.out.print("Select option: ");
-        String option = KEYBOARD_SCANNER.nextLine().trim();
-
-        if ("2".equals(option)) {
-            System.out.println("Add employee cancelled.");
+        if (!confirmPrimaryAction("Save", "Add employee cancelled.")) {
             return;
-        }
-        if (!"1".equals(option)) {
-            throw new IllegalArgumentException("Invalid option");
         }
 
         Employee employee;
@@ -415,8 +394,15 @@ public class Main {
     }
 
     private static double parseSalaryInput(String salaryInput) {
+        if (!Validation.validString(salaryInput)) {
+            throw new IllegalArgumentException("Basic salary cannot be empty");
+        }
         String normalized = salaryInput.replace(",", "").trim();
-        return Double.parseDouble(normalized);
+        double salary = Double.parseDouble(normalized);
+        if (!Validation.validSalary(salary)) {
+            throw new IllegalArgumentException("Basic salary must be >= 0");
+        }
+        return salary;
     }
 
     private static void updateEmployee(HRManager hrManager) {
@@ -478,21 +464,7 @@ public class Main {
         System.out.println("Status: 1.PRESENT  2.ABSENT  3.LEAVE");
         System.out.print("Choose status: ");
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
-
-        Attendance.AttendanceStatus status;
-        switch (statusChoice) {
-            case "1":
-                status = Attendance.AttendanceStatus.PRESENT;
-                break;
-            case "2":
-                status = Attendance.AttendanceStatus.ABSENT;
-                break;
-            case "3":
-                status = Attendance.AttendanceStatus.LEAVE;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid status choice");
-        }
+        Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
 
         hrManager.markEmployeeAttendance(id, status);
         hrManager.saveDataToFiles(DATA_DIR);
@@ -511,24 +483,12 @@ public class Main {
             return;
         }
 
-        System.out.print("Month / Year: ");
-        String[] parts = KEYBOARD_SCANNER.nextLine().trim().split("/");
-        int month = Integer.parseInt(parts[0].trim());
-        int year = Integer.parseInt(parts[1].trim());
+        int[] monthYear = readMonthYearInput("Month / Year: ");
+        int month = monthYear[0];
+        int year = monthYear[1];
 
-        System.out.println();
-        System.out.println("[1] Calculate");
-        System.out.println("[2] Cancel");
-        System.out.println("----------------------------------------");
-        System.out.print("Select option: ");
-        String option = KEYBOARD_SCANNER.nextLine().trim();
-
-        if ("2".equals(option)) {
-            System.out.println("Cancelled.");
+        if (!confirmPrimaryAction("Calculate", "Cancelled.")) {
             return;
-        }
-        if (!"1".equals(option)) {
-            throw new IllegalArgumentException("Invalid option");
         }
 
         List<Attendance> records = hrManager.getAttendanceByEmployeeId(id);
@@ -557,6 +517,51 @@ public class Main {
         System.out.println();
         System.out.println("----------------------------------------");
         System.out.printf("Total Salary       : %,.0f VND%n", totalSalary);
+    }
+
+    private static int[] readMonthYearInput(String prompt) {
+        System.out.print(prompt);
+        String[] parts = KEYBOARD_SCANNER.nextLine().trim().split("/");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid format. Use MM/YYYY");
+        }
+        return new int[] { Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()) };
+    }
+
+    private static Attendance.AttendanceStatus parseAttendanceStatusChoice(String statusChoice) {
+        switch (statusChoice) {
+            case "1":
+                return Attendance.AttendanceStatus.PRESENT;
+            case "2":
+                return Attendance.AttendanceStatus.ABSENT;
+            case "3":
+                return Attendance.AttendanceStatus.LEAVE;
+            default:
+                throw new IllegalArgumentException("Invalid status choice");
+        }
+    }
+
+    private static boolean confirmPrimaryAction(String primaryLabel, String cancelMessage) {
+        System.out.println();
+        System.out.println("[1] " + primaryLabel);
+        System.out.println("[2] Cancel");
+        System.out.println("----------------------------------------");
+        System.out.print("Select option: ");
+
+        String option = KEYBOARD_SCANNER.nextLine().trim();
+        if ("2".equals(option)) {
+            System.out.println(cancelMessage);
+            return false;
+        }
+        if (!"1".equals(option)) {
+            throw new IllegalArgumentException("Invalid option");
+        }
+        return true;
+    }
+
+    private static void waitForEnterToReturn() {
+        System.out.print("Press ENTER to return...");
+        KEYBOARD_SCANNER.nextLine();
     }
 
 }

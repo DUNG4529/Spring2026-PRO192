@@ -222,7 +222,9 @@ public class HRManager {
                 String department = parts[2].trim();
                 String jobTitle = parts[3].trim();
                 String dateOfJoining = parts[4].trim();
-                double baseSalary = Double.parseDouble(parts[5].trim());
+                // Sanitize salary: remove commas if present (e.g., "12,000,000" → "12000000")
+                String salaryStr = parts[5].trim().replace(",", "");
+                double baseSalary = Double.parseDouble(salaryStr);
                 Employee.Status status = Employee.Status.valueOf(parts[6].trim());
                 String type = parts[7].trim();
 

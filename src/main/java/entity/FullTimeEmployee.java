@@ -23,7 +23,8 @@ public class FullTimeEmployee extends Employee {
             // Lương = Cơ bản + (Giờ OT * 80k) - (Ngày vắng * 100k)
             double overtimePay = overtimeHours * 80000;
             double absenceDeduction = absenceDays * 100000;
-            return getBaseSalary() + overtimePay - absenceDeduction;
+            double finalSalary = getBaseSalary() + overtimePay - absenceDeduction;
+            return Math.max(finalSalary, 0);  // Salary cannot be negative
         }
     }
 

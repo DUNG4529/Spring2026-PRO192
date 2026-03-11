@@ -22,7 +22,8 @@ public class PartTimeEmployee extends Employee {
         } else {
             double overtimePay = overtimeHours * 50000;
             double absenceDeduction = absenceDays * 100000;
-            return getBaseSalary() + overtimePay - absenceDeduction;
+            double finalSalary = getBaseSalary() + overtimePay - absenceDeduction;
+            return Math.max(finalSalary, 0);  // Salary cannot be negative
         }
     }
 
