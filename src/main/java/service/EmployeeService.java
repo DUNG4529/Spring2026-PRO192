@@ -49,6 +49,10 @@ public class EmployeeService {
         return new ArrayList<>(employeeMap.values());
     }
 
+    public void clearAll() {
+        employeeMap.clear();
+    }
+
     // update - U
     public void updateEmployee(Employee updateEmp) {
         validateEmployeeForSave(updateEmp);

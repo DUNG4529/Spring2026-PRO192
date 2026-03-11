@@ -2,10 +2,21 @@ package manager;
 
 import service.*;
 import entity.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.time.LocalDate;
 
 public class HRManager {
+    private static final String EMPLOYEE_FILE_NAME = "employees.txt";
+    private static final String ATTENDANCE_FILE_NAME = "attendance.txt";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và báo cáo
     private final EmployeeService employeeService;
     private final AttendanceService attendanceService;
@@ -136,11 +147,48 @@ public class HRManager {
     }
 
     public String reportHighestPaid() {
+        return reportHighestPaid(LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+    }
+
+    public String reportHighestPaid(int month, int year) {
         return reportService.generateHighestPaidEmployeesReport(
                 getAllEmployees(),
                 getAllAttendances(),
-                LocalDate.now().getMonthValue(),
-                LocalDate.now().getYear());
+                month,
+                year);
+    }
+
+    public void loadDataFromFiles(String dataDirectoryPath) {
+        if (dataDirectoryPath == null || dataDirectoryPath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Data directory path cannot be empty");
+        }
+
+        File dataDirectory = new File(dataDirectoryPath);
+        if (!dataDirectory.exists()) {
+            if (!dataDirectory.mkdirs()) {
+                throw new IllegalStateException("Cannot create data directory: " + dataDirectoryPath);
+            }
+        }
+
+        employeeService.clearAll();
+        attendanceService.clearAll();
+
+        loadEmployees(new File(dataDirectory, EMPLOYEE_FILE_NAME));
+        loadAttendance(new File(dataDirectory, ATTENDANCE_FILE_NAME));
+    }
+
+    public void saveDataToFiles(String dataDirectoryPath) {
+        if (dataDirectoryPath == null || dataDirectoryPath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Data directory path cannot be empty");
+        }
+
+        File dataDirectory = new File(dataDirectoryPath);
+        if (!dataDirectory.exists() && !dataDirectory.mkdirs()) {
+            throw new IllegalStateException("Cannot create data directory: " + dataDirectoryPath);
+        }
+
+        saveEmployees(new File(dataDirectory, EMPLOYEE_FILE_NAME));
+        saveAttendance(new File(dataDirectory, ATTENDANCE_FILE_NAME));
     }
 
     private List<Attendance> getAllAttendances() {
@@ -149,6 +197,117 @@ public class HRManager {
             result.addAll(entry.getValue());
         }
         return result;
+    }
+
+    private void loadEmployees(File employeeFile) {
+        if (!employeeFile.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(employeeFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+
+                String[] parts = line.split("\\|", -1);
+                if (parts.length != 8) {
+                    continue;
+                }
+
+                String id = parts[0].trim();
+                String name = parts[1].trim();
+                String department = parts[2].trim();
+                String jobTitle = parts[3].trim();
+                String dateOfJoining = parts[4].trim();
+                double baseSalary = Double.parseDouble(parts[5].trim());
+                Employee.Status status = Employee.Status.valueOf(parts[6].trim());
+                String type = parts[7].trim();
+
+                Employee employee;
+                if ("FULL_TIME".equalsIgnoreCase(type)) {
+                    employee = new FullTimeEmployee(id, name, department, baseSalary, jobTitle, dateOfJoining, status);
+                } else if ("PART_TIME".equalsIgnoreCase(type)) {
+                    employee = new PartTimeEmployee(id, name, department, baseSalary, jobTitle, dateOfJoining, status);
+                } else {
+                    continue;
+                }
+
+                employeeService.addEmployee(employee);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot read employees file: " + employeeFile.getPath(), e);
+        }
+    }
+
+    private void loadAttendance(File attendanceFile) {
+        if (!attendanceFile.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(attendanceFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+
+                String[] parts = line.split("\\|", -1);
+                if (parts.length != 4) {
+                    continue;
+                }
+
+                String employeeId = parts[0].trim();
+                LocalDate date = LocalDate.parse(parts[1].trim(), DATE_FORMATTER);
+                Attendance.AttendanceStatus status = Attendance.AttendanceStatus.valueOf(parts[2].trim());
+                double overtime = Double.parseDouble(parts[3].trim());
+
+                attendanceService.addAttendance(employeeId, date, status, overtime);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot read attendance file: " + attendanceFile.getPath(), e);
+        }
+    }
+
+    private void saveEmployees(File employeeFile) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(employeeFile, false))) {
+            for (Employee employee : getAllEmployees()) {
+                String type = employee instanceof FullTimeEmployee ? "FULL_TIME" : "PART_TIME";
+                writer.write(String.join("|",
+                        employee.getId(),
+                        employee.getName(),
+                        employee.getDepartment(),
+                        employee.getJobTitle(),
+                        employee.getDateOfJoining(),
+                        String.valueOf(employee.getBaseSalary()),
+                        employee.getStatus().name(),
+                        type));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot write employees file: " + employeeFile.getPath(), e);
+        }
+    }
+
+    private void saveAttendance(File attendanceFile) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(attendanceFile, false))) {
+            Map<String, List<Attendance>> attendanceMap = attendanceService.getAllAttendanceRecords();
+            for (Map.Entry<String, List<Attendance>> entry : attendanceMap.entrySet()) {
+                for (Attendance attendance : entry.getValue()) {
+                    writer.write(String.join("|",
+                            attendance.getIdEmployee(),
+                            attendance.getDate().format(DATE_FORMATTER),
+                            attendance.getStatus().name(),
+                            String.valueOf(attendance.getOvertime())));
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot write attendance file: " + attendanceFile.getPath(), e);
+        }
     }
 
     // ========================

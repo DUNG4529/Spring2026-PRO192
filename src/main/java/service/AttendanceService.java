@@ -59,6 +59,10 @@ public class AttendanceService {
         return Collections.unmodifiableMap(snapshot);
     }
 
+    public void clearAll() {
+        AttendanceRecord.clear();
+    }
+
     // 1. Khởi tạo bảng điểm danh cho tất cả nhân viên (mặc định là vắng mặt)
     public void AttendanceTable(EmployeeService empService) {
 

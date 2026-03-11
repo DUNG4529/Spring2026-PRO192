@@ -5,12 +5,15 @@
 package entity;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
  * Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
  */
 public class Attendance {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private final String idEmployee; // Mã nhân viên (không đổi sau khi tạo)
     private LocalDate date; // Ngày điểm danh
     private AttendanceStatus status; // Trạng thái điểm danh
@@ -112,6 +115,12 @@ public class Attendance {
             throw new IllegalArgumentException("Overtime cannot be negative");
         }
         this.overtime = overtime;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Date: %s, Status: %s, Overtime: %.2f",
+                date.format(DATE_FORMATTER), status.getDisplayName(), overtime);
     }
 
 }
