@@ -34,8 +34,6 @@ public class EmployeeService {
             throw new IllegalArgumentException("ID has existed! Please enter another ID.");
 
         employeeMap.put(employee.getId(), employee);
-
-        System.out.println("Added successfully!");
     }
 
     // read - R - lấy 1 employee theo ID
@@ -59,8 +57,6 @@ public class EmployeeService {
             throw new IllegalArgumentException("ID not found! Please do again!");
 
         employeeMap.put(updateEmp.getId(), updateEmp);
-
-        System.out.println("Update successfully!");
     }
 
     // delete - D
@@ -73,8 +69,6 @@ public class EmployeeService {
             throw new IllegalArgumentException("ID not found! Please do again!");
 
         emp.setStatus(Status.INACTIVE);
-
-        System.out.println("Delete successfully!");
     }
 
     private void validateEmployeeForSave(Employee employee) {

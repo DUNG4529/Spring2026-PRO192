@@ -84,8 +84,7 @@ public class AttendanceService {
     public void markAttendance(String id, String newStatusStr) {
         validateEmployeeId(id);
         if (!utils.Validation.validAttendanceStatus(newStatusStr)) {
-            System.out.println("Lỗi: Trạng thái không hợp lệ. Chỉ chấp nhận Present, Absent, hoặc Leave.");
-            return;
+            throw new IllegalArgumentException("Invalid attendance status. Only Present, Absent, or Leave are accepted.");
         }
         AttendanceStatus status = AttendanceStatus.valueOf(newStatusStr.trim().toUpperCase());
         markAttendance(id, status);
@@ -110,13 +109,9 @@ public class AttendanceService {
 
                 if (record.getDate().equals(today)) {
                     record.setStatus(newStatus);
-                    System.out.println("Cập nhật thành công cho ID: " + id);
                     return;
                 }
             }
-
-        } else {
-            System.out.println("Không tìm thấy mã nhân viên!");
         }
     }
 
@@ -155,18 +150,21 @@ public class AttendanceService {
     }
 
     // 3. Hiển thị bảng điểm danh của tất cả nhân viên
-    public void showAllAttendance() {
+    public String showAllAttendance() {
+        StringBuilder output = new StringBuilder();
 
         for (String id : AttendanceRecord.keySet()) {
 
-            System.out.println("ID: " + id);
+            output.append("ID: ").append(id).append("\n");
 
             for (Attendance record : AttendanceRecord.get(id)) {
-                System.out.println(record);
+                output.append(record).append("\n");
             }
 
-            System.out.println("----------------------");
+            output.append("----------------------\n");
         }
+
+        return output.toString();
     }
 
     private boolean isEmployeeExists(String id) {

@@ -98,8 +98,8 @@ public class HRManager {
         return new ArrayList<>(records);
     }
 
-    public void showAllAttendance() {
-        attendanceService.showAllAttendance();
+    public String showAllAttendance() {
+        return attendanceService.showAllAttendance();
     }
 
     // =========================
@@ -124,11 +124,11 @@ public class HRManager {
     // Manager Methods for Reporting
     // ==========================
 
-    public void reportLowAttendance(int thresholdDays) {
+    public String reportLowAttendance(int thresholdDays) {
         if (thresholdDays < 0) {
             throw new IllegalArgumentException("Threshold days cannot be negative");
         }
-        reportService.generateLowAttendanceReport(
+        return reportService.generateLowAttendanceReport(
                 getAllEmployees(),
                 getAllAttendances(),
                 LocalDate.now().getMonthValue(),
@@ -136,8 +136,8 @@ public class HRManager {
                 thresholdDays);
     }
 
-    public void reportHighestPaid() {
-        reportService.generateHighestPaidEmployeesReport(
+    public String reportHighestPaid() {
+        return reportService.generateHighestPaidEmployeesReport(
                 getAllEmployees(),
                 getAllAttendances(),
                 LocalDate.now().getMonthValue(),
