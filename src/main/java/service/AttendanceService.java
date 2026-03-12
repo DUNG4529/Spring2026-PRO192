@@ -155,6 +155,34 @@ public class AttendanceService {
         records.add(attendance);
     }
 
+    // Cập nhật điểm danh cho một ngày cụ thể
+    public void updateAttendance(String id, LocalDate date, AttendanceStatus status, double overtime) {
+        validateAttendanceInputs(id, date, overtime);
+        validateAttendanceStatus(status);
+        validateOvertimeByStatus(status, overtime);
+
+        // BR3: Nhân viên phải tồn tại
+        if (!isEmployeeExists(id)) {
+            throw new IllegalArgumentException("Employee does not exist");
+        }
+
+        List<Attendance> records = AttendanceRecord.get(id);
+        if (records == null) {
+            throw new IllegalArgumentException("No attendance records found for this employee");
+        }
+
+        // Tìm và update record cho ngày cụ thể
+        for (Attendance record : records) {
+            if (record.getDate().equals(date)) {
+                record.setStatus(status);
+                record.setOvertime(overtime);
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("Attendance record not found for this date");
+    }
+
     // 3. Hiển thị bảng điểm danh của tất cả nhân viên
     public String showAllAttendance() {
         StringBuilder output = new StringBuilder();

@@ -99,6 +99,16 @@ public class HRManager {
                 attendance.getOvertime());
     }
 
+    public void updateAttendance(String idEmployee, LocalDate date, String status, double overtime) {
+        validateEmployeeId(idEmployee);
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee does not exist");
+        }
+        Attendance.AttendanceStatus attendanceStatus = Attendance.AttendanceStatus.valueOf(status.trim().toUpperCase());
+        attendanceService.updateAttendance(idEmployee, date, attendanceStatus, overtime);
+    }
+
     public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
         validateEmployeeId(idEmployee);
         List<Attendance> records = attendanceService.getAllAttendanceRecords().get(idEmployee);
