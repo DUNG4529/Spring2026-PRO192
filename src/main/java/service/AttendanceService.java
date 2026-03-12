@@ -172,15 +172,23 @@ public class AttendanceService {
             records.sort((a, b) -> a.getDate().compareTo(b.getDate()));
 
             for (Attendance record : records) {
-                output.append(String.format("%-12s%-11s%.1f%n",
+                output.append(String.format("%-12s%-11s%s%n",
                         record.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         record.getStatus().getDisplayName(),
-                        record.getOvertime()));
+                        formatOvertime(record.getOvertime())));
             }
             output.append("-----------------------------------------\n");
         }
 
         return output.toString();
+    }
+
+    private String formatOvertime(double overtime) {
+        if (overtime == (long) overtime) {
+            return String.format("%d", (long) overtime);
+        } else {
+            return String.format("%.1f", overtime);
+        }
     }
 
     private String normalizeEmployeeId(String id) {

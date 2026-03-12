@@ -216,10 +216,10 @@ public class Main {
         System.out.println("Date        Status     Overtime");
         System.out.println("-----------------------------------------");
         for (Attendance record : records) {
-            System.out.printf("%-12s%-11s%.1f%n",
+            System.out.printf("%-12s%-11s%s%n",
                     record.getDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     record.getStatus().getDisplayName(),
-                    record.getOvertime());
+                    formatOvertime(record.getOvertime()));
         }
         System.out.println("-----------------------------------------");
         waitForEnterToReturn();
@@ -587,6 +587,14 @@ public class Main {
             return "";
         }
         return id.replace("\uFEFF", "").trim();
+    }
+
+    private static String formatOvertime(double overtime) {
+        if (overtime == (long) overtime) {
+            return String.format("%d", (long) overtime);
+        } else {
+            return String.format("%.1f", overtime);
+        }
     }
 
 }
