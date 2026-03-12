@@ -160,10 +160,15 @@ public class Main {
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
         Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
 
-        System.out.print("Overtime Hours   : ");
-        double overtimeHours = Double.parseDouble(KEYBOARD_SCANNER.nextLine().trim());
-        if (overtimeHours < 0) {
-            throw new IllegalArgumentException("Overtime hours cannot be negative");
+        double overtimeHours = 0.0;
+        if (status == Attendance.AttendanceStatus.PRESENT) {
+            System.out.print("Overtime Hours   : ");
+            overtimeHours = Double.parseDouble(KEYBOARD_SCANNER.nextLine().trim());
+            if (overtimeHours < 0) {
+                throw new IllegalArgumentException("Overtime hours cannot be negative");
+            }
+        } else {
+            System.out.println("Overtime Hours   : 0.0 (only allowed for PRESENT)");
         }
 
         System.out.println();

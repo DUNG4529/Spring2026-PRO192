@@ -133,6 +133,7 @@ public class AttendanceService {
     public void addAttendance(String id, LocalDate date, AttendanceStatus status, double overtime) {
         validateAttendanceInputs(id, date, overtime);
         validateAttendanceStatus(status);
+        validateOvertimeByStatus(status, overtime);
 
         // BR3: Nhân viên phải tồn tại trước khi ghi nhận điểm danh
         if (!isEmployeeExists(id)) {
@@ -200,6 +201,12 @@ public class AttendanceService {
     private void validateAttendanceStatus(AttendanceStatus status) {
         if (status == null) {
             throw new IllegalArgumentException("Attendance status cannot be null");
+        }
+    }
+
+    private void validateOvertimeByStatus(AttendanceStatus status, double overtime) {
+        if (status != AttendanceStatus.PRESENT && overtime > 0) {
+            throw new IllegalArgumentException("Overtime is only allowed when status is PRESENT");
         }
     }
 }

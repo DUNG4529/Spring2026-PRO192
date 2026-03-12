@@ -52,6 +52,9 @@ public class Attendance {
         if (overtime < 0) {
             throw new IllegalArgumentException("Overtime cannot be negative");
         }
+        if (status != AttendanceStatus.PRESENT && overtime > 0) {
+            throw new IllegalArgumentException("Overtime is only allowed for PRESENT status");
+        }
         this.idEmployee = idEmployee;
         this.date = date;
         this.status = status;
@@ -98,6 +101,9 @@ public class Attendance {
             throw new IllegalArgumentException("Attendance status cannot be null");
         }
         this.status = status;
+        if (status != AttendanceStatus.PRESENT) {
+            this.overtime = 0.0;
+        }
     }
 
     /**
@@ -113,6 +119,9 @@ public class Attendance {
     public void setOvertime(double overtime) {
         if (overtime < 0) {
             throw new IllegalArgumentException("Overtime cannot be negative");
+        }
+        if (this.status != AttendanceStatus.PRESENT && overtime > 0) {
+            throw new IllegalArgumentException("Overtime is only allowed for PRESENT status");
         }
         this.overtime = overtime;
     }
