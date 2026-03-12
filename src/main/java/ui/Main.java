@@ -62,7 +62,7 @@ public class Main {
     }
 
     private static void showAllEmployees(HRManager hrManager) {
-        List<Employee> employees = hrManager.getAllEmployees();
+        List<Employee> employees = getEmployeesSortedById(hrManager);
         if (employees.isEmpty()) {
             System.out.println("No employees.");
             waitForEnterToReturn();
@@ -153,9 +153,9 @@ public class Main {
         LocalDate date = LocalDate.parse(dateInput, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         System.out.println("Status           : ");
-        System.out.println("            1. Present");
-        System.out.println("            2. Absent");
-        System.out.println("            3. Leave");
+        System.out.println("                    1. Present");
+        System.out.println("                    2. Absent");
+        System.out.println("                    3. Leave");
         System.out.print("Choose           : ");
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
         Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
@@ -203,19 +203,20 @@ public class Main {
             return;
         }
 
-        records.sort((a, b) -> b.getDate().compareTo(a.getDate()));
+        records.sort((a, b) -> a.getDate().compareTo(b.getDate()));
 
         System.out.println();
-        System.out.println("Date         Status      Overtime");
-        System.out.println("----------------------------------");
+        System.out.println("Employee ID: " + employeeId);
+        System.out.println("-----------------------------------------");
+        System.out.println("Date        Status     Overtime");
+        System.out.println("-----------------------------------------");
         for (Attendance record : records) {
-            System.out.printf("%-12s %-11s %s%n",
+            System.out.printf("%-12s%-11s%.1f%n",
                     record.getDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     record.getStatus().getDisplayName(),
-                    String.format("%.0f", record.getOvertime()));
+                    record.getOvertime());
         }
-        System.out.println();
-        System.out.println("----------------------------------");
+        System.out.println("-----------------------------------------");
         waitForEnterToReturn();
     }
 
@@ -263,7 +264,7 @@ public class Main {
         int month = monthYear[0];
         int year = monthYear[1];
 
-        List<Employee> employees = hrManager.getAllEmployees();
+        List<Employee> employees = getEmployeesSortedById(hrManager);
 
         double maxSalary = Double.NEGATIVE_INFINITY;
         for (Employee emp : employees) {
@@ -311,7 +312,7 @@ public class Main {
             return;
         }
 
-        List<Employee> employees = hrManager.getAllEmployees();
+        List<Employee> employees = getEmployeesSortedById(hrManager);
 
         System.out.println("\n-------- LOW ATTENDANCE REPORT --------");
         System.out.println();
@@ -366,7 +367,10 @@ public class Main {
         if (!Validation.validString(jobTitle)) {
             throw new IllegalArgumentException("Job title cannot be empty");
         }
-        System.out.print("Employment Type  : ");
+        System.out.println("Employment Type  : ");
+        System.out.println("            1. Full-time");
+        System.out.println("            2. Part-time");
+        System.out.print("Choose           : ");
         String typeInput = KEYBOARD_SCANNER.nextLine().trim();
         System.out.print("Date of Joining  : ");
         String doj = KEYBOARD_SCANNER.nextLine().trim();
@@ -565,6 +569,19 @@ public class Main {
     private static void waitForEnterToReturn() {
         System.out.print("Press ENTER to return...");
         KEYBOARD_SCANNER.nextLine();
+    }
+
+    private static List<Employee> getEmployeesSortedById(HRManager hrManager) {
+        List<Employee> employees = new ArrayList<>(hrManager.getAllEmployees());
+        employees.sort(Comparator.comparing(e -> normalizeEmployeeId(e.getId())));
+        return employees;
+    }
+
+    private static String normalizeEmployeeId(String id) {
+        if (id == null) {
+            return "";
+        }
+        return id.replace("\uFEFF", "").trim();
     }
 
 }

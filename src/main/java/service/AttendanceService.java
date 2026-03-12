@@ -157,7 +157,10 @@ public class AttendanceService {
     public String showAllAttendance() {
         StringBuilder output = new StringBuilder();
 
-        for (String id : AttendanceRecord.keySet()) {
+        List<String> sortedIds = new ArrayList<>(AttendanceRecord.keySet());
+        Collections.sort(sortedIds);
+
+        for (String id : sortedIds) {
 
             output.append("ID: ").append(id).append("\n");
 
