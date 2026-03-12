@@ -3,6 +3,7 @@ package service;
 import entity.*;
 import entity.Attendance.AttendanceStatus;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class AttendanceService {
@@ -159,20 +160,34 @@ public class AttendanceService {
         StringBuilder output = new StringBuilder();
 
         List<String> sortedIds = new ArrayList<>(AttendanceRecord.keySet());
-        Collections.sort(sortedIds);
+        sortedIds.sort((a, b) -> normalizeEmployeeId(a).compareTo(normalizeEmployeeId(b)));
 
         for (String id : sortedIds) {
+            output.append("\nEmployee ID: ").append(id).append("\n");
+            output.append("-----------------------------------------\n");
+            output.append("Date        Status     Overtime\n");
+            output.append("-----------------------------------------\n");
 
-            output.append("ID: ").append(id).append("\n");
+            List<Attendance> records = AttendanceRecord.get(id);
+            records.sort((a, b) -> a.getDate().compareTo(b.getDate()));
 
-            for (Attendance record : AttendanceRecord.get(id)) {
-                output.append(record).append("\n");
+            for (Attendance record : records) {
+                output.append(String.format("%-12s%-11s%.1f%n",
+                        record.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        record.getStatus().getDisplayName(),
+                        record.getOvertime()));
             }
-
-            output.append("----------------------\n");
+            output.append("-----------------------------------------\n");
         }
 
         return output.toString();
+    }
+
+    private String normalizeEmployeeId(String id) {
+        if (id == null) {
+            return "";
+        }
+        return id.replace("\uFEFF", "").trim();
     }
 
     private boolean isEmployeeExists(String id) {
