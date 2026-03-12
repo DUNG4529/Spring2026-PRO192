@@ -170,6 +170,10 @@ public class HRManager {
             }
         }
 
+        // Ensure AttendanceService always uses the current EmployeeService instance
+        // before loading persisted data.
+        attendanceService.setEmployeeService(employeeService);
+
         employeeService.clearAll();
         attendanceService.clearAll();
 
@@ -217,16 +221,16 @@ public class HRManager {
                     continue;
                 }
 
-                String id = parts[0].trim();
-                String name = parts[1].trim();
-                String department = parts[2].trim();
-                String jobTitle = parts[3].trim();
-                String dateOfJoining = parts[4].trim();
-                // Sanitize salary: remove commas if present (e.g., "12,000,000" → "12000000")
-                String salaryStr = parts[5].trim().replace(",", "");
+                String id = sanitizeField(parts[0]);
+                String name = sanitizeField(parts[1]);
+                String department = sanitizeField(parts[2]);
+                String jobTitle = sanitizeField(parts[3]);
+                String dateOfJoining = sanitizeField(parts[4]);
+                // Sanitize salary: remove commas if present (e.g., "12,000,000" -> "12000000")
+                String salaryStr = sanitizeField(parts[5]).replace(",", "");
                 double baseSalary = Double.parseDouble(salaryStr);
-                Employee.Status status = Employee.Status.valueOf(parts[6].trim());
-                String type = parts[7].trim();
+                Employee.Status status = Employee.Status.valueOf(sanitizeField(parts[6]));
+                String type = sanitizeField(parts[7]);
 
                 Employee employee;
                 if ("FULL_TIME".equalsIgnoreCase(type)) {
@@ -262,10 +266,10 @@ public class HRManager {
                     continue;
                 }
 
-                String employeeId = parts[0].trim();
-                LocalDate date = LocalDate.parse(parts[1].trim(), DATE_FORMATTER);
-                Attendance.AttendanceStatus status = Attendance.AttendanceStatus.valueOf(parts[2].trim());
-                double overtime = Double.parseDouble(parts[3].trim());
+                String employeeId = sanitizeField(parts[0]);
+                LocalDate date = LocalDate.parse(sanitizeField(parts[1]), DATE_FORMATTER);
+                Attendance.AttendanceStatus status = Attendance.AttendanceStatus.valueOf(sanitizeField(parts[2]));
+                double overtime = Double.parseDouble(sanitizeField(parts[3]));
 
                 attendanceService.addAttendance(employeeId, date, status, overtime);
             }
@@ -310,6 +314,13 @@ public class HRManager {
         } catch (IOException e) {
             throw new IllegalStateException("Cannot write attendance file: " + attendanceFile.getPath(), e);
         }
+    }
+
+    private String sanitizeField(String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw.replace("\uFEFF", "").trim();
     }
 
     // ========================

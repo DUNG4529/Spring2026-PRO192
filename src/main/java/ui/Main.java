@@ -33,13 +33,13 @@ public class Main {
                     case "4":
                         reportsMenu(hrManager);
                         break;
-                    case "5":
+                    case "0":
                         hrManager.saveDataToFiles(DATA_DIR);
                         System.out.println("Bye.");
                         KEYBOARD_SCANNER.close();
                         return;
                     default:
-                        System.out.println("Invalid choice. Please select 1-5.");
+                        System.out.println("Invalid choice. Please select 0-4.");
                         break;
                 }
             } catch (Exception e) {
@@ -56,7 +56,7 @@ public class Main {
         System.out.println("2. Attendance Management");
         System.out.println("3. Salary Management");
         System.out.println("4. Reports");
-        System.out.println("5. Exit");
+        System.out.println("0. Exit");
         System.out.println("---------------------------------------------");
         System.out.print("Choose: ");
     }
@@ -92,7 +92,7 @@ public class Main {
             System.out.println("1. Show all employees");
             System.out.println("2. Add employee");
             System.out.println("3. Update employee");
-            System.out.println("4. Back");
+            System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -102,7 +102,7 @@ public class Main {
                 addEmployee(hrManager);
             } else if ("3".equals(choice)) {
                 updateEmployee(hrManager);
-            } else if ("4".equals(choice)) {
+            } else if ("0".equals(choice)) {
                 return;
             } else {
                 System.out.println("Invalid choice.");
@@ -117,7 +117,7 @@ public class Main {
             System.out.println("2. Record attendance");
             System.out.println("3. View attendance history");
             System.out.println("4. Show all attendance");
-            System.out.println("5. Back");
+            System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -129,7 +129,7 @@ public class Main {
                 viewAttendanceHistory(hrManager);
             } else if ("4".equals(choice)) {
                 System.out.println(hrManager.showAllAttendance());
-            } else if ("5".equals(choice)) {
+            } else if ("0".equals(choice)) {
                 return;
             } else {
                 System.out.println("Invalid choice.");
@@ -152,7 +152,10 @@ public class Main {
         String dateInput = KEYBOARD_SCANNER.nextLine().trim();
         LocalDate date = LocalDate.parse(dateInput, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        System.out.println("Status           : 1.Present  2.Absent  3.Leave");
+        System.out.println("Status           : ");
+        System.out.println("            1. Present");
+        System.out.println("            2. Absent");
+        System.out.println("            3. Leave");
         System.out.print("Choose           : ");
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
         Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
@@ -220,13 +223,13 @@ public class Main {
         while (true) {
             System.out.println("\n----- SALARY MANAGEMENT -----");
             System.out.println("1. Calculate salary");
-            System.out.println("2. Back");
+            System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
             if ("1".equals(choice)) {
                 calculateSalary(hrManager);
-            } else if ("2".equals(choice)) {
+            } else if ("0".equals(choice)) {
                 return;
             } else {
                 System.out.println("Invalid choice.");
@@ -239,7 +242,7 @@ public class Main {
             System.out.println("\n----- REPORTS -----");
             System.out.println("1. Low attendance report");
             System.out.println("2. Highest paid report");
-            System.out.println("3. Back");
+            System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -247,7 +250,7 @@ public class Main {
                 lowAttendanceReport(hrManager);
             } else if ("2".equals(choice)) {
                 highestPaidReport(hrManager);
-            } else if ("3".equals(choice)) {
+            } else if ("0".equals(choice)) {
                 return;
             } else {
                 System.out.println("Invalid choice.");
