@@ -271,6 +271,11 @@ public class HRManager {
                 Attendance.AttendanceStatus status = Attendance.AttendanceStatus.valueOf(sanitizeField(parts[2]));
                 double overtime = Double.parseDouble(sanitizeField(parts[3]));
 
+                // Auto-correct: overtime only allowed for PRESENT status
+                if (status != Attendance.AttendanceStatus.PRESENT) {
+                    overtime = 0.0;
+                }
+
                 attendanceService.addAttendance(employeeId, date, status, overtime);
             }
         } catch (IOException e) {
