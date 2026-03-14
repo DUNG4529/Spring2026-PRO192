@@ -61,7 +61,7 @@ public class SalaryService {
         this.attendanceList = attendanceList;
     }
 
-    // 1. Tính lương nhân viên (dựa trên: Lương cơ bản, Ngày công, Giờ làm thêm, Số ngày nghỉ)
+    // 1) Calculate employee salary based on base salary, working days, overtime, and absences.
     public double calculateEmployeeSalary(Employee employee, List<Attendance> attendances, int month, int year) {
         validateEmployeeAttendanceInputs(employee, attendances, month, year);
 
@@ -83,14 +83,14 @@ public class SalaryService {
         return summarizeAttendance(employee, attendances, month, year);
     }
 
-    // 2. Xem bảng lương tất cả nhân viên
+    // 2) Display salary table for all employees.
         public String displayAllSalaries(List<Employee> employees, List<Attendance> attendances, int month, int year) {
         validateEmployeesAttendanceInputs(employees, attendances, month, year);
 
         StringBuilder output = new StringBuilder();
 
         output.append("====================================================================================================\n");
-        output.append(String.format(" BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year));
+        output.append(String.format(" EMPLOYEE SALARY REPORT - %d/%d\n", month, year));
         output.append("====================================================================================================\n");
         output.append(String.format("%-10s | %-20s | %-15s | %-12s | %-12s | %-12s | %-15s\n",
             "ID", "Name", "Role", "Working Days", "Absence Days", "Leave Days", "Total Salary"));
@@ -111,7 +111,7 @@ public class SalaryService {
         return output.toString();
     }
 
-    // Task B6 — Calculate Salary (Detail for a single employee)
+    // Task B6 - Calculate Salary (Detail for a single employee)
     public String displaySalaryDetail(Employee employee, List<Attendance> attendances, int month, int year) {
         validateEmployeeAttendanceInputs(employee, attendances, month, year);
 
@@ -134,14 +134,14 @@ public class SalaryService {
         return output.toString();
     }
 
-    // 3. Xuất bảng lương ra file
+    // 3) Export salary table to a file.
     public void exportSalariesToFile(List<Employee> employees, List<Attendance> attendances, int month, int year,
             String filePath) {
         validateEmployeesAttendanceInputs(employees, attendances, month, year);
         validateFilePath(filePath);
 
         try (FileWriter writer = new FileWriter(filePath)) {
-            writer.write(String.format("BẢNG LƯƠNG NHÂN VIÊN THÁNG %d/%d\n", month, year));
+            writer.write(String.format("EMPLOYEE SALARY REPORT - %d/%d\n", month, year));
             writer.write("ID,Name,Role,Working Days,Absence Days,Leave Days,Total Salary\n");
 
             for (Employee emp : employees) {

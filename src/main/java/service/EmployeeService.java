@@ -36,7 +36,7 @@ public class EmployeeService {
         employeeMap.put(employee.getId(), employee);
     }
 
-    // read - R - lấy 1 employee theo ID
+    // read - R - get one employee by ID
     public Employee getEmployee(String id) {
         if (isBlank(id)) {
             return null;
@@ -44,7 +44,7 @@ public class EmployeeService {
         return employeeMap.get(id);
     }
 
-    // read - R - lấy tất cả
+    // read - R - get all employees
     public List<Employee> getAllEmp() {
         return new ArrayList<>(employeeMap.values());
     }

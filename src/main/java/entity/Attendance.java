@@ -8,21 +8,21 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Class Attendance dùng để lưu thông tin điểm danh của nhân viên
- * Bao gồm: mã nhân viên, ngày điểm danh, trạng thái và giờ tăng ca
+ * Attendance entity stores employee attendance information
+ * including employee ID, attendance date, status, and overtime hours.
  */
 public class Attendance {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final String idEmployee; // Mã nhân viên (không đổi sau khi tạo)
-    private LocalDate date; // Ngày điểm danh
-    private AttendanceStatus status; // Trạng thái điểm danh
-    private double overtime; // Số giờ làm thêm (overtime)
+    private final String idEmployee; // Employee ID (immutable after creation)
+    private LocalDate date; // Attendance date
+    private AttendanceStatus status; // Attendance status
+    private double overtime; // Overtime hours
 
     public enum AttendanceStatus {
-        PRESENT("Present"), // Có mặt
-        ABSENT("Absent"), // Vắng mặt
-        LEAVE("Leave"); // Nghỉ phép
+        PRESENT("Present"),
+        ABSENT("Absent"),
+        LEAVE("Leave");
 
         private String displayName;
 
@@ -35,10 +35,10 @@ public class Attendance {
         }
     }
     /// =========================
-    /// KHỞI TẠO DỮ LIỆU
+    /// INITIALIZATION
     /// =========================
 
-    // Constructor đầy đủ tham số
+    // Full constructor
     public Attendance(String idEmployee, LocalDate date, AttendanceStatus status, double overtime) {
         if (idEmployee == null || idEmployee.trim().isEmpty()) {
             throw new IllegalArgumentException("Employee ID cannot be empty");
@@ -62,39 +62,39 @@ public class Attendance {
     }
 
     /// =========================
-    /// CẬP NHẬT VÀ TRUY XUẤT DỮ LIỆU (GETTER & SETTER)
+    /// ACCESSORS AND MUTATORS (GETTER & SETTER)
     /// =========================
 
     /**
-     * Lấy mã nhân viên
+    * Returns employee ID
      */
     public String getIdEmployee() {
         return idEmployee;
     }
 
     /**
-     * Lấy ngày điểm danh
+    * Returns attendance date
      */
     public LocalDate getDate() {
         return date;
     }
 
     /**
-     * Cập nhật ngày điểm danh
+    * Updates attendance date
      */
     public void setDate(LocalDate date) {
         this.date = date;
     }
 
     /**
-     * Lấy trạng thái điểm danh
+    * Returns attendance status
      */
     public AttendanceStatus getStatus() {
         return status;
     }
 
     /**
-     * Cập nhật trạng thái điểm danh
+    * Updates attendance status
      */
     public void setStatus(AttendanceStatus status) {
         if (status == null) {
@@ -107,14 +107,14 @@ public class Attendance {
     }
 
     /**
-     * Lấy số giờ tăng ca
+    * Returns overtime hours
      */
     public double getOvertime() {
         return overtime;
     }
 
     /**
-     * Cập nhật số giờ tăng ca
+    * Updates overtime hours
      */
     public void setOvertime(double overtime) {
         if (overtime < 0) {

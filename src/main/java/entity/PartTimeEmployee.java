@@ -1,22 +1,21 @@
 
 package entity;
 
-// TÍNH KẾ THỪA (Inheritance): PartTimeEmployee extends (kế thừa) lớp cha Employee.
-// Tái sử dụng lại các thuộc tính và phương thức của lớp cha.
+// INHERITANCE: PartTimeEmployee extends Employee.
+// Reuses shared fields and behavior from the base class.
 public class PartTimeEmployee extends Employee {
 
-    // CONSTRUCTOR của lớp con gọi constructor của lớp cha thông qua từ khóa "super"
+    // Subclass constructor delegates to base constructor via "super".
     public PartTimeEmployee(String id, String name, String department, double baseSalary, String jobTitle,
             String dateOfJoining, Status status) {
         super(id, name, department, baseSalary, jobTitle, dateOfJoining, status);
     }
 
-    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè (Override) lại phương thức abstract từ
-    // lớp cha.
-    // Lớp PartTime thực hiện logic tính lương riêng: OT tính 50k.
+    // POLYMORPHISM: override abstract salary calculation from base class.
+    // Part-time salary rule uses 50,000 VND per overtime hour.
     @Override
     public double calculateSalary(int workingDays, int absenceDays, double overtimeHours) {
-        // Lương = Cơ bản + (Giờ OT * 50k) - (Ngày vắng * 100k)
+        // Salary = Base + (Overtime Hours * 50,000) - (Absence Days * 100,000)
         if (workingDays < 0 || absenceDays < 0 || overtimeHours < 0) {
             throw new IllegalArgumentException("Absence days and overtime hours cannot be negative.");
         } else {
@@ -27,8 +26,8 @@ public class PartTimeEmployee extends Employee {
         }
     }
 
-    // TÍNH ĐA HÌNH (Polymorphism): Ghi đè phương thức toString() của lớp cha
-    // Gọi ngược hàm ở lớp cha (super.toString()) và nối đổi lại text cho phù hợp.
+    // POLYMORPHISM: override toString() from base class.
+    // Reuses base output and customizes the heading text.
     @Override
     public String toString() {
         return super.toString().replace("Employee Information:", "Part-Time Employee Information:");

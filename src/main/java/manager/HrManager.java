@@ -21,13 +21,13 @@ public class HRManager {
             new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter ATTENDANCE_SAVE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và báo cáo
+    // Services used by HRManager for employees, attendance, salary, and reports.
     private final EmployeeService employeeService;
     private final AttendanceService attendanceService;
     private final SalaryService salaryService;
     private final ReportService reportService;
 
-    // Constructor khởi tạo tất cả các service
+    // Constructor initializes all services.
     public HRManager() {
         this.employeeService = new EmployeeService();
         this.attendanceService = new AttendanceService(employeeService);

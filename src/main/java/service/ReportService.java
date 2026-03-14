@@ -16,10 +16,10 @@ public class ReportService {
     public ReportService() {
     }
 
-    // Task B7 — Employees with Low Attendance (BR12)
+    // Task B7 - Employees with Low Attendance (BR12)
     // BR12: An employee is considered to have low attendance if the number of
     // Absent days in a selected month exceeds a predefined threshold (e.g. more than 3 days).
-    // threshold days: Ngưỡng số ngày vắng mặt để xác định nhân viên có điểm danh thấp (ví dụ: 3 ngày)
+    // threshold days: absence-day threshold used to classify low attendance (for example: 3 days)
     public String generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
             int threshold) {
         StringBuilder output = new StringBuilder();
@@ -53,7 +53,7 @@ public class ReportService {
         return output.toString();
     }
 
-    // Task B8 — Highest Paid Employees (BR13)
+    // Task B8 - Highest Paid Employees (BR13)
     // BR13: The highest-paid employees are determined based on the total calculated
     // salary for a selected month
     public String generateHighestPaidEmployeesReport(List<Employee> employees, List<Attendance> attendances, int month,

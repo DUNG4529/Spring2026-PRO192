@@ -8,8 +8,8 @@ import java.util.*;
 
 public class AttendanceService {
 
-    // Dữ liệu điểm danh được lưu trữ trong một Map, với key là ID nhân viên và
-    // value là danh sách các bản ghi điểm danh
+    // Attendance data is stored in a map where key = employee ID and
+    // value = list of attendance records.
     private Map<String, List<Attendance>> AttendanceRecord = new HashMap<>();
     private EmployeeService employeeService;
 
@@ -17,21 +17,20 @@ public class AttendanceService {
     public AttendanceService() {
     }
 
-    // Constructor có tham số EmployeeService để đảm bảo có thể kiểm tra sự tồn tại
-    // của nhân viên khi ghi nhận điểm danh
+    // Constructor with EmployeeService to validate employee existence
+    // when recording attendance.
 
     public AttendanceService(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
-    // Constructor có tham số Map để khởi tạo dữ liệu điểm danh từ bên ngoài (ví dụ:
-    // khi đọc từ file)
+    // Constructor with map for initializing attendance data from outside
+    // (for example, when loading from file).
     public AttendanceService(Map<String, List<Attendance>> attendanceRecord) {
         this.AttendanceRecord = attendanceRecord;
     }
 
-    // Constructor đầy đủ tham số để khởi tạo cả dữ liệu điểm danh và
-    // EmployeeService
+    // Full constructor for attendance data and EmployeeService.
     public AttendanceService(Map<String, List<Attendance>> attendanceRecord, EmployeeService employeeService) {
         this.AttendanceRecord = attendanceRecord;
         this.employeeService = employeeService;
@@ -41,10 +40,10 @@ public class AttendanceService {
         this.employeeService = employeeService;
     }
 
-    // Phương thức để lấy bản sao của tất cả dữ liệu điểm danh (để tránh lộ dữ liệu nội bộ)
+    // Returns a safe snapshot of all attendance data.
     public Map<String, List<Attendance>> getAllAttendanceRecords() {
         Map<String, List<Attendance>> snapshot = new HashMap<>();
-        // Tạo bản sao sâu (deep copy) của dữ liệu điểm danh để đảm bảo tính bất biến
+        // Build a deep copy to keep internal state immutable to callers.
         for (Map.Entry<String, List<Attendance>> entry : AttendanceRecord.entrySet()) {
             List<Attendance> copiedRecords = new ArrayList<>();
             for (Attendance record : entry.getValue()) {
@@ -64,7 +63,7 @@ public class AttendanceService {
         AttendanceRecord.clear();
     }
 
-    // 1. Khởi tạo bảng điểm danh cho tất cả nhân viên (mặc định là vắng mặt)
+    // 1) Initialize attendance table for all employees (default ABSENT).
     public void AttendanceTable(EmployeeService empService) {
 
         List<Employee> IDlist = empService.getAllEmp();
@@ -85,7 +84,7 @@ public class AttendanceService {
         }
     }
 
-    // 2. Cập nhật điểm danh cho nhân viên
+    // 2) Update attendance for an employee.
     public void markAttendance(String id, String newStatusStr) {
         validateEmployeeId(id);
         if (!utils.Validation.validAttendanceStatus(newStatusStr)) {
@@ -95,12 +94,12 @@ public class AttendanceService {
         markAttendance(id, status);
     }
 
-    // 2. Cập nhật điểm danh cho nhân viên (Bằng Enum)
+    // 2) Update attendance for an employee (Enum overload).
     public void markAttendance(String id, AttendanceStatus newStatus) {
         validateEmployeeId(id);
         validateAttendanceStatus(newStatus);
 
-        // BR3: Chỉ chấm công khi nhân viên tồn tại trong hệ thống
+        // BR3: Attendance can only be marked for existing employees.
         if (!isEmployeeExists(id)) {
             throw new IllegalArgumentException("Employee ID does not exist");
         }
@@ -120,7 +119,7 @@ public class AttendanceService {
         }
     }
 
-    // Ghi nhận điểm danh theo ngày cho 1 nhân viên cụ thể (String)
+    // Record attendance on a specific date for one employee (String status).
     public void addAttendance(String id, LocalDate date, String statusStr, double overtime) {
         validateAttendanceInputs(id, date, overtime);
         if (!utils.Validation.validAttendanceStatus(statusStr)) {
@@ -130,20 +129,20 @@ public class AttendanceService {
         addAttendance(id, date, status, overtime);
     }
 
-    // Ghi nhận điểm danh theo ngày cho 1 nhân viên cụ thể
+    // Record attendance on a specific date for one employee.
     public void addAttendance(String id, LocalDate date, AttendanceStatus status, double overtime) {
         validateAttendanceInputs(id, date, overtime);
         validateAttendanceStatus(status);
         validateOvertimeByStatus(status, overtime);
 
-        // BR3: Nhân viên phải tồn tại trước khi ghi nhận điểm danh
+        // BR3: Employee must exist before recording attendance.
         if (!isEmployeeExists(id)) {
             throw new IllegalArgumentException("Employee does not exist");
         }
 
         AttendanceRecord.putIfAbsent(id, new ArrayList<>());
 
-        // BR4: Mỗi nhân viên chỉ được phép có một bản ghi chấm công cho mỗi ngày
+        // BR4: Each employee can only have one attendance record per day.
         List<Attendance> records = AttendanceRecord.get(id);
         for (Attendance record : records) {
             if (record.getDate().equals(date)) {
@@ -155,13 +154,13 @@ public class AttendanceService {
         records.add(attendance);
     }
 
-    // Cập nhật điểm danh cho một ngày cụ thể
+    // Update attendance for a specific date.
     public void updateAttendance(String id, LocalDate date, AttendanceStatus status, double overtime) {
         validateAttendanceInputs(id, date, overtime);
         validateAttendanceStatus(status);
         validateOvertimeByStatus(status, overtime);
 
-        // BR3: Nhân viên phải tồn tại
+        // BR3: Employee must exist.
         if (!isEmployeeExists(id)) {
             throw new IllegalArgumentException("Employee does not exist");
         }
@@ -171,7 +170,7 @@ public class AttendanceService {
             throw new IllegalArgumentException("No attendance records found for this employee");
         }
 
-        // Tìm và update record cho ngày cụ thể
+        // Find and update record for the given date.
         for (Attendance record : records) {
             if (record.getDate().equals(date)) {
                 record.setStatus(status);
@@ -183,7 +182,7 @@ public class AttendanceService {
         throw new IllegalArgumentException("Attendance record not found for this date");
     }
 
-    // 3. Hiển thị bảng điểm danh của tất cả nhân viên
+    // 3) Display attendance table for all employees.
     public String showAllAttendance() {
         StringBuilder output = new StringBuilder();
 
