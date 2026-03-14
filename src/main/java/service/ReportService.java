@@ -5,8 +5,10 @@ import entity.Employee;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ReportService {
 
@@ -72,24 +74,25 @@ public class ReportService {
         }
 
         SalaryService salaryService = new SalaryService();
+        Map<Employee, Double> salaryByEmployee = new LinkedHashMap<>();
         double maxSalary = Double.NEGATIVE_INFINITY;
 
-        // Find max salary
+        // Calculate each salary once and find maximum.
         for (Employee emp : employees) {
             if (emp.getStatus() != Employee.Status.ACTIVE)
                 continue;
             double salary = salaryService.calculateEmployeeSalary(emp, attendances, month, year);
+            salaryByEmployee.put(emp, salary);
             if (salary > maxSalary) {
                 maxSalary = salary;
             }
         }
 
-        // Print employees with max salary
+        // Print employees with max salary.
         boolean found = false;
-        for (Employee emp : employees) {
-            if (emp.getStatus() != Employee.Status.ACTIVE)
-                continue;
-            double salary = salaryService.calculateEmployeeSalary(emp, attendances, month, year);
+        for (Map.Entry<Employee, Double> entry : salaryByEmployee.entrySet()) {
+            Employee emp = entry.getKey();
+            double salary = entry.getValue();
             if (Math.abs(salary - maxSalary) < SALARY_EPSILON) {
                 output.append(String.format("%s %s %s VND\n", emp.getId(), emp.getName(), formatVndAmount(salary)));
                 found = true;

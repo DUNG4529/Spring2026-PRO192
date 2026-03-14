@@ -74,6 +74,10 @@ public class SalaryService {
             return 0.0;
         }
 
+        if (!hasAttendanceInPeriod(employee, attendances, month, year)) {
+            return 0.0;
+        }
+
         AttendanceSummary summary = getAttendanceSummary(employee, attendances, month, year);
         return employee.calculateSalary(summary.getWorkingDays(), summary.getAbsenceDays(), summary.getOvertimeHours());
     }
@@ -192,6 +196,18 @@ public class SalaryService {
         }
 
         return new AttendanceSummary(workingDays, absenceDays, leaveDays, overtimeHours);
+    }
+
+    private boolean hasAttendanceInPeriod(Employee employee, List<Attendance> attendances, int month, int year) {
+        for (Attendance attendance : attendances) {
+            if (!attendance.getIdEmployee().equals(employee.getId())) {
+                continue;
+            }
+            if (attendance.getDate().getMonthValue() == month && attendance.getDate().getYear() == year) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isBeforeDateOfJoining(Employee employee, int month, int year) {

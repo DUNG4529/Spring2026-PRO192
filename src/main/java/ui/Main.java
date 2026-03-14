@@ -306,11 +306,17 @@ public class Main {
 
         List<Employee> employees = getEmployeesSortedById(hrManager);
 
+        Map<Employee, Double> salaryByEmployee = new LinkedHashMap<>();
         double maxSalary = Double.NEGATIVE_INFINITY;
         for (Employee emp : employees) {
-            if (emp.getStatus() != Employee.Status.ACTIVE) continue;
+            if (emp.getStatus() != Employee.Status.ACTIVE) {
+                continue;
+            }
             double salary = hrManager.calculateSalaryById(emp.getId(), month, year);
-            if (salary > maxSalary) maxSalary = salary;
+            salaryByEmployee.put(emp, salary);
+            if (salary > maxSalary) {
+                maxSalary = salary;
+            }
         }
 
         System.out.println("\n------- HIGHEST PAID EMPLOYEES -------");
@@ -319,10 +325,10 @@ public class Main {
         System.out.println("-----------------------------------");
 
         boolean found = false;
-        if (maxSalary > Double.NEGATIVE_INFINITY) {
-            for (Employee emp : employees) {
-                if (emp.getStatus() != Employee.Status.ACTIVE) continue;
-                double salary = hrManager.calculateSalaryById(emp.getId(), month, year);
+        if (!salaryByEmployee.isEmpty()) {
+            for (Map.Entry<Employee, Double> entry : salaryByEmployee.entrySet()) {
+                Employee emp = entry.getKey();
+                double salary = entry.getValue();
                 if (Math.abs(salary - maxSalary) < 0.0001) {
                     System.out.printf("%-8s %-16s %s VND%n", emp.getId(), emp.getName(), formatVndAmount(salary));
                     found = true;
