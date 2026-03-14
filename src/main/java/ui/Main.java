@@ -92,6 +92,7 @@ public class Main {
             System.out.println("1. Show all employees");
             System.out.println("2. Add employee");
             System.out.println("3. Update employee");
+            System.out.println("4. Delete employee");
             System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
@@ -102,6 +103,8 @@ public class Main {
                 addEmployee(hrManager);
             } else if ("3".equals(choice)) {
                 updateEmployee(hrManager);
+            } else if ("4".equals(choice)) {
+                deleteEmployee(hrManager);
             } else if ("0".equals(choice)) {
                 return;
             } else {
@@ -467,6 +470,34 @@ public class Main {
         hrManager.updateEmployeeById(id, employee);
         hrManager.saveDataToFiles(DATA_DIR);
         System.out.println("Employee updated successfully.");
+    }
+
+    private static void deleteEmployee(HRManager hrManager) {
+        System.out.println("------------ DELETE EMPLOYEE -----------");
+        System.out.print("Enter Employee ID to delete: ");
+        String id = KEYBOARD_SCANNER.nextLine().trim();
+
+        Employee employee = hrManager.findEmployeeById(id);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+
+        System.out.println();
+        System.out.println("Employee Information");
+        System.out.println("----------------------------------------");
+        System.out.println("ID          : " + employee.getId());
+        System.out.println("Name        : " + employee.getName());
+        System.out.println("Department  : " + employee.getDepartment());
+        System.out.println("Job Title   : " + employee.getJobTitle());
+        System.out.println("----------------------------------------");
+
+        if (!confirmPrimaryAction("Delete", "Delete employee cancelled.")) {
+            return;
+        }
+
+        hrManager.deleteEmployeeById(id);
+        hrManager.saveDataToFiles(DATA_DIR);
+        System.out.println("Employee deleted successfully.");
     }
 
     private static void markTodayAttendance(HRManager hrManager) {

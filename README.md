@@ -15,7 +15,7 @@ Console-based application for managing employees, attendance, salary and reports
 
 Built with **Java 8+** and **Maven**
 
-**Version:** 1.6.0 | **PM:** Nguyễn Tiến Dũng
+**Version:** 1.6.2 | **PM:** Nguyễn Tiến Dũng
 
 </p>
 
@@ -42,8 +42,8 @@ The **HR Management System (HRMS)** is a **console-based Java application** desi
 
 The system supports:
 
-- ✅ Employee management (Add, Update, View)
-- ✅ Attendance tracking (Record, View history)
+- ✅ Employee management (Add, Update, View, Delete/Set INACTIVE)
+- ✅ Attendance tracking (Mark today, Record, View history, Show all)
 - ✅ Salary calculation (Based on working days, overtime, absences)
 - ✅ HR reports (Low attendance, Highest paid)
 
@@ -53,16 +53,17 @@ All data is stored using **text files** (pipe-delimited format) and automaticall
 
 # ✨ Features
 
-|  Task  | Feature               | Description                                                         |
-| :----: | --------------------- | ------------------------------------------------------------------- |
-| **B1** | Add Employee          | Add new employee (Full-time or Part-time) with complete information |
-| **B2** | Update Employee       | Modify employee department and job title                            |
-| **B3** | View Employees        | Display all employees in formatted table                            |
-| **B4** | Record Attendance     | Log attendance for a specific date with overtime hours              |
-| **B5** | View History          | View attendance records for an employee (sorted by date)            |
-| **B6** | Salary Calculation    | Calculate salary for a specific month, showing breakdown            |
-| **B7** | Low Attendance Report | Find employees exceeding absence threshold                          |
-| **B8** | Highest Paid Report   | Display highest-paid employees for a period                         |
+|  Task   | Feature               | Description                                                         |
+| :-----: | --------------------- | ------------------------------------------------------------------- |
+| **B1**  | Add Employee          | Add new employee (Full-time or Part-time) with complete information |
+| **B2**  | Update Employee       | Modify employee department and job title                            |
+| **B2+** | Delete Employee       | Set employee status to INACTIVE (soft delete)                       |
+| **B3**  | View Employees        | Display all employees in formatted table                            |
+| **B4**  | Record Attendance     | Log attendance for a specific date with overtime hours              |
+| **B5**  | View History          | View attendance records for an employee (sorted by date)            |
+| **B6**  | Salary Calculation    | Calculate salary for a specific month, showing breakdown            |
+| **B7**  | Low Attendance Report | Find employees exceeding absence threshold                          |
+| **B8**  | Highest Paid Report   | Display highest-paid employees for a period                         |
 
 ---
 
@@ -194,7 +195,7 @@ mvn exec:java -Dexec.mainClass="ui.Main"
 2. Attendance Management
 3. Salary Management
 4. Reports
-5. Exit
+0. Exit
 ---------------------------------------------
 Choose: _
 ```
@@ -347,6 +348,6 @@ This project was developed for the course **PRO192 — Software Engineering** at
 **PRO192 — Spring 2026**  
 FPT University
 
-Updated: 11/03/2026
+Updated: 14/03/2026
 
 </p>
