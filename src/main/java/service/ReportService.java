@@ -3,7 +3,10 @@ package service;
 import entity.Attendance;
 import entity.Employee;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 public class ReportService {
 
@@ -88,7 +91,7 @@ public class ReportService {
                 continue;
             double salary = salaryService.calculateEmployeeSalary(emp, attendances, month, year);
             if (Math.abs(salary - maxSalary) < SALARY_EPSILON) {
-                output.append(String.format("%s %s %,.0f VND\n", emp.getId(), emp.getName(), salary));
+                output.append(String.format("%s %s %s VND\n", emp.getId(), emp.getName(), formatVndAmount(salary)));
                 found = true;
             }
         }
@@ -98,5 +101,12 @@ public class ReportService {
         }
         output.append("---------------------------------------------");
         return output.toString();
+    }
+
+    private String formatVndAmount(double amount) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        symbols.setGroupingSeparator('.');
+        DecimalFormat formatter = new DecimalFormat("#,##0", symbols);
+        return formatter.format(amount);
     }
 }

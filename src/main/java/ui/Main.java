@@ -2,6 +2,9 @@ package ui;
 
 import manager.HRManager;
 import entity.*;
+import service.SalaryService;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.time.*;
 import utils.Validation;
@@ -71,18 +74,19 @@ public class Main {
 
         System.out.println("\n================ EMPLOYEE LIST =================");
         System.out.println();
-        System.out.printf("%-6s %-16s %-12s %-18s %s%n", "ID", "Name", "Department", "Job Title", "Salary");
-        System.out.println("--------------------------------------------------------------");
+        System.out.printf("%-8s %-20s %-12s %-16s %-12s    %s%n", "ID", "Name", "Department", "Job Title", "Salary", "Status");
+        System.out.println("--------------------------------------------------------------------------------");
         for (Employee employee : employees) {
-            System.out.printf("%-6s %-16s %-12s %-18s %,.0f%n",
+                System.out.printf("%-8s %-20s %-12s %-16s %12s    %s%n",
                     employee.getId(),
                     employee.getName(),
                     employee.getDepartment(),
                     employee.getJobTitle(),
-                    employee.getBaseSalary());
+                    formatVndAmount(employee.getBaseSalary()),
+                    employee.getStatus().getStatus());
         }
         System.out.println();
-        System.out.println("--------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------");
         waitForEnterToReturn();
     }
 
@@ -232,18 +236,37 @@ public class Main {
         while (true) {
             System.out.println("\n----- SALARY MANAGEMENT -----");
             System.out.println("1. Calculate salary");
+            System.out.println("2. Generate salary report (all employees)");
             System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
             if ("1".equals(choice)) {
                 calculateSalary(hrManager);
+            } else if ("2".equals(choice)) {
+                generateSalaryReportAllEmployees(hrManager);
             } else if ("0".equals(choice)) {
                 return;
             } else {
                 System.out.println("Invalid choice.");
             }
         }
+    }
+
+    private static void generateSalaryReportAllEmployees(HRManager hrManager) {
+        System.out.println("\n------ GENERATE SALARY REPORT ------");
+        int[] monthYear = readMonthYearInput("Month / Year: ");
+        int month = monthYear[0];
+        int year = monthYear[1];
+
+        if (!confirmPrimaryAction("Generate", "Cancelled.")) {
+            return;
+        }
+
+        String report = hrManager.generateSalaryReportAllEmployees(month, year);
+        System.out.println();
+        System.out.println(report);
+        waitForEnterToReturn();
     }
 
     private static void reportsMenu(HRManager hrManager) {
@@ -292,7 +315,7 @@ public class Main {
                 if (emp.getStatus() != Employee.Status.ACTIVE) continue;
                 double salary = hrManager.calculateSalaryById(emp.getId(), month, year);
                 if (Math.abs(salary - maxSalary) < 0.0001) {
-                    System.out.printf("%-8s %-16s %,.0f VND%n", emp.getId(), emp.getName(), salary);
+                    System.out.printf("%-8s %-16s %s VND%n", emp.getId(), emp.getName(), formatVndAmount(salary));
                     found = true;
                 }
             }
@@ -436,7 +459,7 @@ public class Main {
         System.out.println("Name        : " + employee.getName());
         System.out.println("Department  : " + employee.getDepartment());
         System.out.println("Job Title   : " + employee.getJobTitle());
-        System.out.printf("Basic Salary: %,.0f%n", employee.getBaseSalary());
+        System.out.printf("Basic Salary: %s%n", formatVndAmount(employee.getBaseSalary()));
         System.out.println("----------------------------------------");
         System.out.println();
 
@@ -526,6 +549,11 @@ public class Main {
             return;
         }
 
+        if (employee.getStatus() != Employee.Status.ACTIVE) {
+            System.out.println("Error: Cannot calculate salary for INACTIVE employee");
+            return;
+        }
+
         int[] monthYear = readMonthYearInput("Month / Year: ");
         int month = monthYear[0];
         int year = monthYear[1];
@@ -534,32 +562,19 @@ public class Main {
             return;
         }
 
-        List<Attendance> records = hrManager.getAttendanceByEmployeeId(id);
-        int workingDays = 0;
-        int absenceDays = 0;
-        double overtimeHours = 0.0;
-        for (Attendance a : records) {
-            if (a.getDate().getMonthValue() == month && a.getDate().getYear() == year) {
-                if (a.getStatus() == Attendance.AttendanceStatus.PRESENT) {
-                    workingDays++;
-                    overtimeHours += a.getOvertime();
-                } else if (a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
-                    absenceDays++;
-                }
-            }
-        }
+        SalaryService.AttendanceSummary summary = hrManager.getSalaryAttendanceSummaryById(id, month, year);
 
         double totalSalary = hrManager.calculateSalaryById(id, month, year);
 
         System.out.println();
         System.out.println("Salary calculated successfully.");
         System.out.println();
-        System.out.printf("Total Working Days : %d%n", workingDays);
-        System.out.printf("Overtime Hours     : %.0f%n", overtimeHours);
-        System.out.printf("Absence Days       : %d%n", absenceDays);
+        System.out.printf("Total Working Days : %d%n", summary.getWorkingDays());
+        System.out.printf("Overtime Hours     : %s%n", formatOvertime(summary.getOvertimeHours()));
+        System.out.printf("Absence Days       : %d%n", summary.getAbsenceDays());
         System.out.println();
         System.out.println("----------------------------------------");
-        System.out.printf("Total Salary       : %,.0f VND%n", totalSalary);
+        System.out.printf("Total Salary       : %s VND%n", formatVndAmount(totalSalary));
     }
 
     private static int[] readMonthYearInput(String prompt) {
@@ -626,6 +641,13 @@ public class Main {
         } else {
             return String.format("%.1f", overtime);
         }
+    }
+
+    private static String formatVndAmount(double amount) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        symbols.setGroupingSeparator('.');
+        DecimalFormat formatter = new DecimalFormat("#,##0", symbols);
+        return formatter.format(amount);
     }
 
 }

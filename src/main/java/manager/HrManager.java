@@ -140,6 +140,21 @@ public class HRManager {
         return salaryService.calculateEmployeeSalary(employee, getAllAttendances(), month, year);
     }
 
+    public SalaryService.AttendanceSummary getSalaryAttendanceSummaryById(String idEmployee, int month, int year) {
+        validateEmployeeId(idEmployee);
+        validateMonthYear(month, year);
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee does not exist");
+        }
+        return salaryService.getAttendanceSummary(employee, getAllAttendances(), month, year);
+    }
+
+    public String generateSalaryReportAllEmployees(int month, int year) {
+        validateMonthYear(month, year);
+        return salaryService.displayAllSalaries(getAllEmployees(), getAllAttendances(), month, year);
+    }
+
     // ==========================
     // Manager Methods for Reporting
     // ==========================
