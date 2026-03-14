@@ -14,7 +14,7 @@ import java.time.format.ResolverStyle;
 import java.util.*;
 import java.time.LocalDate;
 
-public class HRManager {
+public class HrManager {
     private static final String EMPLOYEE_FILE_NAME = "employees.txt";
     private static final String ATTENDANCE_FILE_NAME = "attendance.txt";
     private static final DateTimeFormatter ATTENDANCE_PARSE_FORMATTER =
@@ -28,7 +28,7 @@ public class HRManager {
     private final ReportService reportService;
 
     // Constructor initializes all services.
-    public HRManager() {
+    public HrManager() {
         this.employeeService = new EmployeeService();
         this.attendanceService = new AttendanceService(employeeService);
         this.salaryService = new SalaryService();

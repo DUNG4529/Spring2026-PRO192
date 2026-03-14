@@ -1,6 +1,6 @@
 package ui;
 
-import manager.HRManager;
+import manager.HrManager;
 import entity.*;
 import service.SalaryService;
 import java.text.DecimalFormat;
@@ -22,7 +22,7 @@ public class Main {
         new DateTimeFormatterBuilder().parseStrict().appendPattern("M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
-        HRManager hrManager = new HRManager();
+        HrManager hrManager = new HrManager();
         hrManager.loadDataFromFiles(DATA_DIR);
         hrManager.initializeAttendance();
 
@@ -72,7 +72,7 @@ public class Main {
         System.out.print("Choose: ");
     }
 
-    private static void showAllEmployees(HRManager hrManager) {
+    private static void showAllEmployees(HrManager hrManager) {
         List<Employee> employees = getEmployeesSortedById(hrManager);
         if (employees.isEmpty()) {
             System.out.println("No employees.");
@@ -99,7 +99,7 @@ public class Main {
         waitForEnterToReturn();
     }
 
-    private static void manageEmployeesMenu(HRManager hrManager) {
+    private static void manageEmployeesMenu(HrManager hrManager) {
         while (true) {
             System.out.println("\n----- MANAGE EMPLOYEES -----");
             System.out.println("1. Show all employees");
@@ -126,7 +126,7 @@ public class Main {
         }
     }
 
-    private static void attendanceManagementMenu(HRManager hrManager) {
+    private static void attendanceManagementMenu(HrManager hrManager) {
         while (true) {
             System.out.println("\n----- ATTENDANCE MANAGEMENT -----");
             System.out.println("1. Mark attendance for today");
@@ -153,7 +153,7 @@ public class Main {
         }
     }
 
-    private static void recordAttendance(HRManager hrManager) {
+    private static void recordAttendance(HrManager hrManager) {
         System.out.println("\n----------- RECORD ATTENDANCE -----------");
         System.out.print("Employee ID      : ");
         String employeeId = KEYBOARD_SCANNER.nextLine().trim();
@@ -204,7 +204,7 @@ public class Main {
         System.out.println("Attendance recorded successfully.");
     }
 
-    private static void viewAttendanceHistory(HRManager hrManager) {
+    private static void viewAttendanceHistory(HrManager hrManager) {
         System.out.println("\n----------- ATTENDANCE HISTORY -----------");
         System.out.println();
         System.out.print("Employee ID : ");
@@ -241,7 +241,7 @@ public class Main {
         waitForEnterToReturn();
     }
 
-    private static void salaryManagementMenu(HRManager hrManager) {
+    private static void salaryManagementMenu(HrManager hrManager) {
         while (true) {
             System.out.println("\n----- SALARY MANAGEMENT -----");
             System.out.println("1. Calculate salary");
@@ -262,7 +262,7 @@ public class Main {
         }
     }
 
-    private static void generateSalaryReportAllEmployees(HRManager hrManager) {
+    private static void generateSalaryReportAllEmployees(HrManager hrManager) {
         System.out.println("\n------ GENERATE SALARY REPORT ------");
         int[] monthYear = readMonthYearInput("Month / Year: ");
         int month = monthYear[0];
@@ -278,7 +278,7 @@ public class Main {
         waitForEnterToReturn();
     }
 
-    private static void reportsMenu(HRManager hrManager) {
+    private static void reportsMenu(HrManager hrManager) {
         while (true) {
             System.out.println("\n----- REPORTS -----");
             System.out.println("1. Low attendance report");
@@ -299,7 +299,7 @@ public class Main {
         }
     }
 
-    private static void highestPaidReport(HRManager hrManager) {
+    private static void highestPaidReport(HrManager hrManager) {
         int[] monthYear = readMonthYearInput("Month / Year (e.g. 3 / 2026): ");
         int month = monthYear[0];
         int year = monthYear[1];
@@ -345,7 +345,7 @@ public class Main {
         waitForEnterToReturn();
     }
 
-    private static void lowAttendanceReport(HRManager hrManager) {
+    private static void lowAttendanceReport(HrManager hrManager) {
         int[] monthYear = readMonthYearInput("Month / Year (e.g. 3 / 2026): ");
         int month = monthYear[0];
         int year = monthYear[1];
@@ -391,7 +391,7 @@ public class Main {
         waitForEnterToReturn();
     }
 
-    private static void addEmployee(HRManager hrManager) {
+    private static void addEmployee(HrManager hrManager) {
         System.out.println("------------- ADD EMPLOYEE -------------");
         System.out.print("Employee ID      : ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
@@ -458,7 +458,7 @@ public class Main {
         return salary;
     }
 
-    private static void updateEmployee(HRManager hrManager) {
+    private static void updateEmployee(HrManager hrManager) {
         System.out.println("------------ UPDATE EMPLOYEE -----------");
         System.out.print("Enter Employee ID to update: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
@@ -510,7 +510,7 @@ public class Main {
         System.out.println("Employee updated successfully.");
     }
 
-    private static void deleteEmployee(HRManager hrManager) {
+    private static void deleteEmployee(HrManager hrManager) {
         System.out.println("------------ DELETE EMPLOYEE -----------");
         System.out.print("Enter Employee ID to delete: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
@@ -538,7 +538,7 @@ public class Main {
         System.out.println("Employee deleted successfully.");
     }
 
-    private static void markTodayAttendance(HRManager hrManager) {
+    private static void markTodayAttendance(HrManager hrManager) {
         System.out.print("Employee ID: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -552,7 +552,7 @@ public class Main {
         System.out.println("Attendance updated.");
     }
 
-    private static void calculateSalary(HRManager hrManager) {
+    private static void calculateSalary(HrManager hrManager) {
         System.out.println("\n----------- CALCULATE SALARY -----------");
         System.out.println();
         System.out.print("Employee ID : ");
@@ -663,7 +663,7 @@ public class Main {
         KEYBOARD_SCANNER.nextLine();
     }
 
-    private static List<Employee> getEmployeesSortedById(HRManager hrManager) {
+    private static List<Employee> getEmployeesSortedById(HrManager hrManager) {
         List<Employee> employees = new ArrayList<>(hrManager.getAllEmployees());
         employees.sort(Comparator.comparing(e -> normalizeEmployeeId(e.getId())));
         return employees;
