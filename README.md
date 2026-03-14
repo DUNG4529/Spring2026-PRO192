@@ -15,7 +15,7 @@ Console-based application for managing employees, attendance, salary and reports
 
 Built with **Java 8+** and **Maven**
 
-**Version:** 1.6.2 | **PM:** Nguyễn Tiến Dũng
+**Version:** 1.6.3 | **PM:** Nguyễn Tiến Dũng
 
 </p>
 

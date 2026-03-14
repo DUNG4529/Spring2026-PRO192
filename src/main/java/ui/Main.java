@@ -74,19 +74,20 @@ public class Main {
 
         System.out.println("\n================ EMPLOYEE LIST =================");
         System.out.println();
-        System.out.printf("%-8s %-20s %-12s %-16s %-12s    %s%n", "ID", "Name", "Department", "Job Title", "Salary", "Status");
-        System.out.println("--------------------------------------------------------------------------------");
+        System.out.printf("%-8s %-20s %-12s %-16s %-12s %-12s    %s%n", "ID", "Name", "Department", "Job Title", "Date Join", "Salary", "Status");
+        System.out.println("--------------------------------------------------------------------------------------------------------");
         for (Employee employee : employees) {
-                System.out.printf("%-8s %-20s %-12s %-16s %12s    %s%n",
+                System.out.printf("%-8s %-20s %-12s %-16s %-12s %12s    %s%n",
                     employee.getId(),
                     employee.getName(),
                     employee.getDepartment(),
                     employee.getJobTitle(),
+                    employee.getDateOfJoining(),
                     formatVndAmount(employee.getBaseSalary()),
                     employee.getStatus().getStatus());
         }
         System.out.println();
-        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------------------");
         waitForEnterToReturn();
     }
 

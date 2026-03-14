@@ -7,10 +7,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
 
 public class SalaryService {
+
+    private static final DateTimeFormatter JOINING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static final class AttendanceSummary {
         private final int workingDays;
@@ -58,6 +64,10 @@ public class SalaryService {
 
         // BR10: Salary can only be calculated for active employees.
         if (employee.getStatus() != Employee.Status.ACTIVE) {
+            return 0.0;
+        }
+
+        if (isBeforeDateOfJoining(employee, month, year)) {
             return 0.0;
         }
 
@@ -179,6 +189,17 @@ public class SalaryService {
         }
 
         return new AttendanceSummary(workingDays, absenceDays, leaveDays, overtimeHours);
+    }
+
+    private boolean isBeforeDateOfJoining(Employee employee, int month, int year) {
+        try {
+            LocalDate joiningDate = LocalDate.parse(employee.getDateOfJoining(), JOINING_DATE_FORMATTER);
+            YearMonth requestedPeriod = YearMonth.of(year, month);
+            YearMonth joiningPeriod = YearMonth.from(joiningDate);
+            return requestedPeriod.isBefore(joiningPeriod);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Invalid date of joining format for employee: " + employee.getId(), ex);
+        }
     }
 
     private void validateEmployeeAttendanceInputs(Employee employee, List<Attendance> attendances, int month, int year) {
