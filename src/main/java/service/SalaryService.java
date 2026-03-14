@@ -10,13 +10,16 @@ import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
 import java.util.Locale;
 
 public class SalaryService {
 
-    private static final DateTimeFormatter JOINING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        private static final DateTimeFormatter JOINING_DATE_FORMATTER =
+            new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
 
     public static final class AttendanceSummary {
         private final int workingDays;

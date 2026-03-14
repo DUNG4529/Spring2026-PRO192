@@ -3,9 +3,13 @@ package utils;
 import java.util.regex.Pattern;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class Validation {
+    private static final DateTimeFormatter INPUT_DATE_FORMATTER =
+            new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
 
     // 1. Kiểm tra ID nhân viên (Mẫu: 2 chữ hoa + 6 số)
     public static boolean validID(String id) {
@@ -35,8 +39,8 @@ public class Validation {
             return false;
         }
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate.parse(date, formatter);
+            String normalizedDate = date.trim().replaceAll("\\s+", "");
+            LocalDate.parse(normalizedDate, INPUT_DATE_FORMATTER);
             return true;
         } catch (DateTimeParseException e) {
             return false;

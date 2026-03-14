@@ -9,13 +9,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 import java.util.*;
 import java.time.LocalDate;
 
 public class HRManager {
     private static final String EMPLOYEE_FILE_NAME = "employees.txt";
     private static final String ATTENDANCE_FILE_NAME = "attendance.txt";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter ATTENDANCE_PARSE_FORMATTER =
+            new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter ATTENDANCE_SAVE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Các service được HRManager sử dụng để quản lý nhân viên, điểm danh, lương và báo cáo
     private final EmployeeService employeeService;
@@ -292,7 +296,7 @@ public class HRManager {
                 }
 
                 String employeeId = sanitizeField(parts[0]);
-                LocalDate date = LocalDate.parse(sanitizeField(parts[1]), DATE_FORMATTER);
+                LocalDate date = LocalDate.parse(sanitizeField(parts[1]), ATTENDANCE_PARSE_FORMATTER);
                 Attendance.AttendanceStatus status = Attendance.AttendanceStatus.valueOf(sanitizeField(parts[2]));
                 double overtime = Double.parseDouble(sanitizeField(parts[3]));
 
@@ -335,7 +339,7 @@ public class HRManager {
                 for (Attendance attendance : entry.getValue()) {
                     writer.write(String.join("|",
                             attendance.getIdEmployee(),
-                            attendance.getDate().format(DATE_FORMATTER),
+                            attendance.getDate().format(ATTENDANCE_SAVE_FORMATTER),
                             attendance.getStatus().name(),
                             String.valueOf(attendance.getOvertime())));
                     writer.newLine();

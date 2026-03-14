@@ -7,11 +7,19 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import utils.Validation;
 
 public class Main {
     private static final Scanner KEYBOARD_SCANNER = new Scanner(System.in);
     private static final String DATA_DIR = "data";
+    private static final DateTimeFormatter INPUT_DATE_FORMATTER =
+        new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter();
+    private static final DateTimeFormatter INPUT_MONTH_YEAR_FORMATTER =
+        new DateTimeFormatterBuilder().parseStrict().appendPattern("M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
         HRManager hrManager = new HRManager();
@@ -158,7 +166,7 @@ public class Main {
 
         System.out.print("Date             : ");
         String dateInput = KEYBOARD_SCANNER.nextLine().trim();
-        LocalDate date = LocalDate.parse(dateInput, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate date = parseDateInput(dateInput);
 
         System.out.println("Status           : ");
         System.out.println("                    1. Present");
@@ -407,7 +415,7 @@ public class Main {
         System.out.print("Date of Joining  : ");
         String doj = KEYBOARD_SCANNER.nextLine().trim();
         if (!Validation.validDate(doj)) {
-            throw new IllegalArgumentException("Invalid date format (expected: dd/MM/yyyy)");
+            throw new IllegalArgumentException("Invalid date format (expected: d/M/yyyy, e.g. 1/2/2026 or 01/02/2026)");
         }
         System.out.print("Basic Salary     : ");
         double baseSalary = parseSalaryInput(KEYBOARD_SCANNER.nextLine().trim());
@@ -555,46 +563,62 @@ public class Main {
             return;
         }
 
-        int[] monthYear = readMonthYearInput("Month / Year: ");
-        int month = monthYear[0];
-        int year = monthYear[1];
+        while (true) {
+            int[] monthYear = readMonthYearInput("Month / Year: ");
+            int month = monthYear[0];
+            int year = monthYear[1];
 
-        if (isBeforeJoiningPeriod(employee, month, year)) {
-            LocalDate joiningDate = LocalDate.parse(employee.getDateOfJoining(),
-                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            YearMonth joiningPeriod = YearMonth.from(joiningDate);
-            System.out.printf("Cannot view salary for %02d/%d. Employee '%s' only joined on %s. \nPlease enter a month/year from %02d/%d onwards.%n",
-                    month, year, employee.getName(), employee.getDateOfJoining(),
-                    joiningPeriod.getMonthValue(), joiningPeriod.getYear());
-            return;
+            try {
+                if (!confirmPrimaryAction("Calculate", "Cancelled.")) {
+                    return;
+                }
+
+                SalaryService.AttendanceSummary summary = hrManager.getSalaryAttendanceSummaryById(id, month, year);
+                double totalSalary = hrManager.calculateSalaryById(id, month, year);
+
+                System.out.println();
+                System.out.println("Salary calculated successfully.");
+                System.out.println();
+                System.out.printf("Total Working Days : %d%n", summary.getWorkingDays());
+                System.out.printf("Overtime Hours     : %s%n", formatOvertime(summary.getOvertimeHours()));
+                System.out.printf("Absence Days       : %d%n", summary.getAbsenceDays());
+                System.out.println();
+                System.out.println("----------------------------------------");
+                System.out.printf("Total Salary       : %s VND%n", formatVndAmount(totalSalary));
+                return;
+            } catch (IllegalArgumentException e) {
+                System.out.println();
+                System.out.println("! " + e.getMessage());
+                System.out.println();
+
+                System.out.println("[1] Enter a different month/year");
+                System.out.println("[2] Back");
+                System.out.print("Choose: ");
+                String opt = KEYBOARD_SCANNER.nextLine().trim();
+                if (!"1".equals(opt)) {
+                    return;
+                }
+            }
         }
-
-        if (!confirmPrimaryAction("Calculate", "Cancelled.")) {
-            return;
-        }
-
-        SalaryService.AttendanceSummary summary = hrManager.getSalaryAttendanceSummaryById(id, month, year);
-
-        double totalSalary = hrManager.calculateSalaryById(id, month, year);
-
-        System.out.println();
-        System.out.println("Salary calculated successfully.");
-        System.out.println();
-        System.out.printf("Total Working Days : %d%n", summary.getWorkingDays());
-        System.out.printf("Overtime Hours     : %s%n", formatOvertime(summary.getOvertimeHours()));
-        System.out.printf("Absence Days       : %d%n", summary.getAbsenceDays());
-        System.out.println();
-        System.out.println("----------------------------------------");
-        System.out.printf("Total Salary       : %s VND%n", formatVndAmount(totalSalary));
     }
 
     private static int[] readMonthYearInput(String prompt) {
         System.out.print(prompt);
-        String[] parts = KEYBOARD_SCANNER.nextLine().trim().split("/");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid format. Use MM/YYYY");
+        String monthYearInput = KEYBOARD_SCANNER.nextLine().trim().replaceAll("\\s+", "");
+        try {
+            YearMonth yearMonth = YearMonth.parse(monthYearInput, INPUT_MONTH_YEAR_FORMATTER);
+            return new int[] { yearMonth.getMonthValue(), yearMonth.getYear() };
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Invalid format. Use M/YYYY (e.g. 2/2026 or 02/2026)");
         }
-        return new int[] { Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()) };
+    }
+
+    private static LocalDate parseDateInput(String dateInput) {
+        try {
+            return LocalDate.parse(dateInput.trim().replaceAll("\\s+", ""), INPUT_DATE_FORMATTER);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Invalid date format. Use d/M/yyyy (e.g. 1/2/2026 or 01/02/2026)");
+        }
     }
 
     private static Attendance.AttendanceStatus parseAttendanceStatusChoice(String statusChoice) {
@@ -659,18 +683,6 @@ public class Main {
         symbols.setGroupingSeparator('.');
         DecimalFormat formatter = new DecimalFormat("#,##0", symbols);
         return formatter.format(amount);
-    }
-
-    private static boolean isBeforeJoiningPeriod(Employee employee, int month, int year) {
-        try {
-            LocalDate joiningDate = LocalDate.parse(
-                    employee.getDateOfJoining(),
-                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            YearMonth requestedPeriod = YearMonth.of(year, month);
-            return requestedPeriod.isBefore(YearMonth.from(joiningDate));
-        } catch (java.time.format.DateTimeParseException ex) {
-            throw new IllegalArgumentException("Invalid date of joining format for employee: " + employee.getId(), ex);
-        }
     }
 
 }
