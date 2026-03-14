@@ -559,6 +559,16 @@ public class Main {
         int month = monthYear[0];
         int year = monthYear[1];
 
+        if (isBeforeJoiningPeriod(employee, month, year)) {
+            LocalDate joiningDate = LocalDate.parse(employee.getDateOfJoining(),
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            YearMonth joiningPeriod = YearMonth.from(joiningDate);
+            System.out.printf("Cannot view salary for %02d/%d. Employee '%s' only joined on %s. \nPlease enter a month/year from %02d/%d onwards.%n",
+                    month, year, employee.getName(), employee.getDateOfJoining(),
+                    joiningPeriod.getMonthValue(), joiningPeriod.getYear());
+            return;
+        }
+
         if (!confirmPrimaryAction("Calculate", "Cancelled.")) {
             return;
         }
@@ -649,6 +659,18 @@ public class Main {
         symbols.setGroupingSeparator('.');
         DecimalFormat formatter = new DecimalFormat("#,##0", symbols);
         return formatter.format(amount);
+    }
+
+    private static boolean isBeforeJoiningPeriod(Employee employee, int month, int year) {
+        try {
+            LocalDate joiningDate = LocalDate.parse(
+                    employee.getDateOfJoining(),
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            YearMonth requestedPeriod = YearMonth.of(year, month);
+            return requestedPeriod.isBefore(YearMonth.from(joiningDate));
+        } catch (java.time.format.DateTimeParseException ex) {
+            throw new IllegalArgumentException("Invalid date of joining format for employee: " + employee.getId(), ex);
+        }
     }
 
 }
