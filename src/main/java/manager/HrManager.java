@@ -178,10 +178,6 @@ public class HrManager {
     // Manager Methods for Salary Calculation and Reporting
     // =========================
 
-    public double calculateSalaryById(String idEmployee) {
-        return calculateSalaryById(idEmployee, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
-    }
-
     public double calculateSalaryById(String idEmployee, int month, int year) {
         validateEmployeeId(idEmployee);
         validateMonthYear(month, year);
@@ -224,10 +220,6 @@ public class HrManager {
     // Manager Methods for Reporting
     // ==========================
 
-    public String reportLowAttendance(int thresholdDays) {
-        return reportLowAttendance(LocalDate.now().getMonthValue(), LocalDate.now().getYear(), thresholdDays);
-    }
-
     public String reportLowAttendance(int month, int year, int thresholdDays) {
         if (thresholdDays < 0) {
             throw new IllegalArgumentException("Threshold days cannot be negative");
@@ -239,10 +231,6 @@ public class HrManager {
                 month,
                 year,
                 thresholdDays);
-    }
-
-    public String reportHighestPaid() {
-        return reportHighestPaid(LocalDate.now().getMonthValue(), LocalDate.now().getYear());
     }
 
     public String reportHighestPaid(int month, int year) {

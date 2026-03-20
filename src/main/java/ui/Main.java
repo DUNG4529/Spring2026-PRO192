@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import utils.Validation;
 
 public class Main {
     private static final Scanner KEYBOARD_SCANNER = new Scanner(System.in);
@@ -560,15 +561,8 @@ public class Main {
 
     private static List<Employee> getEmployeesSortedById(HrManager hrManager) {
         List<Employee> employees = new ArrayList<>(hrManager.getAllEmployees());
-        employees.sort(Comparator.comparing(e -> normalizeEmployeeId(e.getId())));
+        employees.sort(Comparator.comparing(e -> Validation.normalizeEmployeeId(e.getId())));
         return employees;
-    }
-
-    private static String normalizeEmployeeId(String id) {
-        if (id == null) {
-            return "";
-        }
-        return id.replace("\uFEFF", "").trim();
     }
 
     private static String formatOvertime(double overtime) {

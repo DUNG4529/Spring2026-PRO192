@@ -18,14 +18,6 @@ public class EmployeeService {
         this.employeeMap = employeeMap;
     }
 
-    // search
-    public Employee searchByID(String id) {
-        if (isBlank(id)) {
-            return null;
-        }
-        return employeeMap.get(id);
-    }
-
     // create - C
     public void addEmployee(Employee employee) {
         validateEmployeeForSave(employee);

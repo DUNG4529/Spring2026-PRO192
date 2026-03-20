@@ -79,4 +79,12 @@ public class Validation {
     public static void showError(String message) {
         System.out.println("Fail: " + message);
     }
+
+    // 10) Normalize employee IDs by removing BOM and surrounding spaces.
+    public static String normalizeEmployeeId(String id) {
+        if (id == null) {
+            return "";
+        }
+        return id.replace("\uFEFF", "").trim();
+    }
 }

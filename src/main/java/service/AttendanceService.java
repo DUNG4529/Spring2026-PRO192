@@ -5,6 +5,7 @@ import entity.Attendance.AttendanceStatus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import utils.Validation;
 
 public class AttendanceService {
 
@@ -187,7 +188,7 @@ public class AttendanceService {
         StringBuilder output = new StringBuilder();
 
         List<String> sortedIds = new ArrayList<>(AttendanceRecord.keySet());
-        sortedIds.sort((a, b) -> normalizeEmployeeId(a).compareTo(normalizeEmployeeId(b)));
+        sortedIds.sort((a, b) -> Validation.normalizeEmployeeId(a).compareTo(Validation.normalizeEmployeeId(b)));
 
         for (String id : sortedIds) {
             output.append("\nEmployee ID: ").append(id).append("\n");
@@ -218,18 +219,11 @@ public class AttendanceService {
         }
     }
 
-    private String normalizeEmployeeId(String id) {
-        if (id == null) {
-            return "";
-        }
-        return id.replace("\uFEFF", "").trim();
-    }
-
     private boolean isEmployeeExists(String id) {
         if (employeeService == null || id == null || id.trim().isEmpty()) {
             return false;
         }
-        return employeeService.searchByID(id) != null;
+        return employeeService.getEmployee(id) != null;
     }
 
     private void validateAttendanceInputs(String id, LocalDate date, double overtime) {
