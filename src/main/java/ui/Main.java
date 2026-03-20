@@ -2,7 +2,6 @@ package ui;
 
 import manager.HrManager;
 import entity.*;
-import service.SalaryService;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
@@ -304,44 +303,9 @@ public class Main {
         int month = monthYear[0];
         int year = monthYear[1];
 
-        List<Employee> employees = getEmployeesSortedById(hrManager);
-
-        Map<Employee, Double> salaryByEmployee = new LinkedHashMap<>();
-        double maxSalary = Double.NEGATIVE_INFINITY;
-        for (Employee emp : employees) {
-            if (emp.getStatus() != Employee.Status.ACTIVE) {
-                continue;
-            }
-            double salary = hrManager.calculateSalaryById(emp.getId(), month, year);
-            salaryByEmployee.put(emp, salary);
-            if (salary > maxSalary) {
-                maxSalary = salary;
-            }
-        }
-
-        System.out.println("\n------- HIGHEST PAID EMPLOYEES -------");
+        String report = hrManager.reportHighestPaid(month, year);
         System.out.println();
-        System.out.printf("%-8s %-16s %s%n", "ID", "Name", "Total Salary");
-        System.out.println("-----------------------------------");
-
-        boolean found = false;
-        if (!salaryByEmployee.isEmpty()) {
-            for (Map.Entry<Employee, Double> entry : salaryByEmployee.entrySet()) {
-                Employee emp = entry.getKey();
-                double salary = entry.getValue();
-                if (Math.abs(salary - maxSalary) < 0.0001) {
-                    System.out.printf("%-8s %-16s %s VND%n", emp.getId(), emp.getName(), formatVndAmount(salary));
-                    found = true;
-                }
-            }
-        }
-
-        if (!found) {
-            System.out.println("No salary data found for this month.");
-        }
-
-        System.out.println();
-        System.out.println("-----------------------------------");
+        System.out.println(report);
         waitForEnterToReturn();
     }
 
@@ -358,36 +322,9 @@ public class Main {
             return;
         }
 
-        List<Employee> employees = getEmployeesSortedById(hrManager);
-
-        System.out.println("\n-------- LOW ATTENDANCE REPORT --------");
+        String report = hrManager.reportLowAttendance(month, year, threshold);
         System.out.println();
-        System.out.printf("%-8s %-16s %s%n", "ID", "Name", "Absent Days");
-        System.out.println("-----------------------------------");
-
-        boolean found = false;
-        for (Employee emp : employees) {
-            if (emp.getStatus() != Employee.Status.ACTIVE) continue;
-            List<Attendance> records = hrManager.getAttendanceByEmployeeId(emp.getId());
-            int absentDays = 0;
-            for (Attendance a : records) {
-                if (a.getDate().getMonthValue() == month && a.getDate().getYear() == year
-                        && a.getStatus() == Attendance.AttendanceStatus.ABSENT) {
-                    absentDays++;
-                }
-            }
-            if (absentDays > threshold) {
-                System.out.printf("%-8s %-16s %d%n", emp.getId(), emp.getName(), absentDays);
-                found = true;
-            }
-        }
-
-        if (!found) {
-            System.out.println("No employees with low attendance.");
-        }
-
-        System.out.println();
-        System.out.println("-----------------------------------");
+        System.out.println(report);
         waitForEnterToReturn();
     }
 
@@ -430,18 +367,7 @@ public class Main {
             return;
         }
 
-        Employee employee;
-        if ("full-time".equalsIgnoreCase(typeInput) || "fulltime".equalsIgnoreCase(typeInput)
-                || "1".equals(typeInput)) {
-            employee = new FullTimeEmployee(id, name, department, baseSalary, jobTitle, doj, Employee.Status.ACTIVE);
-        } else if ("part-time".equalsIgnoreCase(typeInput) || "parttime".equalsIgnoreCase(typeInput)
-                || "2".equals(typeInput)) {
-            employee = new PartTimeEmployee(id, name, department, baseSalary, jobTitle, doj, Employee.Status.ACTIVE);
-        } else {
-            throw new IllegalArgumentException("Employment type must be Full-time or Part-time");
-        }
-
-        hrManager.addEmployee(employee);
+        hrManager.addEmployee(id, name, department, jobTitle, doj, baseSalary, typeInput);
         hrManager.saveDataToFiles(DATA_DIR);
         System.out.println("Employee added successfully.");
     }
@@ -579,18 +505,12 @@ public class Main {
                     return;
                 }
 
-                SalaryService.AttendanceSummary summary = hrManager.getSalaryAttendanceSummaryById(id, month, year);
-                double totalSalary = hrManager.calculateSalaryById(id, month, year);
+                String salaryDetail = hrManager.calculateSalaryDetailById(id, month, year);
 
                 System.out.println();
                 System.out.println("Salary calculated successfully.");
                 System.out.println();
-                System.out.printf("Total Working Days : %d%n", summary.getWorkingDays());
-                System.out.printf("Overtime Hours     : %s%n", formatOvertime(summary.getOvertimeHours()));
-                System.out.printf("Absence Days       : %d%n", summary.getAbsenceDays());
-                System.out.println();
-                System.out.println("----------------------------------------");
-                System.out.printf("Total Salary       : %s VND%n", formatVndAmount(totalSalary));
+                System.out.print(salaryDetail);
                 return;
             } catch (IllegalArgumentException e) {
                 System.out.println();

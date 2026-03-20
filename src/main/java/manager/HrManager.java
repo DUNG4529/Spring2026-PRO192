@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.ResolverStyle;
 import java.util.*;
 import java.time.LocalDate;
+import utils.Validation;
 
 public class HrManager {
     private static final String EMPLOYEE_FILE_NAME = "employees.txt";
@@ -41,6 +42,42 @@ public class HrManager {
 
     public void addEmployee(Employee employee) {
         employeeService.addEmployee(employee);
+    }
+
+    public void addEmployee(String id, String name, String department, String jobTitle, String dateOfJoining,
+            double baseSalary, String employmentType) {
+        if (!Validation.validID(id)) {
+            throw new IllegalArgumentException("Invalid Employee ID format (expected: 2 uppercase letters + 6 digits)");
+        }
+        if (!Validation.validName(name)) {
+            throw new IllegalArgumentException("Invalid full name (3-50 letters/spaces)");
+        }
+        if (!Validation.validString(department)) {
+            throw new IllegalArgumentException("Department cannot be empty");
+        }
+        if (!Validation.validString(jobTitle)) {
+            throw new IllegalArgumentException("Job title cannot be empty");
+        }
+        if (!Validation.validDate(dateOfJoining)) {
+            throw new IllegalArgumentException(
+                    "Invalid date format (expected: d/M/yyyy, e.g. 1/2/2026 or 01/02/2026)");
+        }
+        if (!Validation.validSalary(baseSalary)) {
+            throw new IllegalArgumentException("Basic salary must be >= 0");
+        }
+
+        Employee employee;
+        if ("full-time".equalsIgnoreCase(employmentType) || "fulltime".equalsIgnoreCase(employmentType)
+                || "1".equals(employmentType)) {
+            employee = new FullTimeEmployee(id, name, department, baseSalary, jobTitle, dateOfJoining, Employee.Status.ACTIVE);
+        } else if ("part-time".equalsIgnoreCase(employmentType) || "parttime".equalsIgnoreCase(employmentType)
+                || "2".equals(employmentType)) {
+            employee = new PartTimeEmployee(id, name, department, baseSalary, jobTitle, dateOfJoining, Employee.Status.ACTIVE);
+        } else {
+            throw new IllegalArgumentException("Employment type must be Full-time or Part-time");
+        }
+
+        addEmployee(employee);
     }
 
     public Employee findEmployeeById(String idEmployee) {
@@ -159,19 +196,34 @@ public class HrManager {
         return salaryService.displayAllSalaries(getAllEmployees(), getAllAttendances(), month, year);
     }
 
+    public String calculateSalaryDetailById(String idEmployee, int month, int year) {
+        validateEmployeeId(idEmployee);
+        validateMonthYear(month, year);
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+        return salaryService.displaySalaryDetail(employee, getAllAttendances(), month, year);
+    }
+
     // ==========================
     // Manager Methods for Reporting
     // ==========================
 
     public String reportLowAttendance(int thresholdDays) {
+        return reportLowAttendance(LocalDate.now().getMonthValue(), LocalDate.now().getYear(), thresholdDays);
+    }
+
+    public String reportLowAttendance(int month, int year, int thresholdDays) {
         if (thresholdDays < 0) {
             throw new IllegalArgumentException("Threshold days cannot be negative");
         }
+        validateMonthYear(month, year);
         return reportService.generateLowAttendanceReport(
                 getAllEmployees(),
                 getAllAttendances(),
-                LocalDate.now().getMonthValue(),
-                LocalDate.now().getYear(),
+                month,
+                year,
                 thresholdDays);
     }
 
