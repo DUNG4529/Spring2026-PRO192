@@ -13,9 +13,17 @@ import java.util.Map;
 public class ReportService {
 
     private static final double SALARY_EPSILON = 0.0001;
+    private final SalaryService salaryService;
 
-    // Constructor
     public ReportService() {
+        this(new SalaryService());
+    }
+
+    public ReportService(SalaryService salaryService) {
+        if (salaryService == null) {
+            throw new IllegalArgumentException("SalaryService cannot be null");
+        }
+        this.salaryService = salaryService;
     }
 
     // Task B7 - Employees with Low Attendance (BR12)
@@ -25,7 +33,11 @@ public class ReportService {
     public String generateLowAttendanceReport(List<Employee> employees, List<Attendance> attendances, int month, int year,
             int threshold) {
         StringBuilder output = new StringBuilder();
-        output.append("----------- LOW ATTENDANCE REPORT -----------\n");
+        output.append("---------------- LOW ATTENDANCE REPORT ----------------\n");
+        output.append(String.format(" Period: %d/%d | Threshold: > %d absent days\n", month, year, threshold));
+        output.append("-------------------------------------------------------\n");
+        output.append(String.format("%-10s | %-24s | %-12s\n", "ID", "Name", "Absent Days"));
+        output.append("-------------------------------------------------------\n");
         boolean found = false;
 
         for (Employee emp : employees) {
@@ -43,7 +55,7 @@ public class ReportService {
             }
 
             if (absentDays > threshold) {
-                output.append(String.format("%s %s %d absent days\n", emp.getId(), emp.getName(), absentDays));
+                output.append(String.format("%-10s | %-24s | %-12d\n", emp.getId(), emp.getName(), absentDays));
                 found = true;
             }
         }
@@ -51,7 +63,7 @@ public class ReportService {
         if (!found) {
             output.append("No employees found with low attendance.\n");
         }
-        output.append("--------------------------------------------");
+        output.append("-------------------------------------------------------");
         return output.toString();
     }
 
@@ -61,7 +73,9 @@ public class ReportService {
     public String generateHighestPaidEmployeesReport(List<Employee> employees, List<Attendance> attendances, int month,
             int year) {
         StringBuilder output = new StringBuilder();
-        output.append("----------- HIGHEST PAID EMPLOYEES -----------\n");
+        output.append("---------------- HIGHEST PAID EMPLOYEES ----------------\n");
+        output.append(String.format(" Period: %d/%d\n", month, year));
+        output.append("---------------------------------------------------------\n");
 
         if (employees == null || attendances == null) {
             throw new IllegalArgumentException("Employee list and attendance list cannot be null");
@@ -73,7 +87,6 @@ public class ReportService {
             throw new IllegalArgumentException("Year must be greater than 0");
         }
 
-        SalaryService salaryService = new SalaryService();
         Map<Employee, Double> salaryByEmployee = new LinkedHashMap<>();
         double maxSalary = Double.NEGATIVE_INFINITY;
 
@@ -89,12 +102,14 @@ public class ReportService {
         }
 
         // Print employees with max salary.
+        output.append(String.format("%-10s | %-24s | %-15s\n", "ID", "Name", "Total Salary"));
+        output.append("---------------------------------------------------------\n");
         boolean found = false;
         for (Map.Entry<Employee, Double> entry : salaryByEmployee.entrySet()) {
             Employee emp = entry.getKey();
             double salary = entry.getValue();
             if (Math.abs(salary - maxSalary) < SALARY_EPSILON) {
-                output.append(String.format("%s %s %s VND\n", emp.getId(), emp.getName(), formatVndAmount(salary)));
+                output.append(String.format("%-10s | %-24s | %-15s\n", emp.getId(), emp.getName(), formatVndAmount(salary) + " VND"));
                 found = true;
             }
         }
@@ -102,7 +117,7 @@ public class ReportService {
         if (!found) {
             output.append("No valid salary data found for this month.\n");
         }
-        output.append("---------------------------------------------");
+        output.append("---------------------------------------------------------");
         return output.toString();
     }
 

@@ -18,8 +18,8 @@ import java.util.Locale;
 
 public class SalaryService {
 
-        private static final DateTimeFormatter JOINING_DATE_FORMATTER =
-            new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter JOINING_DATE_FORMATTER =
+        new DateTimeFormatterBuilder().parseStrict().appendPattern("d/M/uuuu").toFormatter().withResolverStyle(ResolverStyle.STRICT);
 
     public static final class AttendanceSummary {
         private final int workingDays;
@@ -51,14 +51,7 @@ public class SalaryService {
         }
     }
 
-    List<Employee> employeeList;
-    List<Attendance> attendanceList;
-    // Constructor
     public SalaryService() {
-    }
-    public SalaryService(List<Employee> employeeList, List<Attendance> attendanceList) {
-        this.employeeList = employeeList;
-        this.attendanceList = attendanceList;
     }
 
     // 1) Calculate employee salary based on base salary, working days, overtime, and absences.
@@ -74,11 +67,10 @@ public class SalaryService {
             return 0.0;
         }
 
-        if (!hasAttendanceInPeriod(employee, attendances, month, year)) {
+        AttendanceSummary summary = getAttendanceSummary(employee, attendances, month, year);
+        if ((summary.getWorkingDays() + summary.getAbsenceDays() + summary.getLeaveDays()) == 0) {
             return 0.0;
         }
-
-        AttendanceSummary summary = getAttendanceSummary(employee, attendances, month, year);
         return employee.calculateSalary(summary.getWorkingDays(), summary.getAbsenceDays(), summary.getOvertimeHours());
     }
 
@@ -131,10 +123,16 @@ public class SalaryService {
                 summary.getOvertimeHours());
 
         StringBuilder output = new StringBuilder();
-        output.append(String.format("Total Working Days: %d\n", summary.getWorkingDays()));
-        output.append(String.format("Overtime Hours: %.1f\n", summary.getOvertimeHours()));
-        output.append(String.format("Absence Days: %d\n", summary.getAbsenceDays()));
-        output.append(String.format("Total Salary: %s VND\n", formatVndAmount(totalSalary)));
+        output.append("----------------------------------------------------\n");
+        output.append(String.format(" SALARY DETAIL - %s (%d/%d)\n", employee.getId(), month, year));
+        output.append("----------------------------------------------------\n");
+        output.append(String.format("%-20s | %s\n", "Metric", "Value"));
+        output.append("----------------------------------------------------\n");
+        output.append(String.format("%-20s | %d\n", "Working Days", summary.getWorkingDays()));
+        output.append(String.format("%-20s | %.1f\n", "Overtime Hours", summary.getOvertimeHours()));
+        output.append(String.format("%-20s | %d\n", "Absence Days", summary.getAbsenceDays()));
+        output.append(String.format("%-20s | %s VND\n", "Total Salary", formatVndAmount(totalSalary)));
+        output.append("----------------------------------------------------");
         return output.toString();
     }
 
@@ -196,18 +194,6 @@ public class SalaryService {
         }
 
         return new AttendanceSummary(workingDays, absenceDays, leaveDays, overtimeHours);
-    }
-
-    private boolean hasAttendanceInPeriod(Employee employee, List<Attendance> attendances, int month, int year) {
-        for (Attendance attendance : attendances) {
-            if (!attendance.getIdEmployee().equals(employee.getId())) {
-                continue;
-            }
-            if (attendance.getDate().getMonthValue() == month && attendance.getDate().getYear() == year) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean isBeforeDateOfJoining(Employee employee, int month, int year) {

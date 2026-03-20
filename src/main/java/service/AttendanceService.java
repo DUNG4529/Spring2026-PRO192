@@ -191,20 +191,20 @@ public class AttendanceService {
 
         for (String id : sortedIds) {
             output.append("\nEmployee ID: ").append(id).append("\n");
-            output.append("-----------------------------------------\n");
-            output.append("Date        Status     Overtime\n");
-            output.append("-----------------------------------------\n");
+            output.append("-------------------------------------------------\n");
+            output.append(String.format("%-12s | %-10s | %-10s\n", "Date", "Status", "Overtime"));
+            output.append("-------------------------------------------------\n");
 
             List<Attendance> records = AttendanceRecord.get(id);
             records.sort((a, b) -> a.getDate().compareTo(b.getDate()));
 
             for (Attendance record : records) {
-                output.append(String.format("%-12s%-11s%s%n",
+                output.append(String.format("%-12s | %-10s | %-10s%n",
                         record.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         record.getStatus().getDisplayName(),
                         formatOvertime(record.getOvertime())));
             }
-            output.append("-----------------------------------------\n");
+            output.append("-------------------------------------------------\n");
         }
 
         return output.toString();

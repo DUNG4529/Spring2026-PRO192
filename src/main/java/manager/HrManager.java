@@ -33,7 +33,7 @@ public class HrManager {
         this.employeeService = new EmployeeService();
         this.attendanceService = new AttendanceService(employeeService);
         this.salaryService = new SalaryService();
-        this.reportService = new ReportService();
+        this.reportService = new ReportService(this.salaryService);
     }
 
     // =========================
@@ -96,6 +96,33 @@ public class HrManager {
         employeeService.updateEmployee(newEmployee);
     }
 
+    public void updateEmployeeInfoById(String idEmployee, String newDepartment, String newJobTitle) {
+        validateEmployeeId(idEmployee);
+        Employee employee = findEmployeeById(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found");
+        }
+
+        String department = normalizeOptionalInput(newDepartment);
+        String jobTitle = normalizeOptionalInput(newJobTitle);
+
+        if (department != null) {
+            if (!Validation.validString(department)) {
+                throw new IllegalArgumentException("Department cannot be empty");
+            }
+            employee.setDepartment(department);
+        }
+
+        if (jobTitle != null) {
+            if (!Validation.validString(jobTitle)) {
+                throw new IllegalArgumentException("Job title cannot be empty");
+            }
+            employee.setJobTitle(jobTitle);
+        }
+
+        employeeService.updateEmployee(employee);
+    }
+
     public void deleteEmployeeById(String idEmployee) {
         validateEmployeeId(idEmployee);
         employeeService.deleteEmployee(idEmployee);
@@ -114,40 +141,24 @@ public class HrManager {
     }
 
     public void markEmployeeAttendance(String idEmployee, Attendance.AttendanceStatus status) {
-        validateEmployeeId(idEmployee);
         if (status == null) {
             throw new IllegalArgumentException("Attendance status cannot be null");
         }
-        Employee employee = findEmployeeById(idEmployee);
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee does not exist");
-        }
+        requireExistingEmployee(idEmployee);
         attendanceService.markAttendance(idEmployee, status);
     }
 
-    public void addAttendance(Attendance attendance) {
-        if (attendance == null) {
-            throw new IllegalArgumentException("Attendance cannot be null");
-        }
-        Employee employee = findEmployeeById(attendance.getIdEmployee());
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee does not exist");
-        }
-        attendanceService.addAttendance(
-                attendance.getIdEmployee(),
-                attendance.getDate(),
-                attendance.getStatus(),
-                attendance.getOvertime());
+    public void addAttendance(String idEmployee, LocalDate date, Attendance.AttendanceStatus status, double overtime) {
+        requireExistingEmployee(idEmployee);
+        attendanceService.addAttendance(idEmployee, date, status, overtime);
     }
 
-    public void updateAttendance(String idEmployee, LocalDate date, String status, double overtime) {
-        validateEmployeeId(idEmployee);
-        Employee employee = findEmployeeById(idEmployee);
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee does not exist");
+    public void updateAttendance(String idEmployee, LocalDate date, Attendance.AttendanceStatus status, double overtime) {
+        requireExistingEmployee(idEmployee);
+        if (status == null) {
+            throw new IllegalArgumentException("Attendance status cannot be null");
         }
-        Attendance.AttendanceStatus attendanceStatus = Attendance.AttendanceStatus.valueOf(status.trim().toUpperCase());
-        attendanceService.updateAttendance(idEmployee, date, attendanceStatus, overtime);
+        attendanceService.updateAttendance(idEmployee, date, status, overtime);
     }
 
     public List<Attendance> getAttendanceByEmployeeId(String idEmployee) {
@@ -202,6 +213,9 @@ public class HrManager {
         Employee employee = findEmployeeById(idEmployee);
         if (employee == null) {
             throw new IllegalArgumentException("Employee not found");
+        }
+        if (employee.getStatus() != Employee.Status.ACTIVE) {
+            throw new IllegalArgumentException("Cannot calculate salary for INACTIVE employee");
         }
         return salaryService.displaySalaryDetail(employee, getAllAttendances(), month, year);
     }
@@ -416,6 +430,9 @@ public class HrManager {
         if (idEmployee == null || idEmployee.trim().isEmpty()) {
             throw new IllegalArgumentException("Employee ID cannot be empty");
         }
+        if (!Validation.validID(idEmployee.trim())) {
+            throw new IllegalArgumentException("Invalid Employee ID format (expected: 2 uppercase letters + 6 digits)");
+        }
     }
 
     private void validateMonthYear(int month, int year) {
@@ -426,4 +443,22 @@ public class HrManager {
             throw new IllegalArgumentException("Year must be greater than 0");
         }
     }
+
+    private String normalizeOptionalInput(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    private Employee requireExistingEmployee(String idEmployee) {
+        validateEmployeeId(idEmployee);
+        Employee employee = employeeService.getEmployee(idEmployee);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee does not exist");
+        }
+        return employee;
+    }
+
 }

@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import utils.Validation;
 
 public class Main {
     private static final Scanner KEYBOARD_SCANNER = new Scanner(System.in);
@@ -59,9 +58,10 @@ public class Main {
     }
 
     private static void printMainMenu() {
-        System.out.println("\n================= MAIN MENU =================");
-        System.out.println("        HUMAN RESOURCE MANAGEMENT");
-        System.out.println("=============================================");
+        System.out.println("\n=================================================");
+        System.out.println("                    MAIN MENU");
+        System.out.println("            HUMAN RESOURCE MANAGEMENT");
+        System.out.println("=================================================");
         System.out.println("1. Manage Employees");
         System.out.println("2. Attendance Management");
         System.out.println("3. Salary Management");
@@ -100,12 +100,13 @@ public class Main {
 
     private static void manageEmployeesMenu(HrManager hrManager) {
         while (true) {
-            System.out.println("\n----- MANAGE EMPLOYEES -----");
+            System.out.println("\n================ MANAGE EMPLOYEES ================");
             System.out.println("1. Show all employees");
             System.out.println("2. Add employee");
             System.out.println("3. Update employee");
             System.out.println("4. Delete employee");
             System.out.println("0. Back");
+            System.out.println("-------------------------------------------------");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -127,12 +128,13 @@ public class Main {
 
     private static void attendanceManagementMenu(HrManager hrManager) {
         while (true) {
-            System.out.println("\n----- ATTENDANCE MANAGEMENT -----");
+            System.out.println("\n============== ATTENDANCE MANAGEMENT ==============");
             System.out.println("1. Mark attendance for today");
             System.out.println("2. Record attendance");
             System.out.println("3. View attendance history");
             System.out.println("4. Show all attendance");
             System.out.println("0. Back");
+            System.out.println("-------------------------------------------------");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -153,15 +155,9 @@ public class Main {
     }
 
     private static void recordAttendance(HrManager hrManager) {
-        System.out.println("\n----------- RECORD ATTENDANCE -----------");
+        System.out.println("\n================ RECORD ATTENDANCE ================");
         System.out.print("Employee ID      : ");
         String employeeId = KEYBOARD_SCANNER.nextLine().trim();
-
-        Employee employee = hrManager.findEmployeeById(employeeId);
-        if (employee == null) {
-            System.out.println("Error: Employee not found");
-            return;
-        }
 
         System.out.print("Date             : ");
         String dateInput = KEYBOARD_SCANNER.nextLine().trim();
@@ -187,24 +183,26 @@ public class Main {
         }
 
         System.out.println();
-        System.out.println("----------- RECORD ATTENDANCE -----------");
-        System.out.println();
-        System.out.println("Employee ID      : " + employeeId);
-        System.out.println("Date             : " + date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        System.out.println("Status           : " + status.getDisplayName());
-        System.out.printf("Overtime Hours   : %.2f%n", overtimeHours);
+        System.out.println("================ RECORD ATTENDANCE ================");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "Field", "Value");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "Employee ID", employeeId);
+        System.out.printf("%-15s | %s%n", "Date", date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        System.out.printf("%-15s | %s%n", "Status", status.getDisplayName());
+        System.out.printf("%-15s | %.2f%n", "Overtime Hours", overtimeHours);
+        System.out.println("-------------------------------------------------");
         if (!confirmPrimaryAction("Save", "Record cancelled.")) {
             return;
         }
 
-        Attendance attendance = new Attendance(employeeId, date, status, overtimeHours);
-        hrManager.addAttendance(attendance);
+        hrManager.addAttendance(employeeId, date, status, overtimeHours);
         hrManager.saveDataToFiles(DATA_DIR);
         System.out.println("Attendance recorded successfully.");
     }
 
     private static void viewAttendanceHistory(HrManager hrManager) {
-        System.out.println("\n----------- ATTENDANCE HISTORY -----------");
+        System.out.println("\n=============== ATTENDANCE HISTORY ===============");
         System.out.println();
         System.out.print("Employee ID : ");
         String employeeId = KEYBOARD_SCANNER.nextLine().trim();
@@ -223,29 +221,30 @@ public class Main {
             return;
         }
 
-        records.sort((a, b) -> a.getDate().compareTo(b.getDate()));
+        records.sort(Comparator.comparing(Attendance::getDate));
 
         System.out.println();
         System.out.println("Employee ID: " + employeeId);
-        System.out.println("-----------------------------------------");
-        System.out.println("Date        Status     Overtime");
-        System.out.println("-----------------------------------------");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-12s | %-10s | %-10s%n", "Date", "Status", "Overtime");
+        System.out.println("-------------------------------------------------");
         for (Attendance record : records) {
-            System.out.printf("%-12s%-11s%s%n",
+            System.out.printf("%-12s | %-10s | %-10s%n",
                     record.getDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     record.getStatus().getDisplayName(),
                     formatOvertime(record.getOvertime()));
         }
-        System.out.println("-----------------------------------------");
+        System.out.println("-------------------------------------------------");
         waitForEnterToReturn();
     }
 
     private static void salaryManagementMenu(HrManager hrManager) {
         while (true) {
-            System.out.println("\n----- SALARY MANAGEMENT -----");
+            System.out.println("\n================ SALARY MANAGEMENT ================");
             System.out.println("1. Calculate salary");
             System.out.println("2. Generate salary report (all employees)");
             System.out.println("0. Back");
+            System.out.println("-------------------------------------------------");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -262,7 +261,7 @@ public class Main {
     }
 
     private static void generateSalaryReportAllEmployees(HrManager hrManager) {
-        System.out.println("\n------ GENERATE SALARY REPORT ------");
+        System.out.println("\n============== GENERATE SALARY REPORT =============");
         int[] monthYear = readMonthYearInput("Month / Year: ");
         int month = monthYear[0];
         int year = monthYear[1];
@@ -279,10 +278,11 @@ public class Main {
 
     private static void reportsMenu(HrManager hrManager) {
         while (true) {
-            System.out.println("\n----- REPORTS -----");
+            System.out.println("\n==================== REPORTS ====================");
             System.out.println("1. Low attendance report");
             System.out.println("2. Highest paid report");
             System.out.println("0. Back");
+            System.out.println("-------------------------------------------------");
             System.out.print("Choose: ");
             String choice = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -329,27 +329,15 @@ public class Main {
     }
 
     private static void addEmployee(HrManager hrManager) {
-        System.out.println("------------- ADD EMPLOYEE -------------");
+        System.out.println("\n=================== ADD EMPLOYEE ===================");
         System.out.print("Employee ID      : ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
-        if (!Validation.validID(id)) {
-            throw new IllegalArgumentException("Invalid Employee ID format (expected: 2 uppercase letters + 6 digits)");
-        }
         System.out.print("Full Name        : ");
         String name = KEYBOARD_SCANNER.nextLine().trim();
-        if (!Validation.validName(name)) {
-            throw new IllegalArgumentException("Invalid full name (3-50 letters/spaces)");
-        }
         System.out.print("Department       : ");
         String department = KEYBOARD_SCANNER.nextLine().trim();
-        if (!Validation.validString(department)) {
-            throw new IllegalArgumentException("Department cannot be empty");
-        }
         System.out.print("Job Title        : ");
         String jobTitle = KEYBOARD_SCANNER.nextLine().trim();
-        if (!Validation.validString(jobTitle)) {
-            throw new IllegalArgumentException("Job title cannot be empty");
-        }
         System.out.println("Employment Type  : ");
         System.out.println("            1. Full-time");
         System.out.println("            2. Part-time");
@@ -357,9 +345,6 @@ public class Main {
         String typeInput = KEYBOARD_SCANNER.nextLine().trim();
         System.out.print("Date of Joining  : ");
         String doj = KEYBOARD_SCANNER.nextLine().trim();
-        if (!Validation.validDate(doj)) {
-            throw new IllegalArgumentException("Invalid date format (expected: d/M/yyyy, e.g. 1/2/2026 or 01/02/2026)");
-        }
         System.out.print("Basic Salary     : ");
         double baseSalary = parseSalaryInput(KEYBOARD_SCANNER.nextLine().trim());
 
@@ -373,19 +358,19 @@ public class Main {
     }
 
     private static double parseSalaryInput(String salaryInput) {
-        if (!Validation.validString(salaryInput)) {
+        if (salaryInput == null || salaryInput.trim().isEmpty()) {
             throw new IllegalArgumentException("Basic salary cannot be empty");
         }
         String normalized = salaryInput.replace(",", "").trim();
         double salary = Double.parseDouble(normalized);
-        if (!Validation.validSalary(salary)) {
+        if (salary < 0) {
             throw new IllegalArgumentException("Basic salary must be >= 0");
         }
         return salary;
     }
 
     private static void updateEmployee(HrManager hrManager) {
-        System.out.println("------------ UPDATE EMPLOYEE -----------");
+        System.out.println("\n================= UPDATE EMPLOYEE =================");
         System.out.print("Enter Employee ID to update: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -396,12 +381,14 @@ public class Main {
 
         System.out.println();
         System.out.println("Current Information");
-        System.out.println("----------------------------------------");
-        System.out.println("Name        : " + employee.getName());
-        System.out.println("Department  : " + employee.getDepartment());
-        System.out.println("Job Title   : " + employee.getJobTitle());
-        System.out.printf("Basic Salary: %s%n", formatVndAmount(employee.getBaseSalary()));
-        System.out.println("----------------------------------------");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "Field", "Value");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "Name", employee.getName());
+        System.out.printf("%-15s | %s%n", "Department", employee.getDepartment());
+        System.out.printf("%-15s | %s%n", "Job Title", employee.getJobTitle());
+        System.out.printf("%-15s | %s%n", "Basic Salary", formatVndAmount(employee.getBaseSalary()));
+        System.out.println("-------------------------------------------------");
         System.out.println();
 
         System.out.print("Enter new Department (leave blank to skip): ");
@@ -424,20 +411,13 @@ public class Main {
             throw new IllegalArgumentException("Invalid option");
         }
 
-        if (!newDepartment.isEmpty()) {
-            employee.setDepartment(newDepartment);
-        }
-        if (!newJobTitle.isEmpty()) {
-            employee.setJobTitle(newJobTitle);
-        }
-
-        hrManager.updateEmployeeById(id, employee);
+        hrManager.updateEmployeeInfoById(id, newDepartment, newJobTitle);
         hrManager.saveDataToFiles(DATA_DIR);
         System.out.println("Employee updated successfully.");
     }
 
     private static void deleteEmployee(HrManager hrManager) {
-        System.out.println("------------ DELETE EMPLOYEE -----------");
+        System.out.println("\n================= DELETE EMPLOYEE =================");
         System.out.print("Enter Employee ID to delete: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
 
@@ -448,12 +428,14 @@ public class Main {
 
         System.out.println();
         System.out.println("Employee Information");
-        System.out.println("----------------------------------------");
-        System.out.println("ID          : " + employee.getId());
-        System.out.println("Name        : " + employee.getName());
-        System.out.println("Department  : " + employee.getDepartment());
-        System.out.println("Job Title   : " + employee.getJobTitle());
-        System.out.println("----------------------------------------");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "Field", "Value");
+        System.out.println("-------------------------------------------------");
+        System.out.printf("%-15s | %s%n", "ID", employee.getId());
+        System.out.printf("%-15s | %s%n", "Name", employee.getName());
+        System.out.printf("%-15s | %s%n", "Department", employee.getDepartment());
+        System.out.printf("%-15s | %s%n", "Job Title", employee.getJobTitle());
+        System.out.println("-------------------------------------------------");
 
         if (!confirmPrimaryAction("Delete", "Delete employee cancelled.")) {
             return;
@@ -465,10 +447,14 @@ public class Main {
     }
 
     private static void markTodayAttendance(HrManager hrManager) {
+        System.out.println("\n=============== MARK TODAY ATTENDANCE ===============");
         System.out.print("Employee ID: ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
 
-        System.out.println("Status: 1.PRESENT  2.ABSENT  3.LEAVE");
+        System.out.println("Status");
+        System.out.println("1. PRESENT");
+        System.out.println("2. ABSENT");
+        System.out.println("3. LEAVE");
         System.out.print("Choose status: ");
         String statusChoice = KEYBOARD_SCANNER.nextLine().trim();
         Attendance.AttendanceStatus status = parseAttendanceStatusChoice(statusChoice);
@@ -479,21 +465,10 @@ public class Main {
     }
 
     private static void calculateSalary(HrManager hrManager) {
-        System.out.println("\n----------- CALCULATE SALARY -----------");
+        System.out.println("\n================ CALCULATE SALARY ================");
         System.out.println();
         System.out.print("Employee ID : ");
         String id = KEYBOARD_SCANNER.nextLine().trim();
-
-        Employee employee = hrManager.findEmployeeById(id);
-        if (employee == null) {
-            System.out.println("Error: Employee not found");
-            return;
-        }
-
-        if (employee.getStatus() != Employee.Status.ACTIVE) {
-            System.out.println("Error: Cannot calculate salary for INACTIVE employee");
-            return;
-        }
 
         while (true) {
             int[] monthYear = readMonthYearInput("Month / Year: ");
@@ -564,7 +539,7 @@ public class Main {
         System.out.println();
         System.out.println("[1] " + primaryLabel);
         System.out.println("[2] Cancel");
-        System.out.println("----------------------------------------");
+        System.out.println("-------------------------------------------------");
         System.out.print("Select option: ");
 
         String option = KEYBOARD_SCANNER.nextLine().trim();
